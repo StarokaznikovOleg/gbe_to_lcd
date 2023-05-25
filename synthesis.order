@@ -31,3 +31,4 @@ i<>.\src\ethrx_ctr.vhd
 i<>.\src\ethtx_ctr.vhd
 i<>.\src\gowin_ip\video_mem\video_mem2048x32.vhd
 i<>.\src\gowin_ip\video_mem\video_mem1024x32.vhd
+i<>.\src\gowin_ip\video_mem\video_mem4096x32.vhd

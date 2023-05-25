@@ -29,7 +29,7 @@ entity gpu is
 		I_sdrc_rd_valid: in std_logic;
 		I_sdrc_wrd_ack: in std_logic;
 		
-		rx_a: out std_logic_vector(10 downto 0);
+		rx_a: out std_logic_vector(11 downto 0);
 		rx_wr: out std_logic;
 		rx_d: out std_logic_vector(31 downto 0);
 		rx_q: in std_logic_vector(31 downto 0);
@@ -48,7 +48,7 @@ architecture main of gpu is
 	constant video_hsize : integer:=1280;
 	constant video_vsize : integer:=800;
 	constant mem_val : integer:=21; --value sdram address ;  
-	constant Hmem_val : integer:=2; --value of memory tranzaction   !!!! log2(Hmem_len);  
+	constant Hmem_val : integer:=3; --value of memory tranzaction   !!!! log2(Hmem_len);  
 	constant Smem_val : integer:=8; --value of tranzaction for one horizontal string !!!! log2(Smem_len);  	 
 	
 	
@@ -61,7 +61,7 @@ architecture main of gpu is
 	
 	type state_type is (clstart,clstep,clcheck,done,idle,rxcheck,rxstep1,rxstep2,rxstep3,txcheck,txstep1,txstep2,error);
 	signal state : state_type:=clstart;
-	signal count_adrrxbuf,count_adrtxbuf : integer range 0 to 2**10-1 :=0;
+	signal count_adrrxbuf,count_adrtxbuf : integer range 0 to 2**11-1 :=0;
 	signal seltxbuf: std_logic_vector(2 downto 0);
 	signal count_adrmem : integer range 0 to 2**(mem_val-1-Smem_val)-1 :=0;
 	signal Vcount : integer range 0 to 2047 :=0;
@@ -86,8 +86,8 @@ begin
 	O_sdrc_addr(mem_val-2 downto Smem_val)<=conv_std_logic_vector(count_adrmem,mem_val-1-Smem_val);
 	O_sdrc_addr(Smem_val-1 downto 0)<=conv_std_logic_vector(0,Smem_val);
 	
-	rx_a(10)<=adrBuffrxHi;	
-	rx_a(9 downto 0)<=conv_std_logic_vector(count_adrrxbuf,10);	
+	rx_a(11)<=adrBuffrxHi;	
+	rx_a(10 downto 0)<=conv_std_logic_vector(count_adrrxbuf,11);	
 	rx_wr<='0';
 	rx_d<=(others=>'0');
 	
@@ -309,10 +309,12 @@ begin
 					end if;	 
 				
 				when txstep2 =>
-					if t_count=1 and count=222 then
+					if t_count=Hmem_len-1 and count=Smem_len-224 then
 						seltxbuf<="010";
-					elsif t_count=3 and count=190 then
+					elsif t_count=Hmem_len-3 and count=Smem_len-192 then
 						seltxbuf<="100";  
+					elsif t_count=Hmem_len-5 and count=Smem_len-160 then
+						seltxbuf<="000";  
 					end if;
 					
 					O_sdrc_rd_n<='1'; 
@@ -341,6 +343,7 @@ begin
 					
 				
 				when others =>	--err_cycle
+						seltxbuf<="000";  
 					wd_inc<=false;
 					wd_clear<=false;
 					err_read<='0';

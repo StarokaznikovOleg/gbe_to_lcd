@@ -1,4 +1,4 @@
-timestamp=1685019256801
+timestamp=1685032453605
 
 [$root]
 A/$root=22|""|0|1*3516706
@@ -185,12 +185,12 @@ Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [ethrx_module]
-A/main=21|./src/ethrx_module.vhd|28|1*4234791
-BinI32/main=3*359185
-I=0*1079528
-I/main=0*1273026
-M=11|0|v98|1685001021223|./src/ethrx_module.vhd|0*1078845*0x19c2edf45fa304b6c9a906ad05202f9c2b14c8ee|0*1079443*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1685016579325|./src/ethrx_module.vhd|0*1267451*0x625fb4c533aeb1fe160cffd16acc48d5f2eaf40a|0*1272933*0xb33770ff1c10522f9491560174ac8e6c
+A/main=21|./src/ethrx_module.vhd|28|1*4377180
+BinI32/main=3*371208
+I=0*1310031
+I/main=0*1315926
+M=11|0|v98|1685030664141|./src/ethrx_module.vhd|0*1309348*0x23e2d292f0c6909ee1c07093c7c396536d394f8b|0*1309946*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1685030664143|./src/ethrx_module.vhd|0*1310329*0xb6fc530d497c2e3366b8f5168554a48941900954|0*1315833*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/ethrx_module.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -271,12 +271,12 @@ Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [gpu]
-A/main=21|./src/gpu.vhd|46|1*4257800
-BinI32/main=3*362900
-I=0*1169985
-I/main=0*1281193
-M=11|0|v98|1685005491656|./src/gpu.vhd|0*1168761*0x872af7cdeeca9b4044ea83e4722b2d0df2fa1afd|0*1169918*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1685019256540|./src/gpu.vhd|0*1273381*0xa53aa4e1c2d02290eabaee90cae8340c69574cb7|0*1281118*0xb33770ff1c10522f9491560174ac8e6c
+A/main=21|./src/gpu.vhd|46|1*4748678
+BinI32/main=3*385116
+I=0*1380381
+I/main=0*1423884
+M=11|0|v98|1685030845657|./src/gpu.vhd|0*1379157*0x22b6f9fa699e0bf1bf942a33ab8f95c3080e1ed8|0*1380314*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1685032453528|./src/gpu.vhd|0*1415937*0xf95ce3c2780b25cf95704491fdb515f8d574ee3e|0*1423809*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gpu.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -593,13 +593,24 @@ R=./src/gowin_ip/video_mem/video_mem2048x32.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/behavioral=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
+[video_mem4096x32]
+A/behavioral=A/Behavioral 21|./src/gowin_ip/video_mem/video_mem4096x32.vhd|33|1*4386631
+BinI32/behavioral=3*374960
+I=0*1317588
+I/behavioral=I/Behavioral 0*1378106
+M=11|0|v98|1685030700001|./src/gowin_ip/video_mem/video_mem4096x32.vhd|0*1316825*0x0eaaab993a94abb37d1b0875da708f8675910019|0*1317476*0xab32bc1a2daf049573e14469f634e0e6
+M/behavioral=M/Behavioral 21|0|v98|1685030700209|./src/gowin_ip/video_mem/video_mem4096x32.vhd|0*1317698*0xd0991b1117bd70f65a5464129da96faf57bcbd43|0*1377980*0xb33770ff1c10522f9491560174ac8e6c
+R=./src/gowin_ip/video_mem/video_mem4096x32.vhd|12
+Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+Version/behavioral=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
 [vimon10]
-A/main=21|./src/vimon10.vhd|54|1*4202669
-BinI32/main=3*356031
+A/main=21|./src/vimon10.vhd|54|1*4675743
+BinI32/main=3*382078
 I=0*1056772
-I/main=0*1266425
+I/main=0*1398651
 M=11|0|v98|1684819010494|./src/vimon10.vhd|0*1055652*0x8c4b1e3bd66771d64c28f820542625a179fc7e3a|0*1056697*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1685006509885|./src/vimon10.vhd|0*1256505*0x8a8c9e0f55c670844b828bccf7ee6e667cba4a85|0*1266342*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1685030851529|./src/vimon10.vhd|0*1388776*0xc1da552581df5d25753ae204376534891ef5808a|0*1398568*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/vimon10.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -621,13 +632,13 @@ D:/Projects/VIMON/src/gowin_ip/rgmii_rx/rgmii_rx.v=0*991550*992440
 D:/Projects/VIMON/src/gowin_ip/rgmii_rx/rgmii_rx.v_rgmii_tx.v_sdram_int.v_sdram_rpll.v_cos_table.v_intram.v_rom_touch.v=0*272108*310909
 D:/Projects/VIMON/src/gowin_ip/touch_mult/touch_mult.v=0*641362*642096
 LastVerilogToplevel=rgmii_rx
-ModifyID=1653
+ModifyID=1732
 Version=73
 
 [~MFT]
-0=1065|0vimon10.mgf|1281193|662582
-1=436|1vimon10.mgf|4257800|3030718
-3=421|3vimon10.mgf|362900|258810
+0=1142|0vimon10.mgf|1423884|743260
+1=459|1vimon10.mgf|4748678|3246118
+3=444|3vimon10.mgf|385116|279257
 
 [~U]
 $root=12|0*988656|
@@ -650,7 +661,7 @@ eth_gen=11|0*479681|
 ethdma_mem=11|0*79809|
 ethrx_ctr=11|0*468495|
 ethrx_dma=11|0*363836|
-ethrx_module=11|0*1078408|
+ethrx_module=11|0*1308911|
 ethrx_rpll=ethrx_rPLL 11|0*118786|
 ethtx_ctr=11|0*335847|
 ethtx_dma=11|0*371724|
@@ -658,7 +669,7 @@ ethtx_module=11|0*407701|
 ethtx_rpll=ethtx_rPLL 11|0*122614|
 freq_read=11|0*321319|
 gen_logo=11|0*426875|
-gpu=11|0*1167786|
+gpu=11|0*1378182|
 grafics_ctr=11|0*531446|
 gw_delay=11|0*688176|
 i2c=11|0*457264|
@@ -691,6 +702,7 @@ video_mem=11|0*10709|
 video_mem1024x32=11|0*1194143|
 video_mem2048x16=11|0*1095988|
 video_mem2048x32=11|0*1128721|
+video_mem4096x32=11|0*1316281|
 vimon10=11|0*1054654|
 vimon10_lib=3|0*822941|0*823682
 

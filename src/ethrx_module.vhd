@@ -18,7 +18,7 @@ entity ethrx_module is
 		ethrx_en: in std_logic;
 		ethrx_d : in std_logic_vector(7 downto 0);  
 		
-		ethv_a : out std_logic_vector(10 downto 0);  
+		ethv_a : out std_logic_vector(11 downto 0);  
 		ethv_wr: out std_logic;
 		ethv_d : out std_logic_vector(31 downto 0)  
 		
@@ -54,7 +54,7 @@ architecture main of ethrx_module is
 	signal crc_check : std_logic_vector(31 downto 0):=(others=>'0');
 	signal ok_PREA,ok_MACD,ok_MACS:boolean;
 	signal adrBuffHi,numBuff : std_logic:='0';
-	signal adrBuff:integer range 0 to 2**10-1;
+	signal adrBuff:integer range 0 to 2**11-1;
 	constant max_plen_count : integer :=hsize*3+4-1;
 	signal plen_count : integer range 0 to max_plen_count :=0;
 	signal Vcount : integer range 0 to vsize :=0;	
@@ -69,8 +69,8 @@ begin
 	err(2)<=err_len;
 	err(3)<=err_sequence;
 	
-	ethv_a(10)<=adrBuffHi;	
-	ethv_a(9 downto 0)<=conv_std_logic_vector(adrBuff,10);	
+	ethv_a(11)<=adrBuffHi;	
+	ethv_a(10 downto 0)<=conv_std_logic_vector(adrBuff,11);	
 	ethtx_crc32 : entity work.crc32 
 	generic map( BusWidth=>8 )
 	port map(
@@ -111,14 +111,14 @@ begin
 			count:=0;
 			state<=ethpause;
 		elsif rising_edge(clock) then 	
-			vsync<=vsync_int;
 			ok_PREA<=shift_txd(31 downto 0) & ethrx_d=ethPREA;
 			ok_MACD<=shift_txd(47 downto 0)=ethMACD;
 			ok_MACS<=true; --shift_txd(47 downto 0)=ethMACS;
+			vsync<=boolean_to_data(Vcount=0);
+			shift_txd<=shift_txd(55 downto 0) & ethrx_d;	 
 			vsync_delay0<=boolean_to_data(Vcount=0);
 			vsync_delay1<=vsync_delay0;
 			vsync_int<=boolean_to_data(vsync_delay0='1' and vsync_delay1='0');
-			shift_txd<=shift_txd(55 downto 0) & ethrx_d;	 
 			if vsync_int='1' and Fcount=0 then
 				errcnt_crc<=0;
 			elsif  err_crc='1' and state=ethpause then
@@ -139,6 +139,9 @@ begin
 					end if;	 
 				
 				when ethheader => 
+					if count=count_vframe+1 then	-- write caption to buffer	 
+						Fcount<=conv_integer(shift_txd(7 downto 0));
+					end if;	 
 					ethv_d<=shift_txd(31 downto 0); 
 					plen_count<=max_plen_count;
 					adrBuffHi<=numBuff;
@@ -156,9 +159,6 @@ begin
 					elsif count=count_Vline+1 then
 						state<=ethdata;
 					end if;
-					if count=count_vframe+1 then	-- write caption to buffer	 
-						Fcount<=conv_integer(shift_txd(7 downto 0));
-					end if;	 
 					if count=count_Vline+1 then	-- write caption to buffer	 
 						Vcount<=conv_integer(shift_txd(16 downto 1));
 						err_sequence<=boolean_to_data(conv_integer(shift_txd(16 downto 1))/=Vcount and conv_integer(shift_txd(16 downto 1))/=0) ;
@@ -209,7 +209,7 @@ begin
 					ethv_d(13 downto 4)<=conv_std_logic_vector(Vcount,10);
 					ethv_d(3)<='0';
 					ethv_d(2)<=numBuff;
-					ethv_d(1)<=boolean_to_data(Vcount=vsize-1);
+					ethv_d(1)<=boolean_to_data(Vcount=vsize/2-1);
 					ethv_d(0)<=boolean_to_data(Vcount=0);
 					ethv_wr<='1'; 
 					numBuff<=not numBuff;

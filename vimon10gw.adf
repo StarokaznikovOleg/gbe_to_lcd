@@ -98,6 +98,7 @@ Selected=
 .\src\vimon10.vhd=VHDL Source Code
 .\src\gowin_ip\video_mem\video_mem2048x32.vhd=VHDL Source Code
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd=VHDL Source Code
+.\src\gowin_ip\video_mem\video_mem4096x32.vhd=VHDL Source Code
 
 [Files]
 /lcd_lib.vhd=-1
@@ -117,6 +118,7 @@ Selected=
 /gowin_ip\cos_table\cos_table.v=-1
 /gowin_ip\intram\intram.v=-1
 /gowin_ip\rom_touch\rom_touch.v=-1
+/gowin_ip\video_mem\video_mem4096x32.vhd=-1
 /gowin_ip\video_mem\video_mem2048x32.vhd=-1
 /gowin_ip\video_mem\video_mem1024x32.vhd=-1
 /crc32.vhd=-1
