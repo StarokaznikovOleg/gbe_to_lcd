@@ -1,0 +1,427 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;  
+
+library work;
+use work.vimon10_lib.all;								    
+use work.lcd_lib.all;
+
+entity vimon10 is
+	port(	
+		--system
+		PWRGOOD	: in STD_LOGIC;
+		CLK_25M	: in STD_LOGIC;
+		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
+		SWIN : in STD_LOGIC;
+		
+		--LCD port
+		LCD_EN,LCD_PWM : out STD_LOGIC; 
+		--		LCD_EN_LED,LCD_RST : out STD_LOGIC; 
+		LCDA_CLK : out STD_LOGIC; 
+		LCDA : out STD_LOGIC_VECTOR(3 downto 0); 
+		
+		--ETH0 port
+		ETH0_RSTN : out STD_LOGIC;
+		ETH0_LED : in STD_LOGIC_VECTOR(2 downto 2); 
+		ETH0_RXCLK,ETH0_RXCTL : in STD_LOGIC; 
+		ETH0_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
+		ETH0_TXCLK,ETH0_TXCTL : out STD_LOGIC; 
+		ETH0_TXD : out STD_LOGIC_VECTOR(3 downto 0); 
+		
+		--		--ETH1 port
+		--		ETH1_RSTN : out STD_LOGIC;
+		--		ETH1_LED : in STD_LOGIC_VECTOR(2 downto 2); 
+		--		ETH1_RXCLK,ETH1_RXCTL : in STD_LOGIC; 
+		--		ETH1_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
+		--		ETH1_TXCLK,ETH1_TXCTL : out STD_LOGIC; 
+		--		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
+		
+		--MDI port
+		MDC : out STD_LOGIC;
+		MDIO : inout STD_LOGIC;
+		
+		--internal SDRAM 
+		O_sdram_clk,O_sdram_cke,O_sdram_cs_n,O_sdram_cas_n,O_sdram_ras_n,O_sdram_wen_n : out STD_LOGIC;
+		O_sdram_dqm: out STD_LOGIC_VECTOR(3 downto 0); 
+		O_sdram_addr: out STD_LOGIC_VECTOR(10 downto 0); 
+		O_sdram_ba: out STD_LOGIC_VECTOR(1 downto 0); 
+		IO_sdram_dq: inout STD_LOGIC_VECTOR(31 downto 0) 
+		);
+	
+end vimon10;
+
+architecture main of vimon10 is	 
+	signal dbg : std_logic :='0'; -- switch on all debug functions after power up!!!!
+	--	constant dbg : boolean :=false; -- switch off all debug functions after power up!!!!
+	
+	
+	signal reset: std_logic:='0';	  
+	signal all_lock,sdrampll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
+	signal clock_2MHz,clk_125MHz: std_logic:='0';	
+	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
+	
+	signal eth0rx_ref,eth1rx_ref: std_logic:='0';  
+	signal eth0rx_clock,eth0_txclk_int,eth0_txclk_ext,eth0rxpll_lock: std_logic:='0';  
+	signal eth1rx_clock,eth1_txclk_int,eth1_txclk_ext,eth1rxpll_lock: std_logic:='0';  
+	
+	signal eth0tx_en,eth0rx_dv,eth1tx_en,eth1rx_dv: std_logic:='0';
+	signal eth0rx_d,eth0tx_d,eth1rx_d,eth1tx_d: std_logic_vector(7 downto 0):=(others=>'0');  	   
+	signal rgmii0_rxdin,rgmii0_txdout,rgmii1_rxdin,rgmii1_txdout: std_logic_vector(4 downto 0):=(others=>'0');  	   
+	signal rgmii0_rxdout,rgmii0_txdin,rgmii1_rxdout,rgmii1_txdin: std_logic_vector(9 downto 0):=(others=>'0'); 
+	
+	signal rgmii0_rxvalue: std_logic_vector(6 downto 0):=(others=>'0'); 
+	signal rgmii0_rxsdtap,rgmii0_rxsetn: std_logic:='0';
+	
+	signal gpu_err: std_logic_vector(3 downto 0):=(others=>'0'); 
+	signal ethrx_err: std_logic_vector(3 downto 0):=(others=>'0'); 
+	signal lcd_err: std_logic:='0';  
+	
+	signal ethv_a: std_logic_vector(10 downto 0):=(others=>'0'); 
+	signal gputx_sel: std_logic_vector(2 downto 0):=(others=>'0'); 
+	signal gpurx_a: std_logic_vector(10 downto 0):=(others=>'0'); 
+	signal gputx_a,lcd_a: std_logic_vector(9 downto 0):=(others=>'0'); 
+	signal ethv_wr,gpurx_wr,gputx_wr,lcd_wr: std_logic:='0'; 
+	signal ethv_d: std_logic_vector(31 downto 0):=(others=>'0'); 
+	signal gpurx_d,gputx_d: std_logic_vector(31 downto 0):=(others=>'0'); 
+	signal lcd_d,lcd_q: std_logic_vector(95 downto 0):=(others=>'0'); 
+	signal ethv_q,gpurx_q,gputx_q: std_logic_vector(31 downto 0):=(others=>'0'); 
+	
+	signal check_clk: std_logic_vector(7 downto 0); 
+	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
+	
+	
+	signal rst_hw,rst_gpu,rst_lcd,rst_eth: std_logic:='0';  
+	signal gpu_clk,sdram_clk: std_logic:='0';   
+	signal lcd_vsync,eth_vsync: std_logic:='0';   	  
+	
+	signal sdrc_rst_n,sdrc_selfrefresh,sdrc_power_down,sdrc_wr_n,sdrc_rd_n,sdrc_init_done,sdrc_busy_n,sdrc_rd_valid,sdrc_wrd_ack : std_logic:='0'; 
+	signal sdrc_addr: std_logic_vector(20 downto 0):=(others=>'0'); 
+	signal sdrc_data_len: std_logic_vector(7 downto 0):=(others=>'0'); 
+	signal sdrc_dqm: std_logic_vector(3 downto 0):=(others=>'0'); 
+	signal sdrc_data_out: std_logic_vector(31 downto 0):=(others=>'0'); 
+	signal sdrc_data: std_logic_vector(31 downto 0):=(others=>'0'); 
+	
+	signal set_LCD_PWM: std_logic_vector(7 downto 0); 
+	signal set_LCD_EN,int_LCD_EN,int_LCD_PWM: std_logic; 
+	signal no_signal,lcd_no_signal: std_logic; 	 	   	 
+	
+	signal lcd_Vcount,lcd_Hcount: integer; 	 
+	signal grafics_act_pixel : boolean;
+	signal grafics_color_pixel : type_lcd_color;
+	
+	signal touch: type_touch; 	  
+	
+begin  
+	dbg<=SWIN;		
+	MDC<='0';
+	MDIO<='Z';
+	
+	all_lock<=PWRGOOD and sdrampll_lock and lcd_lock and eth0rxpll_lock and eth1rxpll_lock;
+	reset<=not(all_lock);
+	
+	--------------------------------------------------------	
+	--  freqency control	
+	check_clk(0)<=clock_2MHz;  --2.6MHz
+	check_clk(1)<=int_LCD_PWM; --18KHz
+	check_clk(2)<=eth0rx_clock; --125MHz
+	check_clk(3)<=clk_125MHz; --125MHz
+	check_clk(4)<=lcd_sclk;	 --250MHz
+	check_clk(5)<=lcd_pclk;	 --71MHz
+	check_clk(6)<=eth_vsync; --30Hz
+	check_clk(7)<=lcd_vsync; --60Hz
+	--------------------------------------------------------	
+	
+	ETH0_RSTN<='1'; --not rst_hw;
+	--	ETH1_RSTN<=not rst_hw;
+	
+	--------------------------------------------------------	
+	--  errors control	
+	err_clk(00)<=gpu_clk;		err_pulse(00)<=not sdrampll_lock; 	--GPU and SDRAM pll error
+	err_clk(01)<=lcd_pclk;		err_pulse(01)<=not lcd_lock;		--LCD pll error
+	err_clk(02)<=clk_125MHz;	err_pulse(02)<=not eth0rxpll_lock; 	--RXETH0 pll error
+	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=not eth1rxpll_lock; 	--RXETH1 pll error	   
+	err_clk(04)<=CLK_25M;		err_pulse(04)<=ETH0_LED(2);			--eth0 link error
+	err_clk(05)<=CLK_25M;		err_pulse(05)<='0'; --ETH1_LED(2);			--eth1 link error
+	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(0);		--RXETH: video packet crc32 error
+	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(1); 		--RXETH: video packet frame error
+	err_clk(08)<=eth0rx_clock;	err_pulse(08)<=ethrx_err(2); 		--RXETH: video packet len error
+	err_clk(09)<=eth0rx_clock;	err_pulse(09)<=ethrx_err(3); 		--RXETH: video packet sequence error
+	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(0);   		--GPU: video signature error
+	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(1);			--GPU: video sequence error
+	err_clk(12)<=gpu_clk;		err_pulse(12)<=gpu_err(2);			--sdram wrd_ack error
+	err_clk(13)<=gpu_clk;		err_pulse(13)<=gpu_err(3);			--sdram read timeout error
+	err_clk(14)<=lcd_pclk;		err_pulse(14)<=lcd_err;				--LCD: video sequence error
+	
+	--------------------------------------------------------	
+	--  internal clock 2.3MHz	
+	gen_2M : entity work.main_OSC 
+	port map(
+		oscout => clock_2MHz 	--clock 2MHz
+		);	 
+	
+	--------------------------------------------------------	
+	--  sdram pll	
+	sdram_rpll1 : entity work.sdram_rpll 
+	port map(
+		clkin => CLK_25M,
+		lock => sdrampll_lock,
+		clkout => sdram_clk,
+		clkoutp => gpu_clk
+		);	
+	
+	--------------------------------------------------------	
+	--  lcd pll	
+	lcd_sclk_pll : entity work.lcd_rpll 
+	port map (
+		clkin => CLK_25M,		--reference 25MHz
+		lock => lcd_lock,
+		clkout => ref_sclk,		--clock 250MHz
+		clkoutp => lcd_sclk,	--clock 250MHz shift 45°
+		clkoutd => open --clk_125MHz   --clock 125MHz
+		); 	 		 
+	
+	lcd_pclk_pll : entity work.lcd_clkdiv 
+	port map(
+		resetn => '1',
+		hclkin => ref_sclk,	--clock 250MHz
+		clkout => lcd_pclk	 --clock 250MHz/3.5=71.429MHz
+		);	
+	
+	--------------------------------------------------------	
+	--  rx_eth0 path	
+	eth0rx_clock<=ETH0_RXCLK;
+	rgmii0_rxdin(4)<=ETH0_RXCTL;
+	rgmii0_rxdin(3 downto 0)<=ETH0_RXD;
+	rgmii0_rx1 : entity work.rgmii_rx 
+	port map( clk => eth0rx_clock,
+		din => rgmii0_rxdin,
+		q => rgmii0_rxdout );	
+	
+	eth0rx_mux_proc: process (eth0rx_clock)
+	begin
+		if rising_edge(eth0rx_clock) then 	
+			eth0rx_dv<=rgmii0_rxdout(4);
+			eth0rx_d<=rgmii0_rxdout(8 downto 5) & rgmii0_rxdout(3 downto 0); 
+		end if;
+	end process eth0rx_mux_proc;
+	
+	--	--------------------------------------------------------	
+	--	--  rx_eth1 path	
+	
+	
+	
+	--------------------------------------------------------
+	-- eth0 & eth1 connections
+	eth0tx_en<=eth0rx_dv;
+	eth0tx_d<=eth0rx_d;		  
+	ETH0_TXCLK<=eth0rx_clock;
+	--	eth1tx_en<=eth0rx_dv;
+	--	eth1tx_d<=eth0rx_d;
+	--	ETH1_TXCLK<=eth0rx_clock;
+	--------------------------------------------------------	
+	--  tx_eth0 path	
+	rgmii0_txdin(9)<=eth0tx_en;
+	rgmii0_txdin(8 downto 5)<=eth0tx_d(7 downto 4);
+	rgmii0_txdin(4)<=eth0tx_en;
+	rgmii0_txdin(3 downto 0)<=eth0tx_d(3 downto 0);
+	rgmii0_tx1 : entity work.rgmii_tx 
+	port map( clk => clk_125MHz,
+		din => rgmii0_txdin,
+		q => rgmii0_txdout );	
+	ETH0_TXD<=rgmii0_txdout(3 downto 0);
+	ETH0_TXCTL<=rgmii0_txdout(4);
+	--	--------------------------------------------------------	
+	--	--  tx_eth1 path	
+	
+	
+	
+	--------------------------------------------------------	
+	--  grafics_ctr	
+	grafics_ctr1 : entity work.grafics_ctr
+	generic map(hsize=>1280, hblank=>160, vsize=>800, vblank=>23)
+	port map(
+		reset => rst_gpu, 
+		dbg => dbg,
+		err_clk => err_clk,
+		err_pulse => err_pulse,
+		
+		pclk => lcd_pclk,
+		no_signal => lcd_no_signal,
+		Vcount => lcd_Vcount,
+		Hcount => lcd_Hcount,
+		act_pixel => grafics_act_pixel,
+		color_pixel => grafics_color_pixel
+		);		
+	
+	--------------------------------------------------------	
+	sysled3 : entity work.sysled 
+	generic map( max_lock=>6, max_err=>len_err-6)
+	port map( reset => rst_hw, clock => clock_2MHz,
+		LED_GREEN => LED_GREEN, LED_BLUE => LED_BLUE, LED_RED => LED_RED,
+		lock => err_pulse(5 downto 0),
+		lock_clk => err_clk(5 downto 0),
+		err => err_pulse(len_err-1 downto 6),
+		err_clk => err_clk(len_err-1 downto 6)
+		);	
+	
+	sync_all : entity work.resync 
+	port map(
+		reset => reset,
+		clock => clock_2MHz,
+		rst_hw => rst_hw,
+		rst_eth => rst_eth,
+		rst_gpu => rst_gpu,
+		rst_lcd => rst_lcd
+		);		
+	
+	ethrx_module1 : entity work.ethrx_module 
+	generic map( hsize => 1920, vsize => 1080)
+	port map(
+		reset => '0', --rst_eth,
+		clock => eth0rx_clock,
+		err => ethrx_err,
+		vsync => eth_vsync,
+		ethrx_en => eth0rx_dv,
+		ethrx_d => eth0rx_d,
+		ethv_a => ethv_a,
+		ethv_wr => ethv_wr,
+		ethv_d => ethv_d
+		);	
+	
+	rx_video_mem : entity work.video_mem2048x32
+	port map(
+		reseta => rst_eth,
+		clka => eth0rx_clock,
+		cea => '1',
+		ada => ethv_a,
+		wrea => ethv_wr,
+		dina => ethv_d,
+		ocea => '1',
+		douta => ethv_q,
+		resetb => rst_gpu,
+		clkb => gpu_clk,
+		ceb => '1',
+		adb => gpurx_a,
+		wreb => gpurx_wr,
+		dinb => gpurx_d,
+		oceb => '1',
+		doutb => gpurx_q
+		);
+	
+	gpu1 : entity work.gpu 
+	port map(
+		reset => rst_gpu,
+		clock => gpu_clk,
+		err => gpu_err,
+		no_signal => no_signal,
+		
+		rx_a => gpurx_a,
+		rx_wr => gpurx_wr,
+		rx_d => gpurx_d,
+		rx_q => gpurx_q,
+		tx_a => gputx_a,
+		tx_wr => gputx_wr,
+		tx_d => gputx_d,
+		tx_q => gputx_q,
+		
+		O_sdrc_rst_n => sdrc_rst_n,
+		O_sdrc_power_down => sdrc_power_down,
+		O_sdrc_selfrefresh => sdrc_selfrefresh,
+		O_sdrc_data_len => sdrc_data_len,
+		I_sdrc_init_done => sdrc_init_done,
+		I_sdrc_busy_n => sdrc_busy_n,
+		O_sdrc_addr => sdrc_addr,
+		O_sdrc_wr_n => sdrc_wr_n,
+		O_sdrc_rd_n => sdrc_rd_n,
+		I_sdrc_wrd_ack => sdrc_wrd_ack,
+		O_sdrc_dqm => sdrc_dqm,
+		O_sdrc_data => sdrc_data,
+		I_sdrc_data => sdrc_data_out,
+		I_sdrc_rd_valid => sdrc_rd_valid
+		);
+	
+	sdram_int1 : entity work.sdram_int 
+	port map(
+		I_sdrc_rst_n => sdrc_rst_n,
+		I_sdrc_clk => gpu_clk,
+		I_sdram_clk => sdram_clk,
+		I_sdrc_selfrefresh => sdrc_selfrefresh,
+		I_sdrc_power_down => sdrc_power_down,
+		O_sdrc_init_done => sdrc_init_done,
+		O_sdrc_busy_n => sdrc_busy_n,
+		I_sdrc_addr => sdrc_addr,
+		I_sdrc_data_len => sdrc_data_len,
+		I_sdrc_wr_n => sdrc_wr_n,
+		I_sdrc_rd_n => sdrc_rd_n,
+		O_sdrc_wrd_ack => sdrc_wrd_ack,
+		I_sdrc_dqm => sdrc_dqm,
+		I_sdrc_data => sdrc_data,
+		O_sdrc_data => sdrc_data_out,
+		O_sdrc_rd_valid => sdrc_rd_valid,
+		O_sdram_clk =>O_sdram_clk,
+		O_sdram_cke => O_sdram_cke,
+		O_sdram_cs_n => O_sdram_cs_n,
+		O_sdram_cas_n => O_sdram_cas_n,
+		O_sdram_ras_n => O_sdram_ras_n,
+		O_sdram_wen_n => O_sdram_wen_n,
+		O_sdram_addr => O_sdram_addr,
+		O_sdram_ba => O_sdram_ba,
+		O_sdram_dqm => O_sdram_dqm,
+		IO_sdram_dq => IO_sdram_dq
+		);
+	
+	tx_video_mem_Y0 : entity work.video_mem1024x32 
+	port map(
+		reseta=>rst_gpu, clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
+		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
+	
+	tx_video_mem_Y1 : entity work.video_mem1024x32 
+	port map(
+		reseta=>rst_gpu, clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>lcd_d(63 downto 32), oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
+	
+	tx_video_mem_C : entity work.video_mem1024x32 
+	port map(
+		reseta=>rst_gpu, clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>lcd_d(95 downto 64), oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
+	-----------------------------------
+	-- LCD part
+	sync_lcd_no_signal : entity work.Sync 
+	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+	port map( reset=>'0',
+		clk_in=>gpu_clk, data_in=>no_signal,
+		clk_out=>lcd_pclk, data_out=>lcd_no_signal);  
+	
+	set_LCD_EN<='1';
+	set_LCD_PWM<=x"f0"; 
+	LCD_EN<=not int_LCD_EN ;
+	--	LCD_EN_LED<=not rst_lcd;
+	--	LCD_RST<=not rst_lcd;
+	LCD_PWM<= not int_LCD_PWM; 	
+	lcd_module1 : entity work.lcd_module 
+	generic map( hsize => 1280, hblank => 160, vsize => 800, vblank => 23 )
+	port map(
+		reset => rst_lcd,
+		sclk => lcd_sclk,
+		pclk => lcd_pclk,
+		err => lcd_err,
+		vsync => lcd_vsync,
+		EN => set_LCD_EN,
+		PWM => set_LCD_PWM,
+		mem_a => lcd_a,
+		mem_wr => lcd_wr,
+		mem_d => lcd_d,
+		mem_q => lcd_q,
+		LCD_EN => int_LCD_EN,
+		LCD_PWM => int_LCD_PWM,
+		lcd_a_clk => LCDA_CLK,
+		lcd_a => LCDA,
+		Vcount => lcd_Vcount,
+		Hcount => lcd_Hcount,
+		grafics_act => grafics_act_pixel,
+		grafics_color => grafics_color_pixel
+		); 
+	
+end main;
+
