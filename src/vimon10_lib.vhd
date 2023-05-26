@@ -50,7 +50,8 @@ package vimon10_lib is
 	function swap_spi_mem(d:type_spi_mem) return type_spi_mem;	 
 	
 	-- errors cnt
-	constant len_err : integer :=15;
+	constant len_err : integer :=12;
+	constant len_lockerr : integer :=3;
 	constant max_cnt_err : integer :=255;
 	subtype type_pulse_err is std_logic_vector(len_err-1 downto 0); 
 	type type_cnt_err_array is array (len_err-1 downto 0) of integer range 0 to max_cnt_err; 

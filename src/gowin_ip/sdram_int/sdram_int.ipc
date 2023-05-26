@@ -1,0 +1,13 @@
+[General]
+ipc_version=4
+file=sdram_int
+module=sdram_int
+target_device=gw2ar18c-003
+type=sdrc_emb
+version=3.0
+
+[Config]
+IO_INSERTION=false
+LANG=0
+LOW_POWER=true
+Synthesis_tool=GowinSynthesis

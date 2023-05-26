@@ -1,0 +1,121 @@
+//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//All rights reserved.
+//File Title: Post-PnR Simulation Model file
+//GOWIN Version: V1.9.8.07
+//Created Time: Mon May 22 19:22:55 2023
+
+`timescale 100 ps/100 ps
+module rgmii_rx(
+	din,
+	clk,
+	q
+);
+input [4:0] din;
+input clk;
+output [9:0] q;
+wire GND;
+wire VCC;
+wire clk;
+wire [4:0] din;
+wire \iodelay_gen[0].iodelay_inst_1_DF ;
+wire \iodelay_gen[1].iodelay_inst_1_DF ;
+wire \iodelay_gen[2].iodelay_inst_1_DF ;
+wire \iodelay_gen[3].iodelay_inst_1_DF ;
+wire \iodelay_gen[4].iodelay_inst_1_DF ;
+wire [4:0] iodly_o;
+wire [9:0] q;
+VCC VCC_cZ (
+  .V(VCC)
+);
+GND GND_cZ (
+  .G(GND)
+);
+GSR GSR (
+	.GSRI(VCC)
+);
+IODELAY \iodelay_gen[0].iodelay_inst  (
+	.DI(din[0]),
+	.SETN(GND),
+	.SDTAP(GND),
+	.VALUE(GND),
+	.DO(iodly_o[0]),
+	.DF(\iodelay_gen[0].iodelay_inst_1_DF )
+);
+defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=104;
+IODELAY \iodelay_gen[1].iodelay_inst  (
+	.DI(din[1]),
+	.SETN(GND),
+	.SDTAP(GND),
+	.VALUE(GND),
+	.DO(iodly_o[1]),
+	.DF(\iodelay_gen[1].iodelay_inst_1_DF )
+);
+defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=104;
+IODELAY \iodelay_gen[2].iodelay_inst  (
+	.DI(din[2]),
+	.SETN(GND),
+	.SDTAP(GND),
+	.VALUE(GND),
+	.DO(iodly_o[2]),
+	.DF(\iodelay_gen[2].iodelay_inst_1_DF )
+);
+defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=104;
+IODELAY \iodelay_gen[3].iodelay_inst  (
+	.DI(din[3]),
+	.SETN(GND),
+	.SDTAP(GND),
+	.VALUE(GND),
+	.DO(iodly_o[3]),
+	.DF(\iodelay_gen[3].iodelay_inst_1_DF )
+);
+defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=104;
+IODELAY \iodelay_gen[4].iodelay_inst  (
+	.DI(din[4]),
+	.SETN(GND),
+	.SDTAP(GND),
+	.VALUE(GND),
+	.DO(iodly_o[4]),
+	.DF(\iodelay_gen[4].iodelay_inst_1_DF )
+);
+defparam \iodelay_gen[4].iodelay_inst .C_STATIC_DLY=104;
+IDDR \iddr_gen[0].iddr_inst  (
+	.D(iodly_o[0]),
+	.CLK(clk),
+	.Q0(q[0]),
+	.Q1(q[5])
+);
+defparam \iddr_gen[0].iddr_inst .Q0_INIT=1'b0;
+defparam \iddr_gen[0].iddr_inst .Q1_INIT=1'b0;
+IDDR \iddr_gen[1].iddr_inst  (
+	.D(iodly_o[1]),
+	.CLK(clk),
+	.Q0(q[1]),
+	.Q1(q[6])
+);
+defparam \iddr_gen[1].iddr_inst .Q0_INIT=1'b0;
+defparam \iddr_gen[1].iddr_inst .Q1_INIT=1'b0;
+IDDR \iddr_gen[2].iddr_inst  (
+	.D(iodly_o[2]),
+	.CLK(clk),
+	.Q0(q[2]),
+	.Q1(q[7])
+);
+defparam \iddr_gen[2].iddr_inst .Q0_INIT=1'b0;
+defparam \iddr_gen[2].iddr_inst .Q1_INIT=1'b0;
+IDDR \iddr_gen[3].iddr_inst  (
+	.D(iodly_o[3]),
+	.CLK(clk),
+	.Q0(q[3]),
+	.Q1(q[8])
+);
+defparam \iddr_gen[3].iddr_inst .Q0_INIT=1'b0;
+defparam \iddr_gen[3].iddr_inst .Q1_INIT=1'b0;
+IDDR \iddr_gen[4].iddr_inst  (
+	.D(iodly_o[4]),
+	.CLK(clk),
+	.Q0(q[4]),
+	.Q1(q[9])
+);
+defparam \iddr_gen[4].iddr_inst .Q0_INIT=1'b0;
+defparam \iddr_gen[4].iddr_inst .Q1_INIT=1'b0;
+endmodule

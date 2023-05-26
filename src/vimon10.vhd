@@ -140,19 +140,16 @@ begin
 	--  errors control	
 	err_clk(00)<=gpu_clk;		err_pulse(00)<=not sdrampll_lock; 	--GPU and SDRAM pll error
 	err_clk(01)<=lcd_pclk;		err_pulse(01)<=not lcd_lock;		--LCD pll error
-	err_clk(02)<=clk_125MHz;	err_pulse(02)<=not eth0rxpll_lock; 	--RXETH0 pll error
-	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=not eth1rxpll_lock; 	--RXETH1 pll error	   
-	err_clk(04)<=CLK_25M;		err_pulse(04)<=ETH0_LED(2);			--eth0 link error
-	err_clk(05)<=CLK_25M;		err_pulse(05)<='0'; --ETH1_LED(2);			--eth1 link error
-	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(0);		--RXETH: video packet crc32 error
-	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(1); 		--RXETH: video packet frame error
-	err_clk(08)<=eth0rx_clock;	err_pulse(08)<=ethrx_err(2); 		--RXETH: video packet len error
-	err_clk(09)<=eth0rx_clock;	err_pulse(09)<=ethrx_err(3); 		--RXETH: video packet sequence error
-	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(0);   		--GPU: video signature error
-	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(1);			--GPU: video sequence error
-	err_clk(12)<=gpu_clk;		err_pulse(12)<=gpu_err(2);			--sdram wrd_ack error
-	err_clk(13)<=gpu_clk;		err_pulse(13)<=gpu_err(3);			--sdram read timeout error
-	err_clk(14)<=lcd_pclk;		err_pulse(14)<=lcd_err;				--LCD: video sequence error
+	err_clk(02)<=CLK_25M;		err_pulse(02)<=ETH0_LED(2);			--eth0 link error
+	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=ethrx_err(0);		--RXETH: video packet crc32 error
+	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(1); 		--RXETH: video packet frame error
+	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(2); 		--RXETH: video packet len error
+	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(3); 		--RXETH: video packet sequence error
+	err_clk(07)<=gpu_clk;		err_pulse(07)<=gpu_err(0);   		--GPU: video signature error
+	err_clk(08)<=gpu_clk;		err_pulse(08)<=gpu_err(1);			--GPU: video sequence error
+	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(2);			--sdram wrd_ack error
+	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(3);			--sdram read timeout error
+	err_clk(11)<=lcd_pclk;		err_pulse(11)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
 	--  internal clock 2.3MHz	
@@ -257,13 +254,13 @@ begin
 	
 	--------------------------------------------------------	
 	sysled3 : entity work.sysled 
-	generic map( max_lock=>6, max_err=>len_err-6)
+	generic map( max_lock=>len_lockerr, max_err=>len_err-len_lockerr)
 	port map( reset => rst_hw, clock => clock_2MHz,
 		LED_GREEN => LED_GREEN, LED_BLUE => LED_BLUE, LED_RED => LED_RED,
-		lock => err_pulse(5 downto 0),
-		lock_clk => err_clk(5 downto 0),
-		err => err_pulse(len_err-1 downto 6),
-		err_clk => err_clk(len_err-1 downto 6)
+		lock => err_pulse(len_lockerr-1 downto 0),
+		lock_clk => err_clk(len_lockerr-1 downto 0),
+		err => err_pulse(len_err-1 downto len_lockerr),
+		err_clk => err_clk(len_err-1 downto len_lockerr)
 		);	
 	
 	sync_all : entity work.resync 
@@ -321,6 +318,7 @@ begin
 	rx_wr => gpurx_wr,
 	rx_d => gpurx_d,
 	rx_q => gpurx_q,
+	tx_sel => gputx_sel,
 	tx_a => gputx_a,
 	tx_wr => gputx_wr,
 	tx_d => gputx_d,

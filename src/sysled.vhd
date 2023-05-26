@@ -38,38 +38,29 @@ begin
 			if reset='1' then led_state<=(R,R,R,R,R,R); 
 			elsif lock_sync(0)='1' then led_state<=(R,R,R,R,R,X); 
 			elsif lock_sync(1)='1' then led_state<=(R,R,R,R,R,B); 
-			elsif lock_sync(2)='1' then led_state<=(R,R,R,R,X,B); 
-			elsif lock_sync(3)='1' then led_state<=(R,R,R,R,B,X); 
-			elsif lock_sync(4)='1' then led_state<=(R,R,R,R,B,B); 
-			elsif lock_sync(5)='1' then led_state<=(R,R,B,R,R,B); 
+			elsif lock_sync(2)='1' then led_state<=(R,R,R,R,R,G); 
+				--			elsif lock_sync(3)='1' then led_state<=(R,R,R,R,X,G); 
+				--			elsif lock_sync(4)='1' then led_state<=(R,R,R,R,X,B); 
 				
 			elsif err_sync_pulse(0)='1'  then led_state<=(R,X,X,X,X,X); 
-			elsif err_sync_pulse(1)='1'  then led_state<=(R,B,X,X,X,X); 
-			elsif err_sync_pulse(2)='1'  then led_state<=(R,B,B,X,X,X); 
-			elsif err_sync_pulse(3)='1'  then led_state<=(R,B,B,B,X,X); 
-			elsif err_sync_pulse(4)='1'  then led_state<=(R,B,B,B,B,X);
+			elsif err_sync_pulse(1)='1'  then led_state<=(R,B,X,B,X,B); 
+			elsif err_sync_pulse(2)='1'  then led_state<=(R,B,B,B,B,B);
 				
-			elsif err_sync_pulse(5)='1'  then led_state<=(R,B,B,B,B,B); 
-			elsif err_sync_pulse(6)='1'  then led_state<=(R,X,B,B,B,B); 
-			elsif err_sync_pulse(7)='1'  then led_state<=(R,X,X,B,B,B); 
-			elsif err_sync_pulse(8)='1'  then led_state<=(R,X,X,X,B,B); 
-				--			elsif err_sync_pulse(9)='1'  then led_state<=(R,X,X,X,X,B); 
-				--				
-				--			elsif err_sync_pulse(10)='1' then led_state<=(R,X,R,X,X,X); 
-				--			elsif err_sync_pulse(11)='1' then led_state<=(R,X,R,B,X,X); 
-				--			elsif err_sync_pulse(12)='1' then led_state<=(R,X,R,B,B,X); 
+			elsif err_sync_pulse(3)='1'  then led_state<=(R,B,X,X,X,X); 
+			elsif err_sync_pulse(4)='1'  then led_state<=(R,B,X,B,X,X); 
+			elsif err_sync_pulse(5)='1'  then led_state<=(R,B,B,B,B,X); 
 				
-				--			elsif err_sync_pulse(13)='1' then led_state<=(R,X,R,B,B,B); 
-				--			elsif err_sync_pulse(14)='1' then led_state<=(R,X,R,X,B,B); 
-				--			elsif err_sync_pulse(15)='1' then led_state<=(R,X,R,X,X,B); 
+			elsif err_sync_pulse(6)='1'  then led_state<=(R,X,X,X,X,B); 
+			elsif err_sync_pulse(7)='1'  then led_state<=(R,X,X,B,X,B); 
+			elsif err_sync_pulse(8)='1'  then led_state<=(R,X,B,B,B,B); 
 				
-				--			elsif err_sync_pulse(16)='1' then led_state<=(R,B,R,X,X,X); 
-				--			elsif err_sync_pulse(17)='1' then led_state<=(R,B,R,B,X,X); 
-				--			elsif err_sync_pulse(18)='1' then led_state<=(R,B,R,B,B,X); 
-				--
-				--			elsif err_sync_pulse(19)='1' then led_state<=(R,B,R,B,B,B); 
-				--			elsif err_sync_pulse(20)='1' then led_state<=(R,B,R,X,B,B); 
-				--			elsif err_sync_pulse(21)='1' then led_state<=(R,B,R,X,X,B); 
+				--			elsif err_sync_pulse(9)='1'  then led_state<=(R,X,R,X,X,X); 
+				--			elsif err_sync_pulse(10)='1' then led_state<=(R,X,R,B,B,B); 
+				--			elsif err_sync_pulse(11)='1' then led_state<=(R,X,R,B,X,B); 
+				--			elsif err_sync_pulse(12)='1' then led_state<=(R,X,R,X,B,X); 
+				--			elsif err_sync_pulse(13)='1' then led_state<=(R,X,R,X,X,B); 
+				--			elsif err_sync_pulse(14)='1' then led_state<=(R,X,R,B,X,X); 
+				
 				
 			else led_state<=(G,G,G,G,G,B); 
 			end if;

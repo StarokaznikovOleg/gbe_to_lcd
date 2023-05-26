@@ -27,8 +27,8 @@ entity grafics_ctr is
 end grafics_ctr;	  		 
 architecture main of grafics_ctr is 
 	
-	signal act_err,act_logo : boolean;
-	signal pixel_err,pixel_logo : type_lcd_color;
+	signal act_errl,act_errp,act_logo : boolean;
+	signal pixel_errl,pixel_errp,pixel_logo : type_lcd_color;
 	signal run_err,run_logo : std_logic;
 	signal dbg_on,dbg_off,dbg_on_avl,dbg_off_avl : std_logic;
 	
@@ -51,8 +51,8 @@ begin
 	reg_proc: process (reset,pclk)
 	begin
 		if reset='1' then
-			run_err<='0';  
-			run_logo<='0';	
+			run_err<='1';  
+			run_logo<='1';	
 		elsif rising_edge(pclk) then  
 			if dbg_on_avl='1' then 
 				run_err<='1';  
@@ -67,9 +67,12 @@ begin
 	mix_proc: process (pclk)
 	begin
 		if rising_edge(pclk)then 
-			if run_err='1' and act_err then 
+			if run_err='1' and act_errl then 
 				act_pixel<=true;
-				color_pixel<=pixel_err;
+				color_pixel<=pixel_errl;
+			elsif run_err='1' and act_errp then 
+				act_pixel<=true;
+				color_pixel<=pixel_errp;
 			elsif act_logo and (no_signal='1' or run_logo='1') then 
 				act_pixel<=true;
 				color_pixel<=pixel_logo;
@@ -90,14 +93,26 @@ begin
 		act => act_logo,
 		pixel => pixel_logo );	
 	
-	lcd_err_ind : entity work.lcd_ind 
-	generic map( hsize=>hsize, hblank=>hblank+16, vsize=>vsize, vblank=>18, size=>len_err,
-		err_color=>red, mask_color=>white )
+	lcd_err_ind0 : entity work.lcd_ind 
+	generic map( hsize=>hsize, hblank=>hblank+16, vsize=>vsize, vblank=>16, size=>16,
+	err_color=>green, mask_color=>white,
+	level=>len_lockerr, pulse=>0)
 	port map(
 		pclk => pclk,
 		Vcount => Vcount, Hcount => Hcount,
-		err_clk => err_clk, err_pulse => err_pulse,
-		act => act_err,
-		pixel => pixel_err );	  
+		ind_clk => err_clk(len_lockerr-1 downto 0), ind_data => err_pulse(len_lockerr-1 downto 0),
+		act => act_errl,
+		pixel => pixel_errl );	
+		
+	lcd_err_ind1 : entity work.lcd_ind 
+	generic map( hsize=>hsize, hblank=>hblank+16, vsize=>vsize, vblank=>vsize-32, size=>16,
+	err_color=>red, mask_color=>white,
+	level=>0, pulse=>len_err-len_lockerr)
+	port map(
+		pclk => pclk,
+		Vcount => Vcount, Hcount => Hcount,
+		ind_clk => err_clk(len_err-1 downto len_lockerr), ind_data => err_pulse(len_err-1 downto len_lockerr),
+		act => act_errp,
+		pixel => pixel_errp );	  
 	
 end;	 

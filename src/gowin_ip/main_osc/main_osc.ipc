@@ -1,0 +1,12 @@
+[General]
+ipc_version=4
+file=main_osc
+module=main_OSC
+target_device=gw2ar18c-014
+type=clock_osc
+version=3.0
+
+[Config]
+FREQ=100
+LANG=1
+REGULATOR_ENABLE=false
