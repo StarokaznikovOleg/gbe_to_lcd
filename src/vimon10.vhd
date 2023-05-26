@@ -10,7 +10,7 @@ use work.lcd_lib.all;
 entity vimon10 is
 	port(	
 		--system
-		PWRGOOD	: in STD_LOGIC;
+--		PWRGOOD	: in STD_LOGIC;
 		CLK_25M	: in STD_LOGIC;
 		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
 		SWIN : in STD_LOGIC;
@@ -84,10 +84,11 @@ architecture main of vimon10 is
 	signal ethv_wr,gpurx_wr,gputx_wr,lcd_wr: std_logic:='0'; 
 	signal ethv_d: std_logic_vector(31 downto 0):=(others=>'0'); 
 	signal gpurx_d,gputx_d: std_logic_vector(31 downto 0):=(others=>'0'); 
-	signal lcd_d,lcd_q: std_logic_vector(95 downto 0):=(others=>'0'); 
+	signal lcd_d: std_logic_vector(31 downto 0):=(others=>'0'); 
+	signal lcd_q: std_logic_vector(95 downto 0):=(others=>'0'); 
 	signal ethv_q,gpurx_q,gputx_q: std_logic_vector(31 downto 0):=(others=>'0'); 
 	
-	signal check_clk: std_logic_vector(7 downto 0); 
+--	signal check_clk: std_logic_vector(7 downto 0); 
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
 	
 	
@@ -120,17 +121,6 @@ begin
 	--all_lock<=PWRGOOD and sdrampll_lock and lcd_lock and eth0rxpll_lock and eth1rxpll_lock;
 	all_lock<=sdrampll_lock and lcd_lock;
 	reset<=not(all_lock);
-	
-	--------------------------------------------------------	
-	--  freqency control	
-	check_clk(0)<=clock_2MHz;  --2.6MHz
-	check_clk(1)<=int_LCD_PWM; --18KHz
-	check_clk(2)<=eth0rx_clock; --125MHz
-	check_clk(3)<=clk_125MHz; --125MHz
-	check_clk(4)<=lcd_sclk;	 --250MHz
-	check_clk(5)<=lcd_pclk;	 --71MHz
-	check_clk(6)<=eth_vsync; --30Hz
-	check_clk(7)<=lcd_vsync; --60Hz
 	--------------------------------------------------------	
 	
 	ETH0_RSTN<='1'; --not rst_hw;
@@ -138,9 +128,10 @@ begin
 	
 	--------------------------------------------------------	
 	--  errors control	
-	err_clk(00)<=gpu_clk;		err_pulse(00)<=not sdrampll_lock; 	--GPU and SDRAM pll error
-	err_clk(01)<=lcd_pclk;		err_pulse(01)<=not lcd_lock;		--LCD pll error
-	err_clk(02)<=CLK_25M;		err_pulse(02)<=ETH0_LED(2);			--eth0 link error
+	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll error
+	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll error
+	err_clk(02)<=CLK_25M;		err_pulse(02)<=not ETH0_LED(2);			--eth0 link error
+
 	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=ethrx_err(0);		--RXETH: video packet crc32 error
 	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(1); 		--RXETH: video packet frame error
 	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(2); 		--RXETH: video packet len error
@@ -380,13 +371,13 @@ begin
 	port map(
 	reseta=>reset, --rst_gpu,
 	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>lcd_d(63 downto 32), oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
+	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
 	
 	tx_video_mem_C : entity work.video_mem1024x32 
 	port map(
 	reseta=>reset, --rst_gpu,
 	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>lcd_d(95 downto 64), oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
+	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
 	-----------------------------------
 	-- LCD part
 	sync_lcd_no_signal : entity work.Sync 

@@ -15,7 +15,6 @@
 .\src\gowin_ip\intram\intram.v
 .\src\gowin_ip\rom_touch\rom_touch.v
 .\src\gowin_ip\video_mem\video_mem4096x32.vhd
-.\src\gowin_ip\video_mem\video_mem2048x32.vhd
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd
 .\src\crc32.vhd
 .\src\sync.vhd
@@ -27,6 +26,8 @@
 .\src\LCDserializer.vhd
 .\src\gen_logo.vhd
 .\src\lcd_ind.vhd
+.\src\YCC420_to_YCC444div2.vhd
+.\src\YCC444_to_RGB444.vhd
 .\src\lcd_module.vhd
 .\src\gpu.vhd
 .\src\ethrx_ctr.vhd

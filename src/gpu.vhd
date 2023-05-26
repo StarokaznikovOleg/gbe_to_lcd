@@ -53,7 +53,7 @@ architecture main of gpu is
 	
 	
 	constant Hmem_len : integer:=2**Hmem_val; --value of tranzaction for one horizontal string	  
-	constant Smem_len : integer:=2**Smem_val;	--value of memory tranzaction   
+	constant Smem_len : integer:=240; --2**Smem_val;	--value of memory tranzaction   
 	constant err_count_max : integer:=Smem_len+256; --timeout for sdr controller
 	constant adrBuff_status : integer:=0;
 	constant adrBuff_start : integer:=1;
@@ -117,7 +117,7 @@ begin
 			numBuffmem_wr<='0';	
 			numBuffmem_rd<='0';	
 			count_adrrxbuf<=0;
-			seltxbuf<=(others=>'0');
+			seltxbuf<="001";
 			tx_d<=(others=>'0');
 			tx_wr<='0';
 			txstatus_start<=false;
@@ -195,7 +195,7 @@ begin
 				
 				when idle =>  
 					t_count:=Hmem_len; 
-					seltxbuf<="000";
+					seltxbuf<="001";
 					count:=1;
 					if txstatus_start then
 						state<=txcheck;   
@@ -238,7 +238,7 @@ begin
 				when rxstep1 =>   
 					wd_clear<=false;
 					O_sdrc_data<=rx_q;
-					if t_count=0 then  -- end of write the frame
+					if t_count=2 then  -- end of write the frame
 						state<=done;
 					else
 						state<=rxstep2;
@@ -309,14 +309,18 @@ begin
 					end if;	 
 				
 				when txstep2 =>
-					if t_count=Hmem_len-1 and count=Smem_len-224 then
+					if I_sdrc_rd_valid='1'and t_count=Hmem_len-1-1 and count=Smem_len-1-224 then
 						seltxbuf<="010";
-					elsif t_count=Hmem_len-3 and count=Smem_len-192 then
+						count_adrtxbuf<=adrBuff_start;
+					elsif I_sdrc_rd_valid='1'and t_count=Hmem_len-1-3 and count=Smem_len-1-192 then
 						seltxbuf<="100";  
-					elsif t_count=Hmem_len-5 and count=Smem_len-160 then
+						count_adrtxbuf<=adrBuff_start;
+					elsif I_sdrc_rd_valid='1'and t_count=Hmem_len-1-5 and count=Smem_len-1-160 then
 						seltxbuf<="000";  
+						count_adrtxbuf<=adrBuff_start;
+					elsif I_sdrc_rd_valid='1' then
+						count_adrtxbuf<=count_adrtxbuf+1;
 					end if;
-					
 					O_sdrc_rd_n<='1'; 
 					tx_d<=I_sdrc_data;
 					tx_wr<=I_sdrc_rd_valid;
@@ -325,14 +329,11 @@ begin
 						state<=error; 
 					elsif count=0 then
 						count_adrmem<=count_adrmem+1;
-						if t_count=0 then
+						if t_count=2 then
 							state<=done; 
 						else
 							state<=txstep1;
 						end if;
-					end if;	
-					if I_sdrc_rd_valid='1' then 
-						count_adrtxbuf<=count_adrtxbuf+1;
 					end if;	
 					if I_sdrc_rd_valid='1' and count/=0 then
 						count:=count-1;
@@ -343,7 +344,7 @@ begin
 					
 				
 				when others =>	--err_cycle
-						seltxbuf<="000";  
+					seltxbuf<="001";
 					wd_inc<=false;
 					wd_clear<=false;
 					err_read<='0';

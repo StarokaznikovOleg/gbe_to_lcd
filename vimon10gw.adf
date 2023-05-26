@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\VIMON\src\gowin_ip\video_mem
+fileopenfolder=D:\Projects\VIMON\src
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -96,9 +96,10 @@ Selected=
 .\src\ethtx_ctr.vhd=VHDL Source Code
 .\src\grafics_ctr.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
-.\src\gowin_ip\video_mem\video_mem2048x32.vhd=VHDL Source Code
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd=VHDL Source Code
 .\src\gowin_ip\video_mem\video_mem4096x32.vhd=VHDL Source Code
+.\src\YCC444_to_RGB444.vhd=VHDL Source Code
+.\src\YCC420_to_YCC444div2.vhd=VHDL Source Code
 
 [Files]
 /lcd_lib.vhd=-1
@@ -119,7 +120,6 @@ Selected=
 /gowin_ip\intram\intram.v=-1
 /gowin_ip\rom_touch\rom_touch.v=-1
 /gowin_ip\video_mem\video_mem4096x32.vhd=-1
-/gowin_ip\video_mem\video_mem2048x32.vhd=-1
 /gowin_ip\video_mem\video_mem1024x32.vhd=-1
 /crc32.vhd=-1
 /sync.vhd=-1
@@ -131,6 +131,8 @@ Selected=
 /LCDserializer.vhd=-1
 /gen_logo.vhd=-1
 /lcd_ind.vhd=-1
+/YCC420_to_YCC444div2.vhd=-1
+/YCC444_to_RGB444.vhd=-1
 /lcd_module.vhd=-1
 /gpu.vhd=-1
 /ethrx_ctr.vhd=-1

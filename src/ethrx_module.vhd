@@ -38,14 +38,15 @@ architecture main of ethrx_module is
 	constant len_Vframe_seq : integer:=4;
 	constant len_VLine_seq : integer:=4;   
 	
-	constant count_max : integer:=27+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_prea : integer:=15+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_start : integer:=13+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_macd : integer:=6+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_macs : integer:=len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_vtype : integer:=len_Vframe_seq+len_VLine_seq;   
-	constant count_vframe : integer:=len_VLine_seq;   
-	constant count_vline : integer:=0;   
+	constant count_max : integer:=31+len_Vformat+len_Vframe_seq+len_VLine_seq;   
+	constant count_prea : integer:=19+len_Vformat+len_Vframe_seq+len_VLine_seq;   
+	constant count_start : integer:=17+len_Vformat+len_Vframe_seq+len_VLine_seq;   
+	constant count_macd : integer:=10+len_Vformat+len_Vframe_seq+len_VLine_seq;   
+	constant count_macs : integer:=4+len_Vformat+len_Vframe_seq+len_VLine_seq;   
+	constant count_vtype : integer:=4+len_Vframe_seq+len_VLine_seq;   
+	constant count_vframe : integer:=4+len_VLine_seq;   
+	constant count_sequency : integer:=5;   
+	constant count_vline : integer:=1;   
 	
 	type state_type is (ethpause,idle,ethheader,ethdata,ethexit);
 	signal state : state_type:=ethpause;	
@@ -55,7 +56,7 @@ architecture main of ethrx_module is
 	signal ok_PREA,ok_MACD,ok_MACS:boolean;
 	signal adrBuffHi,numBuff : std_logic:='0';
 	signal adrBuff:integer range 0 to 2**11-1;
-	constant max_plen_count : integer :=hsize*3+4-1;
+	constant max_plen_count : integer :=hsize*3-1;
 	signal plen_count : integer range 0 to max_plen_count :=0;
 	signal Vcount : integer range 0 to vsize :=0;	
 	signal err_len,err_crc,err_frame,err_sequence : std_logic:='0';
@@ -156,12 +157,14 @@ begin
 						state<=ethpause;
 					elsif count=count_macs and not ok_MACS then
 						state<=ethpause;
-					elsif count=count_Vline+1 then
+					elsif count=count_vline then
 						state<=ethdata;
 					end if;
-					if count=count_Vline+1 then	-- write caption to buffer	 
+					if count=count_sequency then	-- write caption to buffer	 
 						Vcount<=conv_integer(shift_txd(16 downto 1));
 						err_sequence<=boolean_to_data(conv_integer(shift_txd(16 downto 1))/=Vcount and conv_integer(shift_txd(16 downto 1))/=0) ;
+					end if;	 
+					if count=count_vline then	-- write caption to buffer	 
 						ethv_wr<='1';
 					else
 						ethv_wr<='0';
@@ -175,7 +178,11 @@ begin
 					end if;	 
 				
 				when ethdata => 
+					if ethrx_en='1' then 
 					ethv_d<=shift_txd(31 downto 0); 
+					else
+					ethv_d<=x"00000000"; 
+						end if;
 					intcrc_en<=ethrx_en;
 					if count=1 then
 						adrBuff<=adrBuff+1;

@@ -29,7 +29,7 @@ entity lcd_module is
 		
 		mem_a : out std_logic_vector(9 downto 0);  
 		mem_wr: out std_logic;
-		mem_d : out std_logic_vector(95 downto 0);  
+		mem_d : out std_logic_vector(31 downto 0);  
 		mem_q : in std_logic_vector(95 downto 0)  
 		
 		);
@@ -58,7 +58,7 @@ architecture main of lcd_module is
 	constant adrBuff_start : integer:=1;
 	constant status_signature : std_logic_vector(15 downto 0):=x"428F";
 	
-	signal lcd : type_LCD;
+	signal lcd,stream : type_LCD;
 	type state_type is (Vpause,Hpause,Start1,Start2,Start3,Line,error);
 	signal state : state_type:=Vpause;
 	constant max_adrBuff: integer :=8192*2-1;
@@ -68,9 +68,11 @@ architecture main of lcd_module is
 	signal Frame,Vstart,Vstop,Hstart,Hstop : boolean:=false;	
 	signal adrBuffHi, numBuff:std_logic:='0';	
 	signal Hphase : integer range 0 to 3 :=0;	
-	signal Hdata_shift : std_logic_vector(47 downto 0):=(others=>'0');
+	signal Hdata_shift : std_logic_vector(95 downto 0):=(others=>'0');
 	signal err_sequence : std_logic;
-	signal store_Lcount : integer range 0 to 1280 :=0;
+	signal store_Lcount : integer range 0 to 1280 :=0;	 
+	
+	signal YCCstream,RGBstream : std_logic_vector(23 downto 0):=(others=>'0');
 	
 begin 
 	err<=err_sequence;	
@@ -201,7 +203,7 @@ begin
 					lcd<=(black,cl);
 					adrBuff<=adrBuff+1;	
 					Hphase<=1;
-					Hdata_shift<= mem_q(31 downto 0) & x"00" & x"00";
+					Hdata_shift<=mem_q(95 downto 0);
 					state<=Line; 
 				
 				when Line =>  
@@ -209,22 +211,22 @@ begin
 					if grafics_act then 
 						lcd.color<=grafics_color;
 					else
-						lcd.color.r<=Hdata_shift(47 downto 40);
-						lcd.color.g<=Hdata_shift(39 downto 32);
-						lcd.color.b<=Hdata_shift(31 downto 24);
+						lcd.color.r<=RGBstream(07 downto 00);
+						lcd.color.g<=RGBstream(15 downto 08);
+						lcd.color.b<=RGBstream(23 downto 16);
 					end if;
 					case Hphase is
-						when 0 => Hdata_shift<= mem_q(31 downto 0) & x"00" & x"00";	
-						when 1 => Hdata_shift<= Hdata_shift(23 downto 16) & mem_q(31 downto 0) & x"00";	
-						when 2 => Hdata_shift<= Hdata_shift(23 downto 8) & mem_q(31 downto 0);	
-						when 3 => Hdata_shift<= Hdata_shift(23 downto 0) & x"00" & x"00" & x"00";	
+						when 0 => Hdata_shift<= mem_q(95 downto 0);	
+						when others => Hdata_shift<= x"000000000000" & Hdata_shift(95 downto 48);	
+--						when 2 => Hdata_shift<= Hdata_shift(23 downto 8) & mem_q(31 downto 0);	
+--						when 3 => Hdata_shift<= Hdata_shift(23 downto 0) & x"00" & x"00" & x"00";	
 					end case;
-					if Hphase/=3 then  
+					if Hphase/=1 then  
 						Hphase<=Hphase+1;
 					else
 						Hphase<=0;
 					end if;
-					if Hphase/=2 then  
+					if Hphase=0 then  
 						adrBuff<=adrBuff+1;	
 					end if;
 					if Vstop then	
@@ -253,4 +255,19 @@ begin
 			end case;		
 		end if;
 	end process main_proc; 	
+	
+	--------------------------------------------------------	
+	--  video converters	
+	div2_ycc : entity work.YCC420_to_YCC444div2 
+	port map(
+		clock => pclk,
+		YCC420 => Hdata_shift(47 downto 0),
+		YCC444 => YCCstream
+	);
+	conv_ycc_to_rgb : entity work.YCC444_to_RGB444 
+	port map (
+		clock => pclk,
+		YCC => YCCstream,
+		RGB => RGBstream
+	);
 end main; 
