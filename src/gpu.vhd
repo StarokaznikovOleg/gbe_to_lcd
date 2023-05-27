@@ -59,11 +59,11 @@ architecture main of gpu is
 	constant adrBuff_start : integer:=1;
 	constant status_signature : std_logic_vector(15 downto 0):=x"428F";	 -- two last bytes of macs eth packets!!!
 	
-	type state_type is (clstart,clstep,clcheck,done,idle,rxcheck,rxstep1,rxstep2,rxstep3,txcheck,txstep1,txstep2,error);
+	type state_type is (clstart,clstep,clcheck,rxdone,idle,rxcheck,rxstep1,rxstep2,rxstep3,txcheck,txstep1,txstep2,txdone,error);
 	signal state : state_type:=clstart;
 	signal count_adrrxbuf,count_adrtxbuf : integer range 0 to 2**11-1 :=0;
 	signal seltxbuf: std_logic_vector(2 downto 0);
-	signal count_adrmem : integer range 0 to 2**(mem_val-1-Smem_val)-1 :=0;
+	signal count_adrmem,REQ0adrmem,REQ1adrmem : integer range 0 to 2**(mem_val-1-Smem_val)-1 :=0;
 	signal Vcount : integer range 0 to 2047 :=0;
 	signal numBufftx,numBuffrx : std_logic:='1';
 	signal adrBuffmemHi,adrBufftxHi,adrBuffrxHi,numBuffmem_wr,numBuffmem_rd : std_logic:='0';
@@ -117,6 +117,8 @@ begin
 			numBuffmem_wr<='0';	
 			numBuffmem_rd<='0';	
 			count_adrrxbuf<=0;
+			REQ0adrmem<=0;
+			REQ1adrmem<=0;
 			seltxbuf<="001";
 			tx_d<=(others=>'0');
 			tx_wr<='0';
@@ -167,7 +169,7 @@ begin
 				
 				when clcheck =>   
 					if count_adrmem=0 and adrBuffmemHi='1'then  -- end of clear the sdram
-						state<=done;
+						state<=rxdone;
 					else
 						state<=clstart;
 					end if;	
@@ -175,18 +177,11 @@ begin
 						adrBuffmemHi<='1';
 					end if;	
 				
-				when done =>   
-					err_rxsignature<='0';
-					err_wrd_ack<='0';
-					err_read<='0';
+				when rxdone =>   
 					O_sdrc_rst_n<='1';
 					O_sdrc_wr_n<='1';
 					O_sdrc_rd_n<='1';
-					tx_d<=(others=>'0');
-					tx_wr<='0';
 					adrBuffrxHi<='0';
-					adrBufftxHi<='0';
-					count_adrtxbuf<=adrBuff_status;
 					count_adrrxbuf<=adrBuff_status;	 
 					if I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
 						state<=idle;
@@ -194,8 +189,20 @@ begin
 					end if;	
 				
 				when idle =>  
-					t_count:=Hmem_len; 
+					err_rxsignature<='0';
+					err_wrd_ack<='0';
+					err_read<='0';
+					O_sdrc_rst_n<='1';
+					O_sdrc_wr_n<='1';
+					O_sdrc_rd_n<='1';
 					seltxbuf<="001";
+					adrBufftxHi<='0';
+					count_adrtxbuf<=adrBuff_status;
+					tx_d<=(others=>'0');
+					tx_wr<='0';
+					adrBuffrxHi<='0';
+					count_adrrxbuf<=adrBuff_status;	 
+					t_count:=Hmem_len; 
 					count:=1;
 					if txstatus_start then
 						state<=txcheck;   
@@ -210,7 +217,7 @@ begin
 						count_adrmem<=conv_integer(rx_q(13 downto 4) & conv_std_logic_vector(0,Hmem_val));
 						if not rxstatus_signature then --error signature ?
 							err_rxsignature<='1';
-							state<=done;
+							state<=rxdone;
 						elsif rx_q(0)='1' then -- start frame
 							err_rxsequence<='0';
 							adrBuffrxHi<=rx_q(2);
@@ -220,7 +227,7 @@ begin
 						elsif not rxstatus_sequence or err_rxsequence='1' then-- error sequence
 							store_rxcount<=0;
 							err_rxsequence<='1';
-							state<=done;
+							state<=rxdone;
 						else --if rxstatus_sequence then  -- all ok
 							if rx_q(1)='1' then	 -- last frame	
 								numBuffmem_wr<=not numBuffmem_wr;
@@ -239,7 +246,7 @@ begin
 					wd_clear<=false;
 					O_sdrc_data<=rx_q;
 					if t_count=2 then  -- end of write the frame
-						state<=done;
+						state<=rxdone;
 					else
 						state<=rxstep2;
 					end if;	
@@ -283,6 +290,11 @@ begin
 						adrBufftxHi<=tx_q(2);
 						count_adrtxbuf<=adrBuff_start-1;	
 						adrBuffmemHi<=numBuffmem_rd; 
+						if tx_q(2)='0' then
+							REQ0adrmem<=conv_integer(tx_q(13 downto 4));
+						else
+							REQ1adrmem<=conv_integer(tx_q(13 downto 4));
+						end if;
 						count_adrmem<=conv_integer(tx_q(13 downto 4) & conv_std_logic_vector(0,Hmem_val));
 						if tx_q(1)='1' and numBuffmem_wr=numBuffmem_rd then	 
 							numBuffmem_rd<=not numBuffmem_rd;
@@ -291,7 +303,7 @@ begin
 						state<=txstep1;
 					else
 						count:=count-1;
-					end if;
+					end if;	
 				
 				when txstep1 =>  
 					wd_inc<=false;
@@ -302,23 +314,24 @@ begin
 					end if;	 
 					err_count:=err_count_max-1;
 					tx_wr<='0';
-					if I_sdrc_busy_n='1' then
+					if I_sdrc_busy_n='1' then  
+						if t_count=Hmem_len then
+							seltxbuf<="001";
+							count_adrtxbuf<=adrBuff_start;
+						elsif t_count=Hmem_len-2 then
+							seltxbuf<="010";
+							count_adrtxbuf<=adrBuff_start;
+						elsif t_count=Hmem_len-4 then
+							seltxbuf<="100";
+							count_adrtxbuf<=adrBuff_start;
+						end if;
 						t_count:=t_count-1;
 						O_sdrc_rd_n<='0'; 
 						state<=txstep2;
 					end if;	 
 				
 				when txstep2 =>
-					if I_sdrc_rd_valid='1'and t_count=Hmem_len-1-1 and count=Smem_len-1-224 then
-						seltxbuf<="010";
-						count_adrtxbuf<=adrBuff_start;
-					elsif I_sdrc_rd_valid='1'and t_count=Hmem_len-1-3 and count=Smem_len-1-192 then
-						seltxbuf<="100";  
-						count_adrtxbuf<=adrBuff_start;
-					elsif I_sdrc_rd_valid='1'and t_count=Hmem_len-1-5 and count=Smem_len-1-160 then
-						seltxbuf<="000";  
-						count_adrtxbuf<=adrBuff_start;
-					elsif I_sdrc_rd_valid='1' then
+					if I_sdrc_rd_valid='1' then
 						count_adrtxbuf<=count_adrtxbuf+1;
 					end if;
 					O_sdrc_rd_n<='1'; 
@@ -330,7 +343,8 @@ begin
 					elsif count=0 then
 						count_adrmem<=count_adrmem+1;
 						if t_count=2 then
-							state<=done; 
+							count:=2;
+							state<=txdone; 
 						else
 							state<=txstep1;
 						end if;
@@ -341,7 +355,31 @@ begin
 					if err_count/=0 then
 						err_count:=err_count-1;
 					end if;		
-					
+				
+				when txdone =>   
+					err_rxsignature<='0';
+					err_wrd_ack<='0';
+					err_read<='0';
+					O_sdrc_rst_n<='1';
+					O_sdrc_wr_n<='1';
+					O_sdrc_rd_n<='1';
+					seltxbuf<="001";
+					count_adrtxbuf<=adrBuff_status;
+					tx_d(31 downto 16)<=conv_std_logic_vector(REQ1adrmem,16);
+					tx_d(15 downto 0)<=conv_std_logic_vector(REQ0adrmem,16);
+					if count=2 then
+						adrBufftxHi<='1';
+						tx_wr<='1';	
+					else
+						adrBufftxHi<='0';
+						tx_wr<='0';
+					end if;
+					if count/=0 then
+						count:=count-1;
+					elsif I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
+						state<=idle;
+						count:=2;
+					end if;	
 				
 				when others =>	--err_cycle
 					seltxbuf<="001";

@@ -9,7 +9,8 @@ use work.vimon10_lib.all;
 use work.lcd_lib.all;
 
 entity lcd_module is
-	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23 );
+	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23;
+		hpicture:integer:=960; vpicture:integer:=540);
 	port(
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
@@ -21,7 +22,7 @@ entity lcd_module is
 		Vcount,Hcount: out integer; 
 		grafics_act : in boolean; 
 		grafics_color :in type_lcd_color;
-
+		
 		lcd_a_clk: out std_logic;
 		lcd_a : out std_logic_vector(3 downto 0);  
 		
@@ -36,23 +37,24 @@ entity lcd_module is
 end lcd_module;
 
 architecture main of lcd_module is	  	
---	constant lcd_err_val : integer :=16;
---	signal err_act,mask_act,err_sync: type_pulse_err:=(others=>'0'); 
+	--	constant lcd_err_val : integer :=16;
+	--	signal err_act,mask_act,err_sync: type_pulse_err:=(others=>'0'); 
 	
---	constant v_logo_min : integer :=0;
---	constant v_logo_max : integer :=vsize-300;
---	constant h_logo_min : integer :=hblank;
---	constant h_logo_max : integer :=hsize+hblank-256;
---	signal vs_logo,hs_logo : boolean; 
+	--	constant v_logo_min : integer :=0;
+	--	constant v_logo_max : integer :=vsize-300;
+	--	constant h_logo_min : integer :=hblank;
+	--	constant h_logo_max : integer :=hsize+hblank-256;
+	--	signal vs_logo,hs_logo : boolean; 
 	
---	signal pixel_logo,pixel_touch,pixel_err : type_lcd_color;
---	signal act_logo,act_touch,act_err :boolean;
+	--	signal pixel_logo,pixel_touch,pixel_err : type_lcd_color;
+	--	signal act_logo,act_touch,act_err :boolean;
 	
 	constant fps: integer :=60;
 	constant PWMfreq: integer :=18517;
 	constant PWMsize: integer :=256;
 	constant max_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) /(PWMfreq/fps*PWMsize);
 	constant corr_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) mod(PWMfreq/fps*PWMsize);
+	constant picture_dalay: integer :=4;
 	
 	constant adrBuff_status : integer:=0;
 	constant adrBuff_start : integer:=1;
@@ -64,8 +66,8 @@ architecture main of lcd_module is
 	constant max_adrBuff: integer :=8192*2-1;
 	signal adrBuff,count_adrBuff : integer range 0 to 2**10-1 :=0;	
 	signal intHcount : integer range 0 to hblank+hsize-1 :=0;	
-	signal intVcount : integer range 0 to vblank+vsize-1 :=0;	
-	signal Frame,Vstart,Vstop,Hstart,Hstop : boolean:=false;	
+	signal store0Request,store1Request,intVcount : integer range 0 to vblank+vsize-1 :=0;	
+	signal Frame,Vstart,Vstop,Hstart,Hstop,edging_act,picture_act,status_buffer : boolean:=false;	
 	signal adrBuffHi, numBuff:std_logic:='0';	
 	signal Hphase : integer range 0 to 3 :=0;	
 	signal Hdata_shift : std_logic_vector(95 downto 0):=(others=>'0');
@@ -153,7 +155,14 @@ begin
 			Vstop<=intVcount=vsize+1 and intHcount=hblank+hsize-2;	
 			Hstart<=intHcount=hblank-4;	
 			Hstop<=intHcount=hblank+hsize-2;	
-			vsync<=boolean_to_data(intVcount=0);
+			vsync<=boolean_to_data(intVcount=0); 
+			edging_act<=(intHcount<hblank+(hsize-hpicture)/2 or intHcount>=hblank+hsize-(hsize-hpicture)/2 or intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2);
+			picture_act<=not(intHcount<hblank+(hsize-hpicture)/2-picture_dalay or intHcount>=hblank+hsize-(hsize-hpicture)/2-picture_dalay or intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2);
+			if numBuff='0' then
+				status_buffer<=mem_q(15 downto 0)=conv_std_logic_vector(store0Request,16);	  
+			else
+				status_buffer<=mem_q(31 downto 16)=conv_std_logic_vector(store1Request,16);	  
+			end if;
 			if Hstart then 
 				if  intVcount=vblank+vsize-1 then	
 					intVcount<=0;	
@@ -170,64 +179,57 @@ begin
 			case state is 
 				when Hpause =>  
 					lcd<=(black,hs);
-					mem_wr<=boolean_to_data(intHcount=2);
+					adrBuff<=adrBuff_status;
+					adrBuffHi<=boolean_to_data(intHcount>5);	
+					if intHcount=2 then	
+						if numBuff='0' then
+							store0Request<=intVcount; 
+						else
+							store1Request<=intVcount;
+						end if;
+					end if;
+					mem_wr<=boolean_to_data(intHcount=2);  
 					Frame<=false;
 					if intHcount=3 then	
 						numBuff<=not numBuff;
 					end if;	
 					if Hstart then	
-						adrBuffHi<=numBuff;	
-						adrBuff<=adrBuff_start;
 						state<=Start1;  
-					else
-						adrBuffHi<='0';	
-						adrBuff<=adrBuff_status;
 					end if;	
 				
 				when Start1 =>
 					lcd<=(black,cl);
-					adrBuff<=adrBuff+1;	
-					mem_wr<='0';
+					if not status_buffer then
+						err_sequence<='1';
+					end if;
 					state<=Start2; 
 				
 				when Start2 =>
-					lcd<=(black,cl);
-					if intVcount/=(conv_integer(mem_q(11 downto 0))+1) then
-						err_sequence<='1';
-					end if;
-					adrBuff<=adrBuff+1;	
-					state<=Start3; 
-				
-				when Start3 =>
 					err_sequence<='0';
 					lcd<=(black,cl);
-					adrBuff<=adrBuff+1;	
-					Hphase<=1;
-					Hdata_shift<=mem_q(95 downto 0);
+					Hphase<=0;
+					adrBuffHi<=numBuff;	
+					adrBuff<=adrBuff_start;
 					state<=Line; 
 				
 				when Line =>  
 					lcd.sync<=de;  
 					if grafics_act then 
 						lcd.color<=grafics_color;
+					elsif edging_act then 
+						lcd.color<=sienna;
 					else
 						lcd.color.r<=RGBstream(07 downto 00);
 						lcd.color.g<=RGBstream(15 downto 08);
 						lcd.color.b<=RGBstream(23 downto 16);
 					end if;
-					case Hphase is
-						when 0 => Hdata_shift<= mem_q(95 downto 0);	
-						when others => Hdata_shift<= x"000000000000" & Hdata_shift(95 downto 48);	
---						when 2 => Hdata_shift<= Hdata_shift(23 downto 8) & mem_q(31 downto 0);	
---						when 3 => Hdata_shift<= Hdata_shift(23 downto 0) & x"00" & x"00" & x"00";	
-					end case;
-					if Hphase/=1 then  
-						Hphase<=Hphase+1;
-					else
-						Hphase<=0;
-					end if;
-					if Hphase=0 then  
+					if picture_act and Hphase=1 then  
 						adrBuff<=adrBuff+1;	
+						Hdata_shift<= x"000000000000" & Hdata_shift(95 downto 48);	
+						Hphase<=0;
+					else
+						Hdata_shift<= mem_q(95 downto 0);	
+						Hphase<=1;
 					end if;
 					if Vstop then	
 						state<=Vpause;
@@ -263,11 +265,11 @@ begin
 		clock => pclk,
 		YCC420 => Hdata_shift(47 downto 0),
 		YCC444 => YCCstream
-	);
+		);
 	conv_ycc_to_rgb : entity work.YCC444_to_RGB444 
 	port map (
 		clock => pclk,
 		YCC => YCCstream,
 		RGB => RGBstream
-	);
+		);
 end main; 
