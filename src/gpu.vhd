@@ -343,7 +343,6 @@ begin
 					elsif count=0 then
 						count_adrmem<=count_adrmem+1;
 						if t_count=2 then
-							count:=2;
 							state<=txdone; 
 						else
 							state<=txstep1;
@@ -367,18 +366,17 @@ begin
 					count_adrtxbuf<=adrBuff_status;
 					tx_d(31 downto 16)<=conv_std_logic_vector(REQ1adrmem,16);
 					tx_d(15 downto 0)<=conv_std_logic_vector(REQ0adrmem,16);
-					if count=2 then
+					if count=1 then
 						adrBufftxHi<='1';
 						tx_wr<='1';	
 					else
 						adrBufftxHi<='0';
 						tx_wr<='0';
 					end if;
-					if count/=0 then
-						count:=count-1;
+					if count/=2 then
+						count:=count+1;
 					elsif I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
 						state<=idle;
-						count:=2;
 					end if;	
 				
 				when others =>	--err_cycle
