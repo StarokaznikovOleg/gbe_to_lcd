@@ -64,13 +64,16 @@ architecture main of gpu is
 	signal count_adrrxbuf,count_adrtxbuf : integer range 0 to 2**11-1 :=0;
 	signal seltxbuf: std_logic_vector(2 downto 0);
 	signal count_adrmem,REQ0adrmem,REQ1adrmem : integer range 0 to 2**(mem_val-1-Smem_val)-1 :=0;
-	signal Vcount : integer range 0 to 2047 :=0;
+--	signal Vcount : integer range 0 to 2047 :=0;
 	signal numBufftx,numBuffrx : std_logic:='1';
 	signal adrBuffmemHi,adrBufftxHi,adrBuffrxHi,numBuffmem_wr,numBuffmem_rd : std_logic:='0';
 	signal txstatus_start,rxstatus_start,txstatus_tmpstart,rxstatus_tmpstart,txstatus_signature,rxstatus_signature,rxstatus_sequence: boolean;
 	signal err_rxsignature,err_rxsequence,err_wrd_ack,err_read : std_logic:='0';
 	signal store_rxcount : integer range 0 to 2**(Hmem_val+Smem_val) :=0;
 	signal wd_clear,wd_inc: boolean;
+	
+	signal indexDDR : std_logic_vector(9 downto 0);	 --	number of video packet
+	signal adrDDR : std_logic_vector(11 downto 0);	 --	start address of line in ddr memory
 	
 begin
 	err(0)<=err_rxsignature; 
@@ -177,17 +180,6 @@ begin
 						adrBuffmemHi<='1';
 					end if;	
 				
-				when rxdone =>   
-					O_sdrc_rst_n<='1';
-					O_sdrc_wr_n<='1';
-					O_sdrc_rd_n<='1';
-					adrBuffrxHi<='0';
-					count_adrrxbuf<=adrBuff_status;	 
-					if I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
-						state<=idle;
-						count:=2;
-					end if;	
-				
 				when idle =>  
 					err_rxsignature<='0';
 					err_wrd_ack<='0';
@@ -204,17 +196,19 @@ begin
 					count_adrrxbuf<=adrBuff_status;	 
 					t_count:=Hmem_len; 
 					count:=1;
-					if txstatus_start then
+					if txstatus_start then 
+						indexDDR<=tx_q(13 downto 4);
 						state<=txcheck;   
 					elsif rxstatus_start then
+						indexDDR<=rx_q(13 downto 4);
 						state<=rxcheck; 
 					end if;	 
 				
-				when rxcheck => 
+				when rxcheck =>  
 					if count=0 then
 						numBuffrx<=rx_q(2);
 						adrBuffmemHi<=numBuffmem_wr; 
-						count_adrmem<=conv_integer(rx_q(13 downto 4) & conv_std_logic_vector(0,Hmem_val));
+						count_adrmem<=conv_integer(adrDDR);
 						if not rxstatus_signature then --error signature ?
 							err_rxsignature<='1';
 							state<=rxdone;
@@ -281,22 +275,33 @@ begin
 					end if;	
 					if count/=0 then
 						count:=count-1;
-					end if;
+					end if;	
+					
+				when rxdone =>   
+					O_sdrc_rst_n<='1';
+					O_sdrc_wr_n<='1';
+					O_sdrc_rd_n<='1';
+					adrBuffrxHi<='0';
+					count_adrrxbuf<=adrBuff_status;	 
+					if I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
+						state<=idle;
+						count:=2;
+					end if;	
+				
 				
 				when txcheck => 
 					seltxbuf<="001";
 					if count=0 then
-						numBufftx<=tx_q(2);
 						adrBufftxHi<=tx_q(2);
+						count_adrmem<=conv_integer(adrDDR);
+						numBufftx<=tx_q(2);
 						count_adrtxbuf<=adrBuff_start-1;	
-						adrBuffmemHi<=numBuffmem_rd; 
 						if tx_q(2)='0' then
 							REQ0adrmem<=conv_integer(tx_q(13 downto 4));
 						else
 							REQ1adrmem<=conv_integer(tx_q(13 downto 4));
 						end if;
-						count_adrmem<=conv_integer(tx_q(13 downto 4) & conv_std_logic_vector(0,Hmem_val));
-						if tx_q(1)='1' and numBuffmem_wr=numBuffmem_rd then	 
+						if tx_q(0)='1' and numBuffmem_wr=numBuffmem_rd then	 
 							numBuffmem_rd<=not numBuffmem_rd;
 						end if;	
 						wd_inc<=tx_q(1)='1';
@@ -306,6 +311,7 @@ begin
 					end if;	
 				
 				when txstep1 =>  
+					adrBuffmemHi<=numBuffmem_rd; 
 					wd_inc<=false;
 					if t_count=1 then
 						count:=Smem_len-2; 
@@ -395,7 +401,13 @@ begin
 				
 			end case;
 		end if;
-	end process main_proc; 	   
+	end process main_proc; 	  
+	
+	indexDDR_table_1 : entity work.indexDDR_table 
+	port map( reset=>'0',
+		clk=>clock, ce=>'1', oce=>'1',
+		ad=>indexDDR, dout=>adrDDR);  
+	
 	
 	wd_proc: process (reset,clock)
 		variable wd_count :integer range 0 to wd_timeout*60-1:=0;

@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\VIMON\src
+fileopenfolder=D:\Projects\VIMON\src\gowin_ip\indexDDR_table
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -58,48 +58,9 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem|Behavioral|0 
+HierarchyInformation=video_mem|Behavioral|0
 ShowHide=ShowTopLevel
 Selected=
-
-[Files]
-/lcd_lib.vhd=-1
-/vimon10_lib.vhd=-1
-/gowin_ip\video_mem\video_mem.vhd=-1
-/gowin_ip\ddrout\ddrout.v=-1
-/gowin_ip\ethrx_rPLL\ethrx_rPLL.vhd=-1
-/gowin_ip\ethtx_rpll\ethtx_rpll.vhd=-1
-/gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd=-1
-/gowin_ip\lcd_rpll\lcd_rpll.vhd=-1
-/gowin_ip\logo_rom\logo_rom.v=-1
-/gowin_ip\main_osc\main_osc.vhd=-1
-/gowin_ip\rgmii_rx\rgmii_rx.v=-1
-/gowin_ip\rgmii_tx\rgmii_tx.v=-1
-/gowin_ip\sdram_int\sdram_int.v=-1
-/gowin_ip\sdram_rpll\sdram_rpll.v=-1
-/gowin_ip\cos_table\cos_table.v=-1
-/gowin_ip\intram\intram.v=-1
-/gowin_ip\rom_touch\rom_touch.v=-1
-/gowin_ip\video_mem\video_mem4096x32.vhd=-1
-/gowin_ip\video_mem\video_mem1024x32.vhd=-1
-/crc32.vhd=-1
-/sync.vhd=-1
-/resync.vhd=-1
-/freq_read.vhd=-1
-/sysled.vhd=-1
-/ser7to1.vhd=-1
-/ethrx_module.vhd=-1
-/LCDserializer.vhd=-1
-/gen_logo.vhd=-1
-/lcd_ind.vhd=-1
-/YCC420_to_YCC444div2.vhd=-1
-/YCC444_to_RGB444.vhd=-1
-/lcd_module.vhd=-1
-/gpu.vhd=-1
-/ethrx_ctr.vhd=-1
-/ethtx_ctr.vhd=-1
-/grafics_ctr.vhd=-1
-/vimon10.vhd=-1
 
 [Files.Data]
 .\src\lcd_lib.vhd=VHDL Source Code
@@ -139,3 +100,45 @@ Selected=
 .\src\ethtx_ctr.vhd=VHDL Source Code
 .\src\grafics_ctr.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
+.\src\gowin_ip\indexDDR_table\indexDDR_table.v=Verilog Source Code
+
+[Files]
+/lcd_lib.vhd=-1
+/vimon10_lib.vhd=-1
+/gowin_ip\video_mem\video_mem.vhd=-1
+/gowin_ip\ddrout\ddrout.v=-1
+/gowin_ip\ethrx_rPLL\ethrx_rPLL.vhd=-1
+/gowin_ip\ethtx_rpll\ethtx_rpll.vhd=-1
+/gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd=-1
+/gowin_ip\lcd_rpll\lcd_rpll.vhd=-1
+/gowin_ip\logo_rom\logo_rom.v=-1
+/gowin_ip\main_osc\main_osc.vhd=-1
+/gowin_ip\rgmii_rx\rgmii_rx.v=-1
+/gowin_ip\rgmii_tx\rgmii_tx.v=-1
+/gowin_ip\sdram_int\sdram_int.v=-1
+/gowin_ip\sdram_rpll\sdram_rpll.v=-1
+/gowin_ip\cos_table\cos_table.v=-1
+/gowin_ip\intram\intram.v=-1
+/gowin_ip\rom_touch\rom_touch.v=-1
+/gowin_ip\indexDDR_table\indexDDR_table.v=-1
+/gowin_ip\video_mem\video_mem4096x32.vhd=-1
+/gowin_ip\video_mem\video_mem1024x32.vhd=-1
+/crc32.vhd=-1
+/sync.vhd=-1
+/resync.vhd=-1
+/freq_read.vhd=-1
+/sysled.vhd=-1
+/ser7to1.vhd=-1
+/ethrx_module.vhd=-1
+/LCDserializer.vhd=-1
+/gen_logo.vhd=-1
+/lcd_ind.vhd=-1
+/YCC420_to_YCC444div2.vhd=-1
+/YCC444_to_RGB444.vhd=-1
+/lcd_module.vhd=-1
+/gpu.vhd=-1
+/ethrx_ctr.vhd=-1
+/ethtx_ctr.vhd=-1
+/grafics_ctr.vhd=-1
+/vimon10.vhd=-1
+

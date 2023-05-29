@@ -168,12 +168,8 @@ begin
 			if Hstart then 
 				if  intVcount=vblank+vsize-1 then	
 					intVcount<=0;	
-					intVAcount<=0;	
 				else
 					intVcount<=intVcount+1;	
-					if not edgingv_act then
-						intVAcount<=intVAcount+1;	
-					end if;
 				end if;
 			end if;
 			if intHcount=hblank+hsize-1 then	 
@@ -185,8 +181,13 @@ begin
 			case state is 
 				when Hpause =>  
 					lcd<=(black,hs);
-					adrBuff<=adrBuff_status;
 					adrBuffHi<=boolean_to_data(intHcount>5);	
+					adrBuff<=adrBuff_status;
+					if intHcount=1 and intVcount=(vsize-vpicture)/2-1 then	  
+						intVAcount<=0;	
+					elsif intHcount=1 and req_act then	  
+						intVAcount<=intVAcount+1;	
+					end if;	 
 					if intHcount=2 then	
 						if numBuff='0' then
 							store0Request<=intVAcount; 

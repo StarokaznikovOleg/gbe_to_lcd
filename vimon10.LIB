@@ -1,8 +1,8 @@
-timestamp=1685276584673
+timestamp=1685378847286
 
 [$root]
-A/$root=22|""|0|1*4965369
-BinI32/$root=3*397725
+A/$root=22|""|0|1*7096723
+BinI32/$root=3*606693
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [\~autorefresh.sdram_int \]
@@ -271,12 +271,12 @@ Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [gpu]
-A/main=21|./src/gpu.vhd|46|1*6990435
-BinI32/main=3*590286
+A/main=21|./src/gpu.vhd|46|1*7150876
+BinI32/main=3*607102
 I=0*1380381
-I/main=0*1985461
+I/main=0*2075172
 M=11|0|v98|1685086307695|./src/gpu.vhd|0*1379157*0x22b6f9fa699e0bf1bf942a33ab8f95c3080e1ed8|0*1380314*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1685276584494|./src/gpu.vhd|0*1976689*0x67c34fe789c10a36cb17b59c9bd6949d9af953d4|0*1985386*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1685378847210|./src/gpu.vhd|0*2066260*0x8cdef01568aab632cbb2b59d9c964ef4b6d064cb|0*2075097*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gpu.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -310,6 +310,13 @@ M/main=21|0|v98|1684254744806|./src/i2c.vhd|0*458424*0xf814d2ee506cedbf1d7443224
 R=./src/i2c.vhd|8
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
+[indexDDR_table]
+A/indexDDR_table=22|./src/gowin_ip/indexDDR_table/indexDDR_table.v|9|1*7097225
+BinI32/indexDDR_table=3*606832
+P/~emb=282,3403,4043,4259
+R=./src/gowin_ip/indexDDR_table/indexDDR_table.v|9
+Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [intram]
 A/intram=22|./src/gowin_ip/intram/intram.v|9|1*740200
@@ -351,12 +358,12 @@ R=./src/lcd_lib.vhd|5
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [lcd_module]
-A/main=21|./src/lcd_module.vhd|39|1*6859115
-BinI32/main=3*582929
+A/main=21|./src/lcd_module.vhd|39|1*7056025
+BinI32/main=3*596059
 I=0*1681854
-I/main=0*1926086
+I/main=0*2011004
 M=11|0|v98|1685183107101|./src/lcd_module.vhd|0*1680870*0x3f83b722a7d56dbdf96d50be731bbdc878310da1|0*1681773*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1685272024332|./src/lcd_module.vhd|0*1920240*0x62285bca8aaf3d8b1a37207f1dfe3c9e0a3d3b3f|0*1925997*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1685287071455|./src/lcd_module.vhd|0*2005091*0x32ac9ceef705193f9a3d89f8781b868459c64ee1|0*2010915*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/lcd_module.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -647,21 +654,22 @@ Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [~A]
 D:/Projects/VIMON/src/gowin_ip/ddrout/ddrout.v=0*1435084*1435634
+D:/Projects/VIMON/src/gowin_ip/indexDDR_table/indexDDR_table.v=0*2034553*2038064
 D:/Projects/VIMON/src/gowin_ip/logo_rom/logo_rom.v=0*1445719*1452466
 D:/Projects/VIMON/src/gowin_ip/rgmii_rx/rgmii_rx.v=0*991550*992440
 D:/Projects/VIMON/src/gowin_ip/rgmii_rx/rgmii_rx.v_rgmii_tx.v_sdram_int.v_sdram_rpll.v_cos_table.v_intram.v_rom_touch.v=0*272108*310909
 D:/Projects/VIMON/src/gowin_ip/touch_mult/touch_mult.v=0*641362*642096
-LastVerilogToplevel=logo_rom
-ModifyID=2549
+LastVerilogToplevel=indexDDR_table
+ModifyID=2632
 Version=73
 
 [~MFT]
-0=1666|0vimon10.mgf|1985461|1324129
-1=720|1vimon10.mgf|6990435|5622279
-3=702|3vimon10.mgf|590286|482323
+0=1730|0vimon10.mgf|2075172|1404771
+1=745|1vimon10.mgf|7150876|5772700
+3=727|3vimon10.mgf|607102|498829
 
 [~U]
-$root=12|0*1436081|
+$root=12|0*2029681|
 \~autorefresh.sdram_int \=12|0*247067||0x80
 \~control_fsm.sdram_int \=12|0*153056||0x80
 \~top.sdram_int \=12|0*253269||0x80
@@ -693,6 +701,7 @@ gpu=11|0*1378182|
 grafics_ctr=11|0*531446|
 gw_delay=11|0*688176|
 i2c=11|0*457264|
+indexDDR_table=12|0*2030135||0x90
 intram=12|0*268943||0x90
 lcd_clkdiv=11|0*126442|
 lcd_ind=11|0*1424178|

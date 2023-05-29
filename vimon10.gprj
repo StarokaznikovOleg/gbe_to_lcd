@@ -8,6 +8,7 @@
         <File path="src/gowin_ip/cos_table/cos_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/ddrout/ddrout.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/gw_delay/gw_delay.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/indexDDR_table/indexDDR_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/intram/intram.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/logo_rom/logo_rom.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/rgmii_rx/rgmii_rx.v" type="file.verilog" enable="1"/>
@@ -42,9 +43,9 @@
         <File path="src/vimon10_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10.cst" type="file.cst" enable="1"/>
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
-        <File path="src/std_gpu_stat.rao" type="file.gao" enable="1"/>
+        <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_gpu.rao" type="file.gao" enable="1"/>
         <File path="src/stp_gpurx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
