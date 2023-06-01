@@ -3,6 +3,15 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;   
 package lcd_lib is  
+	type type_ycc_color is record
+		Y : std_logic_vector(7 downto 0);
+		Cb : std_logic_vector(7 downto 0);
+		Cr : std_logic_vector(7 downto 0);
+	end record;
+	constant ycc_black 	: type_ycc_color := (x"10",x"80",x"80");	
+	constant ycc_white 	: type_ycc_color := (x"eb",x"80",x"80");	
+	constant ycc_red 	: type_ycc_color := (x"51",x"5a",x"eb");
+	
 	type type_lcd_color is record
 		R : std_logic_vector(7 downto 0);
 		G : std_logic_vector(7 downto 0);

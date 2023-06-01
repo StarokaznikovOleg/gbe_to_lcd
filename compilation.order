@@ -27,8 +27,8 @@
 .\src\LCDserializer.vhd
 .\src\gen_logo.vhd
 .\src\lcd_ind.vhd
+.\src\ycc2rgb.vhd
 .\src\YCC420_to_YCC444div2.vhd
-.\src\YCC444_to_RGB444.vhd
 .\src\lcd_module.vhd
 .\src\gpu.vhd
 .\src\ethrx_ctr.vhd

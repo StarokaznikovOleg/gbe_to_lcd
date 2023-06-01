@@ -7,7 +7,6 @@
     <FileList>
         <File path="src/gowin_ip/cos_table/cos_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/ddrout/ddrout.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/gw_delay/gw_delay.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/indexDDR_table/indexDDR_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/intram/intram.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/logo_rom/logo_rom.v" type="file.verilog" enable="1"/>
@@ -17,14 +16,11 @@
         <File path="src/gowin_ip/sdram_rpll/sdram_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/LCDserializer.vhd" type="file.vhdl" enable="1"/>
         <File path="src/YCC420_to_YCC444div2.vhd" type="file.vhdl" enable="1"/>
-        <File path="src/YCC444_to_RGB444.vhd" type="file.vhdl" enable="1"/>
         <File path="src/crc32.vhd" type="file.vhdl" enable="1"/>
         <File path="src/eth_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/ethrx_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/freq_read.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gen_logo.vhd" type="file.vhdl" enable="1"/>
-        <File path="src/gowin_ip/ethrx_rPLL/ethrx_rPLL.vhd" type="file.vhdl" enable="1"/>
-        <File path="src/gowin_ip/ethtx_rpll/ethtx_rpll.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_clkdiv/lcd_clkdiv.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_rpll/lcd_rpll.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/main_osc/main_osc.vhd" type="file.vhdl" enable="1"/>
@@ -41,14 +37,15 @@
         <File path="src/sysled.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10_lib.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/ycc2rgb.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10.cst" type="file.cst" enable="1"/>
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_gpu.rao" type="file.gao" enable="1"/>
+        <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpurx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_lcd.rao" type="file.gao" enable="1"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="1"/>
     </FileList>
 </Project>

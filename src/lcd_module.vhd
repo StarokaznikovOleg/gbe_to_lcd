@@ -54,7 +54,7 @@ architecture main of lcd_module is
 	constant PWMsize: integer :=256;
 	constant max_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) /(PWMfreq/fps*PWMsize);
 	constant corr_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) mod(PWMfreq/fps*PWMsize);
-	constant picture_dalay: integer :=4;
+	constant picture_dalay: integer :=8;
 	
 	constant adrBuff_status : integer:=0;
 	constant adrBuff_start : integer:=1;
@@ -70,11 +70,12 @@ architecture main of lcd_module is
 	signal Frame,Vstart,Vstop,Hstart,Hstop,req_act,edgingv_act,edgingh_act,picture_act,status_buffer : boolean:=false;	
 	signal adrBuffHi, numBuff:std_logic:='0';	
 	signal Hphase : integer range 0 to 3 :=0;	
-	signal Hdata_shift : std_logic_vector(95 downto 0):=(others=>'0');
+	signal YCC420stream : std_logic_vector(47 downto 0):=(others=>'0');
 	signal err_sequence : std_logic;
-	signal store_Lcount : integer range 0 to 1280 :=0;	 
+--	signal store_Lcount : integer range 0 to 1280 :=0;	 
 	
-	signal YCCstream,RGBstream : std_logic_vector(23 downto 0):=(others=>'0');
+	signal YCCstream : type_ycc_color:=ycc_black;
+	signal RGBstream : type_lcd_color:=black;
 	
 begin 
 	err<=err_sequence;	
@@ -226,16 +227,14 @@ begin
 					elsif edgingh_act or edgingv_act then 
 						lcd.color<=sienna;
 					else
-						lcd.color.r<=RGBstream(07 downto 00);
-						lcd.color.g<=RGBstream(15 downto 08);
-						lcd.color.b<=RGBstream(23 downto 16);
+						lcd.color<=RGBstream;
 					end if;
 					if picture_act and Hphase=1 then  
 						adrBuff<=adrBuff+1;	
-						Hdata_shift<= x"000000000000" & Hdata_shift(95 downto 48);	
+						YCC420stream<= mem_q(95 downto 80) & mem_q(63 downto 32);	
 						Hphase<=0;
 					else
-						Hdata_shift<= mem_q(95 downto 0);	
+						YCC420stream<= mem_q(79 downto 64) & mem_q(31 downto 0);	
 						Hphase<=1;
 					end if;
 					if Vstop then	
@@ -257,7 +256,7 @@ begin
 					numBuff<='0';
 					adrBuff<=0;  
 					mem_wr<='0';
-					Hdata_shift<=(others=>'0');
+					YCC420stream<=(others=>'0');
 					Hphase<=0;
 					state<=Vpause;
 				
@@ -270,13 +269,13 @@ begin
 	div2_ycc : entity work.YCC420_to_YCC444div2 
 	port map(
 		clock => pclk,
-		YCC420 => Hdata_shift(47 downto 0),
-		YCC444 => YCCstream
+		YCC420 => YCC420stream(47 downto 0),
+		YCbCr => YCCstream
 		);
-	conv_ycc_to_rgb : entity work.YCC444_to_RGB444 
+	conv_ycc_to_rgb : entity work.ycc2rgb 
 	port map (
 		clock => pclk,
-		YCC => YCCstream,
+		YCbCr => YCCstream,
 		RGB => RGBstream
 		);
 end main; 

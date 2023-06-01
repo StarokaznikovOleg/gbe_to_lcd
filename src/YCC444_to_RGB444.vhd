@@ -17,13 +17,22 @@ entity YCC444_to_RGB444 is
 		);
 end YCC444_to_RGB444;	  		 
 architecture main of YCC444_to_RGB444 is  	 
+	signal y,cr,cb,r,g,b : std_logic_vector(7 downto 0);
 begin 
-	delay_proc: process (clock)
-	begin
-		if rising_edge(clock) then 
-			RGB(07 downto 00)<=YCC(07 downto 00);
-			RGB(15 downto 08)<=YCC(07 downto 00);
-			RGB(23 downto 16)<=YCC(07 downto 00);
-		end if;
-	end process delay_proc; 
+	ycc2rgb_1 : entity work.ycc2rgb 
+	port map(
+		clock => clock,
+		y => y,
+		cr => cr,
+		cb => cb,
+		r => r,
+		g => g,
+		b => b
+		);
+	y<=YCC(07 downto 00);
+	cr<=YCC(07 downto 00);
+	cb<=YCC(07 downto 00);
+	RGB(07 downto 00)<=r;
+	RGB(15 downto 08)<=g;
+	RGB(23 downto 16)<=b;
 end;
