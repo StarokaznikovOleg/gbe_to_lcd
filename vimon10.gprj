@@ -14,6 +14,9 @@
         <File path="src/gowin_ip/rgmii_tx/rgmii_tx.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/sdram_int/sdram_int.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/sdram_rpll/sdram_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/table_FONT/table_FONT.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/table_MAP/table_MAP.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
         <File path="src/LCDserializer.vhd" type="file.vhdl" enable="1"/>
         <File path="src/YCC420_to_YCC444div2.vhd" type="file.vhdl" enable="1"/>
         <File path="src/crc32.vhd" type="file.vhdl" enable="1"/>
@@ -21,6 +24,7 @@
         <File path="src/ethrx_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/freq_read.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gen_logo.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/gen_txt.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_clkdiv/lcd_clkdiv.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_rpll/lcd_rpll.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/main_osc/main_osc.vhd" type="file.vhdl" enable="1"/>
@@ -42,10 +46,11 @@
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_gentxt.rao" type="file.gao" enable="1"/>
         <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpurx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_lcd.rao" type="file.gao" enable="1"/>
+        <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="1"/>
     </FileList>
 </Project>

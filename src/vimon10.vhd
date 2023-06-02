@@ -10,7 +10,7 @@ use work.lcd_lib.all;
 entity vimon10 is
 	port(	
 		--system
---		PWRGOOD	: in STD_LOGIC;
+		--		PWRGOOD	: in STD_LOGIC;
 		CLK_25M	: in STD_LOGIC;
 		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
 		SWIN : in STD_LOGIC;
@@ -88,7 +88,7 @@ architecture main of vimon10 is
 	signal lcd_q: std_logic_vector(95 downto 0):=(others=>'0'); 
 	signal ethv_q,gpurx_q,gputx_q: std_logic_vector(31 downto 0):=(others=>'0'); 
 	
---	signal check_clk: std_logic_vector(7 downto 0); 
+	--	signal check_clk: std_logic_vector(7 downto 0); 
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
 	
 	
@@ -113,6 +113,11 @@ architecture main of vimon10 is
 	
 	signal touch: type_touch; 	  
 	
+	
+	signal txt_mapadr : std_logic_vector(13 downto 0);
+	signal txt_mapwr : std_logic;
+	signal txt_mapdin : std_logic_vector(7 downto 0);
+	
 begin  
 	dbg<=SWIN;		
 	MDC<='0';
@@ -131,7 +136,7 @@ begin
 	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll error
 	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll error
 	err_clk(02)<=CLK_25M;		err_pulse(02)<=not ETH0_LED(2);			--eth0 link error
-
+	
 	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=ethrx_err(0);		--RXETH: video packet crc32 error
 	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(1); 		--RXETH: video packet frame error
 	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(2); 		--RXETH: video packet len error
@@ -226,7 +231,11 @@ begin
 	
 	
 	--------------------------------------------------------	
-	--  grafics_ctr	
+	--  grafics_ctr		  
+	
+	txt_mapadr<=(others=>'0');
+	txt_mapwr<='0';
+	txt_mapdin<=(others=>'0');
 	grafics_ctr1 : entity work.grafics_ctr
 	generic map(hsize=>1280, hblank=>270, vsize=>800, vblank=>15)
 	port map(
@@ -240,7 +249,13 @@ begin
 		Vcount => lcd_Vcount,
 		Hcount => lcd_Hcount,
 		act_pixel => grafics_act_pixel,
-		color_pixel => grafics_color_pixel
+		color_pixel => grafics_color_pixel,
+		
+		txt_mapadr => txt_mapadr,
+		txt_mapclk => clk_125MHz,
+		txt_mapwr => txt_mapwr,
+		txt_mapdin => txt_mapdin
+		
 		);		
 	
 	--------------------------------------------------------	
@@ -280,56 +295,56 @@ begin
 	
 	rx_video_mem : entity work.video_mem4096x32
 	port map(
-	reseta => reset, --rst_eth,
-	clka => eth0rx_clock,
-	cea => '1',
-	ada => ethv_a,
-	wrea => ethv_wr,
-	dina => ethv_d,
-	ocea => '1',
-	douta => ethv_q,
-	resetb => rst_gpu,
-	clkb => gpu_clk,
-	ceb => '1',
-	adb => gpurx_a,
-	wreb => gpurx_wr,
-	dinb => gpurx_d,
-	oceb => '1',
-	doutb => gpurx_q
-	);
+		reseta => reset, --rst_eth,
+		clka => eth0rx_clock,
+		cea => '1',
+		ada => ethv_a,
+		wrea => ethv_wr,
+		dina => ethv_d,
+		ocea => '1',
+		douta => ethv_q,
+		resetb => rst_gpu,
+		clkb => gpu_clk,
+		ceb => '1',
+		adb => gpurx_a,
+		wreb => gpurx_wr,
+		dinb => gpurx_d,
+		oceb => '1',
+		doutb => gpurx_q
+		);
 	
 	gpu1 : entity work.gpu 
 	port map(
-	reset => reset, --rst_gpu,
-	clock => gpu_clk,
-	err => gpu_err,
-	no_signal => no_signal,
-	
-	rx_a => gpurx_a,
-	rx_wr => gpurx_wr,
-	rx_d => gpurx_d,
-	rx_q => gpurx_q,
-	tx_sel => gputx_sel,
-	tx_a => gputx_a,
-	tx_wr => gputx_wr,
-	tx_d => gputx_d,
-	tx_q => gputx_q,
-	
-	O_sdrc_rst_n => sdrc_rst_n,
-	O_sdrc_power_down => sdrc_power_down,
-	O_sdrc_selfrefresh => sdrc_selfrefresh,
-	O_sdrc_data_len => sdrc_data_len,
-	I_sdrc_init_done => sdrc_init_done,
-	I_sdrc_busy_n => sdrc_busy_n,
-	O_sdrc_addr => sdrc_addr,
-	O_sdrc_wr_n => sdrc_wr_n,
-	O_sdrc_rd_n => sdrc_rd_n,
-	I_sdrc_wrd_ack => sdrc_wrd_ack,
-	O_sdrc_dqm => sdrc_dqm,
-	O_sdrc_data => sdrc_data,
-	I_sdrc_data => sdrc_data_out,
-	I_sdrc_rd_valid => sdrc_rd_valid
-	);
+		reset => reset, --rst_gpu,
+		clock => gpu_clk,
+		err => gpu_err,
+		no_signal => no_signal,
+		
+		rx_a => gpurx_a,
+		rx_wr => gpurx_wr,
+		rx_d => gpurx_d,
+		rx_q => gpurx_q,
+		tx_sel => gputx_sel,
+		tx_a => gputx_a,
+		tx_wr => gputx_wr,
+		tx_d => gputx_d,
+		tx_q => gputx_q,
+		
+		O_sdrc_rst_n => sdrc_rst_n,
+		O_sdrc_power_down => sdrc_power_down,
+		O_sdrc_selfrefresh => sdrc_selfrefresh,
+		O_sdrc_data_len => sdrc_data_len,
+		I_sdrc_init_done => sdrc_init_done,
+		I_sdrc_busy_n => sdrc_busy_n,
+		O_sdrc_addr => sdrc_addr,
+		O_sdrc_wr_n => sdrc_wr_n,
+		O_sdrc_rd_n => sdrc_rd_n,
+		I_sdrc_wrd_ack => sdrc_wrd_ack,
+		O_sdrc_dqm => sdrc_dqm,
+		O_sdrc_data => sdrc_data,
+		I_sdrc_data => sdrc_data_out,
+		I_sdrc_rd_valid => sdrc_rd_valid
+		);
 	
 	sdram_int1 : entity work.sdram_int 
 	port map(
@@ -363,9 +378,9 @@ begin
 	
 	tx_video_mem_Y0 : entity work.video_mem1024x32 
 	port map(
-	reseta=>reset, --rst_gpu,
-	clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
+		reseta=>reset, --rst_gpu,
+		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
+		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
 	
 	tx_video_mem_Y1 : entity work.video_mem1024x32 
 	port map(
@@ -395,26 +410,26 @@ begin
 	lcd_module1 : entity work.lcd_module 
 	generic map( hsize=>1280, hblank=>270, vsize=>800, vblank=>15,	hpicture=>960, vpicture=>540 )
 	port map(
-	reset => reset, --rst_lcd,
-	sclk => lcd_sclk,
-	pclk => lcd_pclk,
-	err => lcd_err,
-	vsync => lcd_vsync,
-	EN => set_LCD_EN,
-	PWM => set_LCD_PWM,
-	mem_a => lcd_a,
-	mem_wr => lcd_wr,
-	mem_d => lcd_d,
-	mem_q => lcd_q,
-	LCD_EN => int_LCD_EN,
-	LCD_PWM => int_LCD_PWM,
-	lcd_a_clk => LCDA_CLK,
-	lcd_a => LCDA,
-	Vcount => lcd_Vcount,
-	Hcount => lcd_Hcount,
-	grafics_act => grafics_act_pixel,
-	grafics_color => grafics_color_pixel
-	); 
+		reset => reset, --rst_lcd,
+		sclk => lcd_sclk,
+		pclk => lcd_pclk,
+		err => lcd_err,
+		vsync => lcd_vsync,
+		EN => set_LCD_EN,
+		PWM => set_LCD_PWM,
+		mem_a => lcd_a,
+		mem_wr => lcd_wr,
+		mem_d => lcd_d,
+		mem_q => lcd_q,
+		LCD_EN => int_LCD_EN,
+		LCD_PWM => int_LCD_PWM,
+		lcd_a_clk => LCDA_CLK,
+		lcd_a => LCDA,
+		Vcount => lcd_Vcount,
+		Hcount => lcd_Hcount,
+		grafics_act => grafics_act_pixel,
+		grafics_color => grafics_color_pixel
+		); 
 	
 end main;
 

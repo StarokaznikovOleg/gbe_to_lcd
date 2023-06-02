@@ -34,3 +34,6 @@ i<>.\src\gowin_ip\video_mem\video_mem4096x32.vhd
 i<>.\src\YCC420_to_YCC444div2.vhd
 i<>.\src\gowin_ip\indexDDR_table\indexDDR_table.v
 i<>.\src\ycc2rgb.vhd
+i<>.\src\gowin_ip\table_MAP\table_MAP.v
+i<>.\src\gowin_ip\table_FONT\table_FONT.v
+i<>.\src\gen_txt.vhd

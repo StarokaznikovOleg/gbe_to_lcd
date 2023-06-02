@@ -21,14 +21,18 @@ entity grafics_ctr is
 		pclk,no_signal: in std_logic; 	
 		Vcount,Hcount: in integer; 
 		act_pixel : out boolean; 
-		color_pixel :out type_lcd_color
+		color_pixel :out type_lcd_color;
+		
+		txt_mapadr : in std_logic_vector(13 downto 0);
+		txt_mapclk,txt_mapwr : in std_logic;
+		txt_mapdin : in std_logic_vector(7 downto 0)
 		
 		);
 end grafics_ctr;	  		 
 architecture main of grafics_ctr is 
 	
-	signal act_errl,act_errp,act_logo : boolean;
-	signal pixel_errl,pixel_errp,pixel_logo : type_lcd_color;
+	signal act_errl,act_errp,act_logo,act_txt : boolean;
+	signal pixel_errl,pixel_errp,pixel_logo,pixel_txt : type_lcd_color;
 	signal run_err,run_logo : std_logic;
 	signal dbg_on,dbg_off,dbg_on_avl,dbg_off_avl : std_logic;
 	
@@ -76,13 +80,29 @@ begin
 			elsif act_logo and (no_signal='1' or run_logo='1') then 
 				act_pixel<=true;
 				color_pixel<=pixel_logo;
+			elsif act_txt then 
+				act_pixel<=true;
+				color_pixel<=pixel_txt;
 			else
 				act_pixel<=false;
 				color_pixel<=black;
 			end if;
 		end if;
 	end process mix_proc; 
-	
+	lcd_txt : entity work.gen_txt 
+	generic map( vsize=>vsize,vblank=>vblank,hblank=>hblank,hsize=>hsize,
+		text_color=>white )
+	port map(
+		clock => pclk,
+		Vcount => Vcount,
+		Hcount => Hcount,
+		act => act_txt,
+		pixel => pixel_txt,
+		map_adr => txt_mapadr,
+		map_clk => txt_mapclk,
+		map_wr => txt_mapwr,
+		map_din => txt_mapdin
+	);	
 	lcd_logo : entity work.gen_logo 
 	generic map( vsize=>vsize,vblank=>vblank,hblank=>hblank,hsize=>hsize,
 		logo_hsize=>256,logo_vsize=>300,top_plane=>olive,bottom_plane=>dark_yellow )

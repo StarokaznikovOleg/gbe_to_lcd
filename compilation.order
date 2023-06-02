@@ -17,6 +17,8 @@
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v
 .\src\gowin_ip\video_mem\video_mem4096x32.vhd
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd
+.\src\gowin_ip\table_MAP\table_MAP.v
+.\src\gowin_ip\table_FONT\table_FONT.v
 .\src\crc32.vhd
 .\src\sync.vhd
 .\src\resync.vhd
@@ -26,6 +28,7 @@
 .\src\ethrx_module.vhd
 .\src\LCDserializer.vhd
 .\src\gen_logo.vhd
+.\src\gen_txt.vhd
 .\src\lcd_ind.vhd
 .\src\ycc2rgb.vhd
 .\src\YCC420_to_YCC444div2.vhd
