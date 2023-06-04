@@ -29,6 +29,7 @@
 .\src\LCDserializer.vhd
 .\src\gen_logo.vhd
 .\src\gen_txt.vhd
+.\src\text_ctr.vhd
 .\src\lcd_ind.vhd
 .\src\ycc2rgb.vhd
 .\src\YCC420_to_YCC444div2.vhd

@@ -117,8 +117,14 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
+	signal link0,link1,power,video : std_logic;
 	
 begin  
+	
+	link0<= not ETH0_LED(2);
+	link1<='0';
+	power<='0';
+	video<= not no_signal;
 	dbg<=SWIN;		
 	MDC<='0';
 	MDIO<='Z';
@@ -233,9 +239,6 @@ begin
 	--------------------------------------------------------	
 	--  grafics_ctr		  
 	
-	txt_mapadr<=(others=>'0');
-	txt_mapwr<='0';
-	txt_mapdin<=(others=>'0');
 	grafics_ctr1 : entity work.grafics_ctr
 	generic map(hsize=>1280, hblank=>270, vsize=>800, vblank=>15)
 	port map(
@@ -252,11 +255,23 @@ begin
 		color_pixel => grafics_color_pixel,
 		
 		txt_mapadr => txt_mapadr,
-		txt_mapclk => clk_125MHz,
+		txt_mapclk => lcd_pclk,
 		txt_mapwr => txt_mapwr,
 		txt_mapdin => txt_mapdin
-		
-		);		
+		);	
+	
+	text_ctr1 : entity work.text_ctr 
+	port map(
+		reset => reset,
+		clock => lcd_pclk,
+		map_adr => txt_mapadr,
+		map_wr => txt_mapwr,
+		map_dout => txt_mapdin,
+		link0 => link0,
+		link1 => link1,
+		power => power,
+		video => video
+		);
 	
 	--------------------------------------------------------	
 	sysled3 : entity work.sysled 
@@ -408,7 +423,7 @@ begin
 	--	LCD_RST<=not rst_lcd;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
-	generic map( hsize=>1280, hblank=>270, vsize=>800, vblank=>15,	hpicture=>960, vpicture=>540 )
+	generic map( hsize=>1280, hblank=>270, vsize=>800, vblank=>15,	hpicture=>960, vfild=>32 )
 	port map(
 		reset => reset, --rst_lcd,
 		sclk => lcd_sclk,

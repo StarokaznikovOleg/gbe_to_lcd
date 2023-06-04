@@ -94,6 +94,7 @@ Selected=
 .\src\ethrx_module.vhd=VHDL Source Code
 .\src\LCDserializer.vhd=VHDL Source Code
 .\src\gen_logo.vhd=VHDL Source Code
+.\src\gen_txt.vhd=VHDL Source Code
 .\src\lcd_ind.vhd=VHDL Source Code
 .\src\ycc2rgb.vhd=VHDL Source Code
 .\src\YCC420_to_YCC444div2.vhd=VHDL Source Code
@@ -103,7 +104,7 @@ Selected=
 .\src\ethtx_ctr.vhd=VHDL Source Code
 .\src\grafics_ctr.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
-.\src\gen_txt.vhd=VHDL Source Code
+.\src\text_ctr.vhd=VHDL Source Code
 
 [Files]
 /lcd_lib.vhd=-1
@@ -138,6 +139,7 @@ Selected=
 /LCDserializer.vhd=-1
 /gen_logo.vhd=-1
 /gen_txt.vhd=-1
+/text_ctr.vhd=-1
 /lcd_ind.vhd=-1
 /ycc2rgb.vhd=-1
 /YCC420_to_YCC444div2.vhd=-1

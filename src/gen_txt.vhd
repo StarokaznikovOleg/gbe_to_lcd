@@ -36,7 +36,7 @@ architecture main of gen_txt is
 	constant h_min : integer :=hblank;
 	constant h_max : integer :=hsize+hblank;	 
 	
-	constant delay : integer :=4;
+	constant delay : integer :=5;
 	
 	signal frame,vact,hact: boolean; 	 
 	
@@ -75,33 +75,28 @@ begin
 	MAPaddress(7 downto 0)<=conv_std_logic_vector(int_hcount,17)(11 downto 4);
 	table_MAP1 : entity work.table_MAP 
 	port map(
-	reseta => '0',
-	clka => map_clk,
-	cea => map_wr,
-	ada => map_adr,
-	din => map_din,
-	resetb => '0',
-	clkb => clock,
-	ceb => '1',
-	oce => '1',
-	adb => MAPaddress,
-	dout => MAPdata
-	);	   
+		reseta => '0',
+		clka => map_clk,
+		cea => map_wr,
+		ada => map_adr,
+		din => map_din,
+		resetb => '0',
+		clkb => clock,
+		ceb => '1',
+		oce => '1',
+		adb => MAPaddress,
+		dout => MAPdata
+		);	   
 	FONTaddress(16 downto 12)<=conv_std_logic_vector(int_vcount,14)(4 downto 0);
---	FONTaddress(16)<=conv_std_logic_vector(int_vcount,14)(0);
---	FONTaddress(15)<=conv_std_logic_vector(int_vcount,14)(1);
---	FONTaddress(14)<=conv_std_logic_vector(int_vcount,14)(2);
---	FONTaddress(13)<=conv_std_logic_vector(int_vcount,14)(3);
---	FONTaddress(12)<=conv_std_logic_vector(int_vcount,14)(4);
 	FONTaddress(11 downto 4)<=MAPdata;
-	FONTaddress(3 downto 0)<=conv_std_logic_vector(int_hcount,17)(3 downto 0);
+	FONTaddress(3 downto 0)<=conv_std_logic_vector(int_hcount-1,17)(3 downto 0);
 	table_FONT1 : entity work.table_FONT 	 
 	port map(
-	reset => '0',
-	clk => clock,
-	ad => FONTaddress,
-	oce => '1',
-	ce => '1',
-	dout => int_act
-	);
+		reset => '0',
+		clk => clock,
+		ad => FONTaddress,
+		oce => '1',
+		ce => '1',
+		dout => int_act
+		);
 end main;

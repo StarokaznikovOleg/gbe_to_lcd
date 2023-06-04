@@ -10,7 +10,8 @@ use work.lcd_lib.all;
 
 entity lcd_module is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23;
-		hpicture:integer:=960; vpicture:integer:=540);
+	hpicture:integer:=960; vpicture:integer:=540; 
+	vfild:integer:=32);
 	port(
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
@@ -157,10 +158,13 @@ begin
 			Hstart<=intHcount=hblank-4;	
 			Hstop<=intHcount=hblank+hsize-2;	
 			vsync<=boolean_to_data(intVcount=0); 
-			req_act<=intVcount>=(vsize-vpicture)/2-1 and intVcount<vsize-(vsize-vpicture)/2-1;
-			edgingv_act<=intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2;
+			req_act<=intVcount>=vfild-1 and intVcount<vfild+vpicture-1;
+--			req_act<=intVcount>=(vsize-vpicture)/2-1 and intVcount<vsize-(vsize-vpicture)/2-1;
+			edgingv_act<=intVcount<vfild or intVcount>=vfild+vpicture;
+--			edgingv_act<=intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2;
 			edgingh_act<=intHcount<hblank+(hsize-hpicture)/2 or intHcount>=hblank+hsize-(hsize-hpicture)/2;
-			picture_act<=not(intHcount<hblank+(hsize-hpicture)/2-picture_dalay or intHcount>=hblank+hsize-(hsize-hpicture)/2-picture_dalay or intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2);
+			picture_act<=not(intHcount<hblank+(hsize-hpicture)/2-picture_dalay or intHcount>=hblank+hsize-(hsize-hpicture)/2-picture_dalay
+			or intVcount<vfild or intVcount>=vfild+vpicture);
 			if numBuff='0' then
 				status_buffer<=mem_q(15 downto 0)=conv_std_logic_vector(store0Request,16);	  
 			else
@@ -184,7 +188,7 @@ begin
 					lcd<=(black,hs);
 					adrBuffHi<=boolean_to_data(intHcount>5);	
 					adrBuff<=adrBuff_status;
-					if intHcount=1 and intVcount=(vsize-vpicture)/2-1 then	  
+					if intHcount=1 and intVcount=vfild-1 then	  
 						intVAcount<=0;	
 					elsif intHcount=1 and req_act then	  
 						intVAcount<=intVAcount+1;	

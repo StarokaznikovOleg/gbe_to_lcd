@@ -37,3 +37,4 @@ i<>.\src\ycc2rgb.vhd
 i<>.\src\gowin_ip\table_MAP\table_MAP.v
 i<>.\src\gowin_ip\table_FONT\table_FONT.v
 i<>.\src\gen_txt.vhd
+i<>.\src\text_ctr.vhd

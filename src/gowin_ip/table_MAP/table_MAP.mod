@@ -16,5 +16,5 @@
 -width_1 8
 -read_mode bypass
 -reset_mode sync
--init_file D:/Projects/VIMON/grafics/table_MAP_v1.mi
+-init_file D:\Projects\VIMON\grafics\table_MAP.mi
 -init_match port_A
