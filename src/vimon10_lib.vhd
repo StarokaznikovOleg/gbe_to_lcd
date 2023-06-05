@@ -5,10 +5,19 @@ use IEEE.std_logic_unsigned.all;
 use work.lcd_lib.all;
 package vimon10_lib is  
 	attribute chip_pin : string;
-	constant hw_version:	integer :=07;
-	constant fw_version:	integer :=02;
-	constant fw_revision:	integer :=03;
-	constant fw_test:		integer :=01;  
+	--------------------------------------------------	
+	----------        Versions data         ----------	
+	constant hw_version:	integer :=9;
+	constant fw_version:	integer :=1;
+	constant fw_revision:	integer :=1;
+	constant fw_test:		integer :=1;  
+	--------------------------------------------------	
+	----------        LCD parameters        ----------	
+	constant lcd_hsize:integer:=1280;
+	constant lcd_hblank:integer:=160; 
+	constant lcd_vsize:integer:=800; 
+	constant lcd_vblank:integer:=23;
+	--------------------------------------------------
 	
 	constant V_marker : integer :=01; 
 	constant H_marker : integer :=02; 
@@ -17,7 +26,7 @@ package vimon10_lib is
 	subtype type_Vvalue is integer range 0 to 8191;
 	subtype type_Hvalue is integer range 0 to 8191;
 	subtype type_Vfreq is integer range 0 to 255;	
-
+	
 	type type_crop is record
 		hstart : type_Hvalue;
 		vstart : type_Vvalue;

@@ -30,26 +30,42 @@ architecture main of text_ctr is
 	subtype type_hadr is std_logic_vector(7 downto 0);
 	subtype type_char is std_logic_vector(7 downto 0);
 	type array5_char_type is array (4 downto 0) of type_char;
+	type array8_char_type is array (7 downto 0) of type_char;
 	
-	constant line_on : array5_char_type :=(x"00",x"6f",x"6e",x"00",x"00");
-	constant line_off : array5_char_type :=(x"00",x"6f",x"66",x"66",x"00");	 
 	
-	constant Parameters : type_vadr :=conv_std_logic_vector(21,6);
+	constant vadrVersion : type_vadr :=conv_std_logic_vector(24,6);
+	constant hadrVersion : type_hadr :=conv_std_logic_vector(62,8);	  
+	constant hwv0 : type_char := conv_std_logic_vector(((hw_version/100) mod 10)+48,8);
+	constant hwv1 : type_char := conv_std_logic_vector(((hw_version/10) mod 10)+48,8);
+	constant hwv2 : type_char := conv_std_logic_vector((hw_version mod 10)+48,8);
+	constant fwv0 : type_char := conv_std_logic_vector(((fw_version/100) mod 10)+48,8);
+	constant fwv1 : type_char := conv_std_logic_vector((fw_version/10 mod 10)+48,8);
+	constant fwv2 : type_char := conv_std_logic_vector((fw_version mod 10)+48,8);
+	constant fwr0 : type_char := conv_std_logic_vector(((fw_revision/100) mod 10)+48,8);
+	constant fwr1 : type_char := conv_std_logic_vector(((fw_revision/10) mod 10)+48,8);
+	constant fwr2 : type_char := conv_std_logic_vector((fw_revision mod 10)+48,8);
+	constant fwt0 : type_char := conv_std_logic_vector(((fw_test/100) mod 10)+48,8);
+	constant fwt1 : type_char := conv_std_logic_vector(((fw_test/10) mod 10)+48,8);
+	constant fwt2 : type_char := conv_std_logic_vector((fw_test mod 10)+48,8);
+	
+	constant ParamLine : type_vadr :=conv_std_logic_vector(21,6);
 	constant hadrLink0 : type_hadr :=conv_std_logic_vector(22,8);
 	constant hadrLink1 : type_hadr :=conv_std_logic_vector(28,8);
 	constant hadrPower : type_hadr :=conv_std_logic_vector(34,8);
 	constant hadrVideo : type_hadr :=conv_std_logic_vector(40,8);
+	constant line_on : array5_char_type :=(x"00",x"6f",x"6e",x"00",x"00");
+	constant line_off : array5_char_type :=(x"00",x"6f",x"66",x"66",x"00");	
 	
-	type state_type is (idle,stlink0,stlink1,stpower,stvideo);
+	type state_type is (idle,stLink0,stLink1,stPower,stVideo,stVersion);
 	signal state : state_type:=idle;	
 	signal vadr : type_vadr;
 	signal hadr : type_hadr;   
-	signal shiftdata: array5_char_type;
+	signal shiftChars: array5_char_type;
 	
 	
 begin 
-	map_adr<=Parameters & hadr;
-	map_dout<=shiftdata(4);
+	map_adr<=vadr & hadr;
+	map_dout<=shiftChars(4);
 	--------------------------------------------	
 	main: process (reset,clock)  
 		variable count: integer range 0 to 255;
@@ -64,17 +80,18 @@ begin
 					state<=stLink0;
 				
 				when stLink0 => 
+					vadr<=ParamLine;
 					map_wr<='1';
 					if count=4 then	
-						if link0='1' then
-							shiftdata<=line_on;
-						else
-							shiftdata<=line_off;
-						end if;
 						hadr<=hadrLink0;
+						if link0='1' then
+							shiftChars<=line_on;
+						else
+							shiftChars<=line_off;
+						end if;
 					else 
 						hadr<=hadr+1;
-						shiftdata<=(shiftdata(3),shiftdata(2),shiftdata(1),shiftdata(0),x"00");
+						shiftChars<=(shiftChars(3),shiftChars(2),shiftChars(1),shiftChars(0),x"00");
 					end if;
 					if count=0 then
 						count:=4;
@@ -84,17 +101,18 @@ begin
 					end if;	
 				
 				when stLink1 => 
+					vadr<=ParamLine;
 					map_wr<='1';
 					if count=4 then
-						if link1='1' then
-							shiftdata<=line_on;
-						else
-							shiftdata<=line_off;
-						end if;
 						hadr<=hadrLink1; 
+						if link1='1' then
+							shiftChars<=line_on;
+						else
+							shiftChars<=line_off;
+						end if;
 					else 
+						shiftChars<=(shiftChars(3),shiftChars(2),shiftChars(1),shiftChars(0),x"00");
 						hadr<=hadr+1;
-						shiftdata<=(shiftdata(3),shiftdata(2),shiftdata(1),shiftdata(0),x"00");
 					end if;
 					if count=0 then
 						count:=4;
@@ -102,19 +120,20 @@ begin
 					else
 						count:=count-1;
 					end if;
-					
+				
 				when stPower => 
+					vadr<=ParamLine;
 					map_wr<='1';
 					if count=4 then
 						hadr<=hadrPower; 
 						if power='1' then
-							shiftdata<=line_on;
+							shiftChars<=line_on;
 						else
-							shiftdata<=line_off;
+							shiftChars<=line_off;
 						end if;
 					else 
+						shiftChars<=(shiftChars(3),shiftChars(2),shiftChars(1),shiftChars(0),x"00");
 						hadr<=hadr+1;
-						shiftdata<=(shiftdata(3),shiftdata(2),shiftdata(1),shiftdata(0),x"00");
 					end if;
 					if count=0 then
 						count:=4;
@@ -122,27 +141,55 @@ begin
 					else
 						count:=count-1;
 					end if;
-						
+				
 				when stVideo => 
+					vadr<=ParamLine;
 					map_wr<='1';
 					if count=4 then
 						hadr<=hadrVideo; 
 						if power='1' then
-							shiftdata<=line_on;
+							shiftChars<=line_on;
 						else
-							shiftdata<=line_off;
+							shiftChars<=line_off;
 						end if;
 					else 
 						hadr<=hadr+1;
-						shiftdata<=(shiftdata(3),shiftdata(2),shiftdata(1),shiftdata(0),x"00");
+						shiftChars<=(shiftChars(3),shiftChars(2),shiftChars(1),shiftChars(0),x"00");
+					end if;
+					if count=0 then
+						count:=14;
+						state<=stVersion;
+					else
+						count:=count-1;
+					end if;
+				
+				when stVersion => 
+					vadr<=vadrVersion;
+					map_wr<='1';
+					if count=14 then
+						hadr<=hadrVersion; 
+						shiftChars<=(hwv0,hwv1,hwv2,x"00",x"00");
+					elsif count=10 then
+						hadr<=hadr+1;
+						shiftChars<=(fwv0,fwv1,fwv2,x"00",x"00");
+					elsif count=6 then
+						hadr<=hadr+1;
+						shiftChars<=(fwr0,fwr1,fwr2,x"00",x"00");
+					elsif count=2 then
+						hadr<=hadr+1;
+						shiftChars<=(fwt0,fwt1,fwt2,x"00",x"00");
+					else 
+						hadr<=hadr+1;
+						shiftChars<=(shiftChars(3),shiftChars(2),shiftChars(1),shiftChars(0),x"00");
 					end if;
 					if count=0 then
 						count:=4;
 						state<=idle;
 					else
 						count:=count-1;
-					end if;
-			
+					end if;	
+					
+				
 				when others => 
 					state<=idle;
 				

@@ -114,7 +114,7 @@ begin
 		pixel => pixel_logo );	
 	
 	lcd_err_ind0 : entity work.lcd_ind 
-	generic map( hsize=>hsize, hblank=>hblank+16, vsize=>vsize, vblank=>16, size=>16,
+	generic map( hsize=>hsize, hblank=>894, vsize=>vsize, vblank=>670, size=>16,
 	err_color=>green, mask_color=>white,
 	level=>len_lockerr, pulse=>0)
 	port map(
@@ -125,7 +125,7 @@ begin
 		pixel => pixel_errl );	
 		
 	lcd_err_ind1 : entity work.lcd_ind 
-	generic map( hsize=>hsize, hblank=>hblank+16, vsize=>vsize, vblank=>vsize-32, size=>16,
+	generic map( hsize=>hsize, hblank=>894, vsize=>vsize, vblank=>694, size=>16,
 	err_color=>red, mask_color=>white,
 	level=>0, pulse=>len_err-len_lockerr)
 	port map(

@@ -240,7 +240,7 @@ begin
 	--  grafics_ctr		  
 	
 	grafics_ctr1 : entity work.grafics_ctr
-	generic map(hsize=>1280, hblank=>270, vsize=>800, vblank=>15)
+	generic map(hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank)
 	port map(
 		reset => rst_gpu, 
 		dbg => dbg,
@@ -423,7 +423,8 @@ begin
 	--	LCD_RST<=not rst_lcd;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
-	generic map( hsize=>1280, hblank=>270, vsize=>800, vblank=>15,	hpicture=>960, vfild=>32 )
+	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
+		hpicture=>960, vfild=>32 )
 	port map(
 		reset => reset, --rst_lcd,
 		sclk => lcd_sclk,

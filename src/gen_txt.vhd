@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
--- Title       : logo generator
--- Design      : gen_logo
+-- Title       : text generator
+-- Design      : gen_txt
 -- Author      : Starokaznikov OV.
 -- Company     : Protei
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
-use work.vimon10_lib.all;
+--use work.vimon10_lib.all;
 use work.lcd_lib.all;
 
 entity gen_txt is
@@ -29,14 +29,15 @@ entity gen_txt is
 end gen_txt;
 
 architecture main of gen_txt is			 
-	constant fcount_max : integer := 255;  
+--	constant fcount_max : integer := 255;  
 	
 	constant v_min : integer :=0;
 	constant v_max : integer :=vsize;
 	constant h_min : integer :=hblank;
 	constant h_max : integer :=hsize+hblank;	 
 	
-	constant delay : integer :=5;
+	constant delay_map : integer :=4;
+	constant delay_font : integer :=1;
 	
 	signal frame,vact,hact: boolean; 	 
 	
@@ -57,7 +58,7 @@ begin
 		if rising_edge(clock)then 
 			act<=int_act="1";
 			vact<=Vcount>=v_min and Vcount<v_max;
-			hact<=Hcount>=h_min-delay and Hcount<h_max-delay;
+			hact<=Hcount>=h_min-delay_map and Hcount<h_max-delay_map;
 			if hcount=0 then  
 				int_hcount<=0;
 			elsif hact then	
@@ -89,7 +90,7 @@ begin
 		);	   
 	FONTaddress(16 downto 12)<=conv_std_logic_vector(int_vcount,14)(4 downto 0);
 	FONTaddress(11 downto 4)<=MAPdata;
-	FONTaddress(3 downto 0)<=conv_std_logic_vector(int_hcount-1,17)(3 downto 0);
+	FONTaddress(3 downto 0)<=conv_std_logic_vector(int_hcount-delay_font,17)(3 downto 0);
 	table_FONT1 : entity work.table_FONT 	 
 	port map(
 		reset => '0',
