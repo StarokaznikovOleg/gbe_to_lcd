@@ -105,7 +105,7 @@ architecture main of vimon10 is
 	
 	signal set_LCD_PWM: std_logic_vector(7 downto 0); 
 	signal set_LCD_EN,int_LCD_EN,int_LCD_PWM: std_logic; 
-	signal no_signal,lcd_no_signal: std_logic; 	 	   	 
+	signal no_signal: std_logic; 	 	   	 
 	
 	signal lcd_Vcount,lcd_Hcount: integer; 	 
 	signal grafics_act_pixel : boolean;
@@ -139,19 +139,20 @@ begin
 	
 	--------------------------------------------------------	
 	--  errors control	
-	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll error
-	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll error
-	err_clk(02)<=CLK_25M;		err_pulse(02)<=not ETH0_LED(2);			--eth0 link error
+	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll ok
+	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll ok
+	err_clk(02)<=CLK_25M;		err_pulse(02)<=not ETH0_LED(2);	--eth0 link ok
+	err_clk(03)<=gpu_clk;		err_pulse(03)<=not no_signal;	--eth0 video	ok
 	
-	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=ethrx_err(0);		--RXETH: video packet crc32 error
-	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(1); 		--RXETH: video packet frame error
-	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(2); 		--RXETH: video packet len error
-	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(3); 		--RXETH: video packet sequence error
-	err_clk(07)<=gpu_clk;		err_pulse(07)<=gpu_err(0);   		--GPU: video signature error
-	err_clk(08)<=gpu_clk;		err_pulse(08)<=gpu_err(1);			--GPU: video sequence error
-	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(2);			--sdram wrd_ack error
-	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(3);			--sdram read timeout error
-	err_clk(11)<=lcd_pclk;		err_pulse(11)<=lcd_err;				--LCD: video sequence error
+	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(0);		--RXETH: video packet crc32 error
+	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(1); 		--RXETH: video packet frame error
+	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(2); 		--RXETH: video packet len error
+	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(3); 		--RXETH: video packet sequence error
+	err_clk(08)<=gpu_clk;		err_pulse(08)<=gpu_err(0);   		--GPU: video signature error
+	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(1);			--GPU: video sequence error
+	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(2);			--sdram wrd_ack error
+	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(3);			--sdram read timeout error
+	err_clk(12)<=lcd_pclk;		err_pulse(12)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
 	--  internal clock 2.3MHz	
@@ -248,7 +249,6 @@ begin
 		err_pulse => err_pulse,
 		
 		pclk => lcd_pclk,
-		no_signal => lcd_no_signal,
 		Vcount => lcd_Vcount,
 		Hcount => lcd_Hcount,
 		act_pixel => grafics_act_pixel,
@@ -409,13 +409,7 @@ begin
 	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
 	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
 	-----------------------------------
-	-- LCD part
-	sync_lcd_no_signal : entity work.Sync 
-	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
-	port map( reset=>'0',
-		clk_in=>gpu_clk, data_in=>no_signal,
-		clk_out=>lcd_pclk, data_out=>lcd_no_signal);  
-	
+	-- LCD part	
 	set_LCD_EN<='1';
 	set_LCD_PWM<=x"f0"; 
 	LCD_EN<=not int_LCD_EN ;

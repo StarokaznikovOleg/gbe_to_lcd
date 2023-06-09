@@ -10,14 +10,8 @@ package vimon10_lib is
 	constant hw_version:	integer :=9;
 	constant fw_version:	integer :=1;
 	constant fw_revision:	integer :=1;
-	constant fw_test:		integer :=1;  
+	constant fw_test:		integer :=4;  
 	--------------------------------------------------	
-	----------        LCD parameters        ----------	
-	constant lcd_hsize:integer:=1280;
-	constant lcd_hblank:integer:=160; 
-	constant lcd_vsize:integer:=800; 
-	constant lcd_vblank:integer:=23;
-	--------------------------------------------------
 	
 	constant V_marker : integer :=01; 
 	constant H_marker : integer :=02; 
@@ -59,8 +53,8 @@ package vimon10_lib is
 	function swap_spi_mem(d:type_spi_mem) return type_spi_mem;	 
 	
 	-- errors cnt
-	constant len_err : integer :=12;
-	constant len_lockerr : integer :=3;
+	constant len_err : integer :=13;
+	constant len_lockerr : integer :=4;
 	constant max_cnt_err : integer :=255;
 	subtype type_pulse_err is std_logic_vector(len_err-1 downto 0); 
 	type type_cnt_err_array is array (len_err-1 downto 0) of integer range 0 to max_cnt_err; 

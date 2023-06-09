@@ -304,7 +304,7 @@ begin
 						if tx_q(0)='1' and numBuffmem_wr=numBuffmem_rd then	 
 							numBuffmem_rd<=not numBuffmem_rd;
 						end if;	
-						wd_inc<=tx_q(1)='1';
+						wd_inc<=tx_q(0)='1';
 						state<=txstep1;
 					else
 						count:=count-1;

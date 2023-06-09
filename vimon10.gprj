@@ -5,11 +5,11 @@
     <Version>5</Version>
     <Device name="GW2AR-18C" pn="GW2AR-LV18EQ144C8/I7">gw2ar18c-004</Device>
     <FileList>
-        <File path="src/gowin_ip/cos_table/cos_table.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/cos_table/cos_table.v" type="file.verilog" enable="0"/>
         <File path="src/gowin_ip/ddrout/ddrout.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/indexDDR_table/indexDDR_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/intram/intram.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/logo_rom/logo_rom.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/logo_rom/logo_rom.v" type="file.verilog" enable="0"/>
         <File path="src/gowin_ip/rgmii_rx/rgmii_rx.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/rgmii_tx/rgmii_tx.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/sdram_int/sdram_int.v" type="file.verilog" enable="1"/>
@@ -22,7 +22,7 @@
         <File path="src/eth_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/ethrx_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/freq_read.vhd" type="file.vhdl" enable="1"/>
-        <File path="src/gen_logo.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/gen_logo.vhd" type="file.vhdl" enable="0"/>
         <File path="src/gen_txt.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_clkdiv/lcd_clkdiv.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gowin_ip/lcd_rpll/lcd_rpll.vhd" type="file.vhdl" enable="1"/>

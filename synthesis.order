@@ -10,8 +10,6 @@ i<>.\src\LCDserializer.vhd
 i<>.\src\ser7to1.vhd
 i<>.\src\gowin_ip\video_mem\video_mem.vhd
 i<>.\src\gowin_ip\ddrout\ddrout.v
-i<>.\src\gowin_ip\ethrx_rPLL\ethrx_rPLL.vhd
-i<>.\src\gowin_ip\ethtx_rpll\ethtx_rpll.vhd
 i<>.\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd
 i<>.\src\gowin_ip\lcd_rpll\lcd_rpll.vhd
 i<>.\src\gowin_ip\logo_rom\logo_rom.v
@@ -25,7 +23,6 @@ i<>.\src\lcd_lib.vhd
 i<>.\src\gen_logo.vhd
 i<>.\src\lcd_ind.vhd
 i<>.\src\gowin_ip\intram\intram.v
-i<>.\src\gowin_ip\rom_touch\rom_touch.v
 i<>.\src\corund10cpu.vhd
 i<>.\src\ethrx_ctr.vhd
 i<>.\src\ethtx_ctr.vhd

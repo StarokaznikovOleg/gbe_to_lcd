@@ -147,7 +147,7 @@ begin
 					map_wr<='1';
 					if count=4 then
 						hadr<=hadrVideo; 
-						if power='1' then
+						if video='1' then
 							shiftChars<=line_on;
 						else
 							shiftChars<=line_off;

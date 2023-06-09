@@ -36,10 +36,10 @@ begin
 	begin 
 		if rising_edge(clock) then 	
 			if reset='1' then led_state<=(R,R,R,R,R,R); 
-			elsif lock_sync(0)='1' then led_state<=(R,R,R,R,R,X); 
-			elsif lock_sync(1)='1' then led_state<=(R,R,R,R,R,B); 
-			elsif lock_sync(2)='1' then led_state<=(R,R,R,R,R,G); 
-				--			elsif lock_sync(3)='1' then led_state<=(R,R,R,R,X,G); 
+			elsif lock_sync(0)='0' then led_state<=(R,R,R,R,R,X); 
+			elsif lock_sync(1)='0' then led_state<=(R,R,R,R,R,B); 
+			elsif lock_sync(2)='0' then led_state<=(R,R,R,R,R,G); 
+			elsif lock_sync(3)='0' then led_state<=(R,R,R,R,X,G); 
 				--			elsif lock_sync(4)='1' then led_state<=(R,R,R,R,X,B); 
 				
 			elsif err_sync_pulse(0)='1'  then led_state<=(R,X,X,X,X,X); 

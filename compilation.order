@@ -2,8 +2,6 @@
 .\src\vimon10_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
-.\src\gowin_ip\ethrx_rPLL\ethrx_rPLL.vhd
-.\src\gowin_ip\ethtx_rpll\ethtx_rpll.vhd
 .\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd
 .\src\gowin_ip\lcd_rpll\lcd_rpll.vhd
 .\src\gowin_ip\logo_rom\logo_rom.v
@@ -13,7 +11,6 @@
 .\src\gowin_ip\sdram_rpll\sdram_rpll.v
 .\src\gowin_ip\cos_table\cos_table.v
 .\src\gowin_ip\intram\intram.v
-.\src\gowin_ip\rom_touch\rom_touch.v
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v
 .\src\gowin_ip\video_mem\video_mem4096x32.vhd
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd

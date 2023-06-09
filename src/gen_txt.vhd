@@ -29,8 +29,6 @@ entity gen_txt is
 end gen_txt;
 
 architecture main of gen_txt is			 
---	constant fcount_max : integer := 255;  
-	
 	constant v_min : integer :=0;
 	constant v_max : integer :=vsize;
 	constant h_min : integer :=hblank;
@@ -39,7 +37,7 @@ architecture main of gen_txt is
 	constant delay_map : integer :=4;
 	constant delay_font : integer :=1;
 	
-	signal frame,vact,hact: boolean; 	 
+	signal frame,vact,hact,FONToce: boolean; 	 
 	
 	signal int_vcount: integer range 0 to vsize:= 0; 
 	signal int_hcount: integer range 0 to hsize:= 0;  
@@ -49,22 +47,22 @@ architecture main of gen_txt is
 	signal FONTaddress: std_logic_vector(16 downto 0); 
 	signal int_act: std_logic_vector(0 downto 0); 
 	
-	
 begin 
 	--------------------------------------------	
 	pixel<=text_color;
 	xy_counters: process (clock)
 	begin
 		if rising_edge(clock)then 
-			act<=int_act="1";
+			act<=int_act="1" and FONToce;
 			vact<=Vcount>=v_min and Vcount<v_max;
-			hact<=Hcount>=h_min-delay_map and Hcount<h_max-delay_map;
+			hact<=Hcount>=h_min-delay_map and Hcount<h_max-delay_map;					
+			FONToce<=Hcount>=h_min-delay_map+2 and Hcount<h_max-delay_map+2;
 			if hcount=0 then  
 				int_hcount<=0;
 			elsif hact then	
 				int_hcount<=int_hcount+1;
 			end if;
-			if Vcount=0 and hcount=0 then  
+			if Vcount=vsize+vblank-1 and hcount=0 then  
 				int_vcount<=0;
 			elsif  hcount=0 then	
 				int_vcount<=int_vcount+1;

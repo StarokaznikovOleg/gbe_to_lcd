@@ -32,7 +32,7 @@ architecture main of ethrx_module is
 	
 	constant ethPREA : std_logic_vector(39 downto 0):=x"55555555d5";
 	constant ethMACD : std_logic_vector(47 downto 0):=x"ffffffffffff";
---	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
+	--	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
 	
 	constant len_Vformat : integer:=8;
 	constant len_Vframe_seq : integer:=4;
@@ -84,7 +84,7 @@ begin
 		crc_check => crc_check,
 		crc_calc => open
 		);
-	
+	numBuff<=conv_std_logic_vector(Vcount,1)(0);	
 	main_proc: process (reset,clock)
 		variable count : integer range 0 to count_max :=0;
 	begin
@@ -94,7 +94,7 @@ begin
 			err_frame<='0';
 			err_sequence<='0';
 			adrBuffHi<='0';
-			numBuff<='0';
+--			numBuff<='0';
 			adrBuff<=0; 
 			ethv_wr<='0';
 			ethv_d<=(others=>'0'); 
@@ -179,10 +179,10 @@ begin
 				
 				when ethdata => 
 					if ethrx_en='1' then 
-					ethv_d<=shift_txd(31 downto 0); 
+						ethv_d<=shift_txd(31 downto 0); 
 					else
-					ethv_d<=x"00000000"; 
-						end if;
+						ethv_d<=x"00000000"; 
+					end if;
 					intcrc_en<=ethrx_en;
 					if count=1 then
 						adrBuff<=adrBuff+1;
@@ -219,7 +219,7 @@ begin
 					ethv_d(1)<=boolean_to_data(Vcount=vsize/2-1);
 					ethv_d(0)<=boolean_to_data(Vcount=0);
 					ethv_wr<='1'; 
-					numBuff<=not numBuff;
+--					numBuff<=not numBuff;
 					Vcount<=Vcount+1;
 					state<=idle;
 				

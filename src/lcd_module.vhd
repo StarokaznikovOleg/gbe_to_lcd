@@ -10,8 +10,8 @@ use work.lcd_lib.all;
 
 entity lcd_module is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23;
-	hpicture:integer:=960; vpicture:integer:=540; 
-	vfild:integer:=32);
+		hpicture:integer:=960; vpicture:integer:=540; 
+		vfild:integer:=32);
 	port(
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
@@ -68,12 +68,12 @@ architecture main of lcd_module is
 	signal adrBuff,count_adrBuff : integer range 0 to 2**10-1 :=0;	
 	signal intHcount : integer range 0 to hblank+hsize-1 :=0;	
 	signal store0Request,store1Request,intVcount,intVAcount : integer range 0 to vblank+vsize-1 :=0;	
-	signal Frame,Vstart,Vstop,Hstart,Hstop,req_act,edgingv_act,edgingh_act,picture_act,status_buffer : boolean:=false;	
+	signal Frame,Vstart,Vstop,Hstart,Hstop,req_act,edgingv_act,edgingh_act,picturev_act,pictureh_act,status_buffer : boolean:=false;	
 	signal adrBuffHi, numBuff:std_logic:='0';	
 	signal Hphase : integer range 0 to 3 :=0;	
 	signal YCC420stream : std_logic_vector(47 downto 0):=(others=>'0');
 	signal err_sequence : std_logic;
---	signal store_Lcount : integer range 0 to 1280 :=0;	 
+	--	signal store_Lcount : integer range 0 to 1280 :=0;	 
 	
 	signal YCCstream : type_ycc_color:=ycc_black;
 	signal RGBstream : type_lcd_color:=black;
@@ -137,44 +137,53 @@ begin
 	
 	mem_a(9)<=adrBuffHi;	
 	mem_a(8 downto 0)<=conv_std_logic_vector(adrBuff,9);	
+	numBuff<=conv_std_logic_vector(intVAcount,1)(0);
 	
+	mem_d(31 downto 16)<=status_signature;
+	mem_d(15)<='0';
+	mem_d(14)<='0';	
+	mem_d(3)<='0';
 	main_proc: process (pclk)
 	begin
 		if rising_edge(pclk) then  
-			mem_d(31 downto 16)<=status_signature;
-			mem_d(15)<='0';
-			mem_d(14)<='0';	
 			if intVAcount=vpicture then	 
 				mem_d(13 downto 4)<=conv_std_logic_vector(0,10);  
+				mem_d(2)<='0';
+				mem_d(1)<='0';
+				mem_d(0)<='1';
 			else
-				mem_d(13 downto 4)<=conv_std_logic_vector(intVAcount,10);  
+				mem_d(13 downto 4)<=conv_std_logic_vector(intVAcount+1,10);  
+				mem_d(2)<=not numBuff;
+				mem_d(1)<=boolean_to_data(intVAcount=vpicture-1);
+				mem_d(0)<='0';
 			end if;
-			mem_d(3)<='0';
-			mem_d(2)<=numBuff;
-			mem_d(1)<=boolean_to_data(intVAcount=vpicture-1);
-			mem_d(0)<=boolean_to_data(intVAcount=0);
 			Vstart<=intVcount=1 and intHcount=hblank+hsize-2;	
 			Vstop<=intVcount=vsize+1 and intHcount=hblank+hsize-2;	
 			Hstart<=intHcount=hblank-4;	
 			Hstop<=intHcount=hblank+hsize-2;	
 			vsync<=boolean_to_data(intVcount=0); 
-			req_act<=intVcount>=vfild-1 and intVcount<vfild+vpicture-1;
---			req_act<=intVcount>=(vsize-vpicture)/2-1 and intVcount<vsize-(vsize-vpicture)/2-1;
+			req_act<=intVcount>=vfild-1 and intVcount<vpicture+vfild-1;
+			picturev_act<=intVcount>=vfild and intVcount<vpicture+vfild;
 			edgingv_act<=intVcount<vfild or intVcount>=vfild+vpicture;
---			edgingv_act<=intVcount<(vsize-vpicture)/2 or intVcount>=vsize-(vsize-vpicture)/2;
 			edgingh_act<=intHcount<hblank+(hsize-hpicture)/2 or intHcount>=hblank+hsize-(hsize-hpicture)/2;
-			picture_act<=not(intHcount<hblank+(hsize-hpicture)/2-picture_dalay or intHcount>=hblank+hsize-(hsize-hpicture)/2-picture_dalay
-			or intVcount<vfild or intVcount>=vfild+vpicture);
+			pictureh_act<=intHcount>=hblank+(hsize-hpicture)/2-picture_dalay and intHcount<hblank+hsize-(hsize-hpicture)/2-picture_dalay;
 			if numBuff='0' then
-				status_buffer<=mem_q(15 downto 0)=conv_std_logic_vector(store0Request,16);	  
-			else
 				status_buffer<=mem_q(31 downto 16)=conv_std_logic_vector(store1Request,16);	  
+			else
+				status_buffer<=mem_q(15 downto 0)=conv_std_logic_vector(store0Request,16);	  
 			end if;
-			if Hstart then 
+			if intHcount=0 then 
 				if  intVcount=vblank+vsize-1 then	
 					intVcount<=0;	
 				else
 					intVcount<=intVcount+1;	
+				end if;
+			end if;
+			if intHcount=0 then
+				if intVcount=vfild-1 then 
+					intVAcount<=0;	
+				elsif picturev_act then
+					intVAcount<=intVAcount+1;	
 				end if;
 			end if;
 			if intHcount=hblank+hsize-1 then	 
@@ -188,11 +197,6 @@ begin
 					lcd<=(black,hs);
 					adrBuffHi<=boolean_to_data(intHcount>5);	
 					adrBuff<=adrBuff_status;
-					if intHcount=1 and intVcount=vfild-1 then	  
-						intVAcount<=0;	
-					elsif intHcount=1 and req_act then	  
-						intVAcount<=intVAcount+1;	
-					end if;	 
 					if intHcount=2 then	
 						if numBuff='0' then
 							store0Request<=intVAcount; 
@@ -202,9 +206,6 @@ begin
 					end if;	 
 					mem_wr<=boolean_to_data(intHcount=2 and req_act);  
 					Frame<=false;
-					if intHcount=3 then	
-						numBuff<=not numBuff;
-					end if;	
 					if Hstart then	
 						state<=Start1;  
 					end if;	
@@ -233,7 +234,7 @@ begin
 					else
 						lcd.color<=RGBstream;
 					end if;
-					if picture_act and Hphase=1 then  
+					if picturev_act and pictureh_act and Hphase=1 then  
 						adrBuff<=adrBuff+1;	
 						YCC420stream<= mem_q(95 downto 80) & mem_q(63 downto 32);	
 						Hphase<=0;
@@ -257,7 +258,6 @@ begin
 				when others =>	--err_cycle
 					lcd<=(black,cl);
 					adrBuffHi<='0';	
-					numBuff<='0';
 					adrBuff<=0;  
 					mem_wr<='0';
 					YCC420stream<=(others=>'0');
