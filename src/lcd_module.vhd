@@ -22,7 +22,7 @@ entity lcd_module is
 		
 		Vcount,Hcount: out integer; 
 		grafics_act : in boolean; 
-		grafics_color :in type_lcd_color;
+		grafics_color :in type_rgb_color;
 		
 		lcd_a_clk: out std_logic;
 		lcd_a : out std_logic_vector(3 downto 0);  
@@ -76,7 +76,7 @@ architecture main of lcd_module is
 	--	signal store_Lcount : integer range 0 to 1280 :=0;	 
 	
 	signal YCCstream : type_ycc_color:=ycc_black;
-	signal RGBstream : type_lcd_color:=black;
+	signal RGBstream : type_rgb_color:=black;
 	
 begin 
 	err<=err_sequence;	

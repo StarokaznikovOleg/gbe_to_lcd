@@ -10,15 +10,15 @@ entity ycc2rgb is
 	port (
 		clock : in  std_logic;
 		YCbCr : in  type_ycc_color;
-		RGB   : out type_lcd_color
+		RGB   : out type_rgb_color
 		);
 end entity ycc2rgb;
 
 architecture rtl of ycc2rgb is
-	signal s0Y, s0Cb, s0Cr : integer range 0 to 2**8-1;
-	signal s1xY, s1rCr, s1gCb, s1gCr, s1bCb : integer range 0 to 2**18-1;
-	signal s2R, s2G, s2B : integer range -2**19 to 2**19-1;
-	signal s3R, s3G, s3B : integer range 0 to 2**10-1;
+	signal s0Y, s0Cb, s0Cr : integer range 0 to (2**8)-1;
+	signal s1xY, s1rCr, s1gCb, s1gCr, s1bCb : integer range 0 to (2**18)-1;
+	signal s2R, s2G, s2B : integer range -(2**19) to (2**19)-1;
+	signal s3R, s3G, s3B : integer range 0 to (2**10)-1;
 begin
 	-- Convert unsigned YCbCr inputs to signed representation		 
 	s0Y  <= conv_integer(YCbCr.Y);
@@ -41,11 +41,13 @@ begin
 			if s2R>(255+223)*256 then s3R<=255; 
 			elsif s2R<223*256  then s3R<=0; 
 			else s3R<=conv_integer(conv_std_logic_vector(s2R,18)(17 downto 8)) -223;	
-			end if;
+			end if;	  
+			
 			if s2G>(255-136)*256  then s3G<=255; 
 			elsif s2G<-136*256  then s3G<=0; 
 			else s3G<=conv_integer(conv_std_logic_vector(s2G,18)(17 downto 8)) +136;
-			end if;
+			end if;		
+			
 			if s2B>(255+277)*256  then s3B<=255; 
 			elsif s2B<277*256  then s3B<=0; 
 			else s3B<=conv_integer(conv_std_logic_vector(s2B,18)(17 downto 8)) -277;

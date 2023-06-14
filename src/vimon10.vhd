@@ -109,10 +109,7 @@ architecture main of vimon10 is
 	
 	signal lcd_Vcount,lcd_Hcount: integer; 	 
 	signal grafics_act_pixel : boolean;
-	signal grafics_color_pixel : type_lcd_color;
-	
-	signal touch: type_touch; 	  
-	
+	signal grafics_color_pixel : type_rgb_color;
 	
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;

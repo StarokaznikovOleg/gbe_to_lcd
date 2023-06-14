@@ -8,6 +8,7 @@
 .\src\gowin_ip\main_osc\main_osc.vhd
 .\src\gowin_ip\rgmii_rx\rgmii_rx.v
 .\src\gowin_ip\rgmii_tx\rgmii_tx.v
+.\src\gowin_ip\sdram_int\sdram_int.v
 .\src\gowin_ip\sdram_rpll\sdram_rpll.v
 .\src\gowin_ip\cos_table\cos_table.v
 .\src\gowin_ip\intram\intram.v

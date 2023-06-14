@@ -10,7 +10,7 @@ package vimon10_lib is
 	constant hw_version:	integer :=9;
 	constant fw_version:	integer :=1;
 	constant fw_revision:	integer :=1;
-	constant fw_test:		integer :=4;  
+	constant fw_test:		integer :=5;  
 	--------------------------------------------------	
 	
 	constant V_marker : integer :=01; 
@@ -34,16 +34,6 @@ package vimon10_lib is
 		scaling : boolean;
 	end record;
 	constant clear_video_mode : type_video_mode := (clear_crop,0,false);	 
-	
-	subtype type_touch_value is integer range 0 to 1920;
-	type type_finger is record
-		act : boolean;
-		x : type_touch_value;
-		y : type_touch_value;
-	end record;
-	type type_touch is array (4 downto 0) of type_finger;
-	type type_touch_color is array (4 downto 0) of type_lcd_color;
-	
 	
 	function boolean_to_data(data:boolean) return std_logic;	
 	function data_to_boolean(data:std_logic) return boolean;	

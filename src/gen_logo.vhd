@@ -16,12 +16,12 @@ use work.lcd_lib.all;
 entity gen_logo is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23; 
 		logo_hsize:integer:=256; logo_vsize:integer:=300; 
-		top_plane:type_lcd_color:=white; bottom_plane:type_lcd_color:=gray);
+		top_plane:type_rgb_color:=white; bottom_plane:type_rgb_color:=gray);
 	port(
 		clock: in std_logic; 
 		Vcount,Hcount: in integer; 
 		act: out boolean; 
-		pixel :out type_lcd_color  
+		pixel :out type_rgb_color  
 		);
 end gen_logo;
 

@@ -21,7 +21,7 @@ entity grafics_ctr is
 		pclk: in std_logic; 	
 		Vcount,Hcount: in integer; 
 		act_pixel : out boolean; 
-		color_pixel :out type_lcd_color;
+		color_pixel :out type_rgb_color;
 		
 		txt_mapadr : in std_logic_vector(13 downto 0);
 		txt_mapclk,txt_mapwr : in std_logic;
@@ -32,7 +32,7 @@ end grafics_ctr;
 architecture main of grafics_ctr is 
 	
 	signal act_errl,act_errp,act_logo,act_txt : boolean;
-	signal pixel_errl,pixel_errp,pixel_logo,pixel_txt : type_lcd_color;
+	signal pixel_errl,pixel_errp,pixel_logo,pixel_txt : type_rgb_color;
 	signal run_err,run_logo : std_logic;
 	signal dbg_on,dbg_off,dbg_on_avl,dbg_off_avl : std_logic;
 	

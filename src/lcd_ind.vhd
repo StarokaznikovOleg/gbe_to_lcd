@@ -10,7 +10,7 @@ use work.lcd_lib.all;
 
 entity lcd_ind is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=2; size:integer:=16;
-		err_color:type_lcd_color:=red; mask_color:type_lcd_color:=yellow;
+		err_color:type_rgb_color:=red; mask_color:type_rgb_color:=yellow;
 		level:integer:=3; pulse:integer:=3);
 	port(
 		pclk: in std_logic; 
@@ -18,7 +18,7 @@ entity lcd_ind is
 		Vcount :  in integer range 0 to vblank+vsize-1 :=0;	
 		ind_clk,ind_data: in std_logic_vector(level+pulse-1 downto 0):=(others=>'0'); 
 		act: out boolean; 
-		pixel :out type_lcd_color
+		pixel :out type_rgb_color
 		
 		);
 end lcd_ind;
