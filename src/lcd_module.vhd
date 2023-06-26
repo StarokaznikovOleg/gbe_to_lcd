@@ -76,7 +76,7 @@ architecture main of lcd_module is
 	--	signal store_Lcount : integer range 0 to 1280 :=0;	 
 	
 	signal YCCstream : type_ycc_color:=ycc_black;
-	signal RGBstream : type_rgb_color:=black;
+	signal RGBstream : type_rgb_color:=rgb_black;
 	
 begin 
 	err<=err_sequence;	
@@ -194,7 +194,7 @@ begin
 			
 			case state is 
 				when Hpause =>  
-					lcd<=(black,hs);
+					lcd<=(rgb_black,hs);
 					adrBuffHi<=boolean_to_data(intHcount>5);	
 					adrBuff<=adrBuff_status;
 					if intHcount=2 then	
@@ -211,7 +211,7 @@ begin
 					end if;	
 				
 				when Start1 =>
-					lcd<=(black,cl);
+					lcd<=(rgb_black,cl);
 					if not status_buffer and not edgingv_act then
 						err_sequence<='1';
 					end if;
@@ -219,7 +219,7 @@ begin
 				
 				when Start2 =>
 					err_sequence<='0';
-					lcd<=(black,cl);
+					lcd<=(rgb_black,cl);
 					Hphase<=0;
 					adrBuffHi<=numBuff;	
 					adrBuff<=adrBuff_start;
@@ -230,7 +230,7 @@ begin
 					if grafics_act then 
 						lcd.color<=grafics_color;
 					elsif edgingh_act or edgingv_act then 
-						lcd.color<=sienna;
+						lcd.color<=rgb_sienna;
 					else
 						lcd.color<=RGBstream;
 					end if;
@@ -249,14 +249,14 @@ begin
 					end if;	
 				
 				when Vpause =>  
-					lcd<=(black,vs);
+					lcd<=(rgb_black,vs);
 					if Vstart then
 						Frame<=true;
 						state<=Hpause;
 					end if;	
 				
 				when others =>	--err_cycle
-					lcd<=(black,cl);
+					lcd<=(rgb_black,cl);
 					adrBuffHi<='0';	
 					adrBuff<=0;  
 					mem_wr<='0';

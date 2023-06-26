@@ -67,7 +67,7 @@ architecture main of gpu is
 --	signal Vcount : integer range 0 to 2047 :=0;
 	signal numBufftx,numBuffrx : std_logic:='1';
 	signal adrBuffmemHi,adrBufftxHi,adrBuffrxHi,numBuffmem_wr,numBuffmem_rd : std_logic:='0';
-	signal txstatus_start,rxstatus_start,txstatus_tmpstart,rxstatus_tmpstart,txstatus_signature,rxstatus_signature,rxstatus_sequence: boolean;
+	signal txstatus_start,rxstatus_start,txstatus_tmpstart,rxstatus_tmpstart,txstatus_signature,rxstatus_signature,rxstatus_sequence,rxstatus_err: boolean;
 	signal err_rxsignature,err_rxsequence,err_wrd_ack,err_read : std_logic:='0';
 	signal store_rxcount : integer range 0 to 2**(Hmem_val+Smem_val) :=0;
 	signal wd_clear,wd_inc: boolean;
@@ -130,6 +130,7 @@ begin
 			rxstatus_start<=false;
 			rxstatus_tmpstart<=false;
 			rxstatus_sequence<=false;
+			rxstatus_err<=false;
 			wd_inc<=false;
 			wd_clear<=false;
 			state<=clstart;
@@ -143,6 +144,7 @@ begin
 			txstatus_signature<=tx_q(31 downto 16)=status_signature;
 			rxstatus_signature<=rx_q(31 downto 16)=status_signature;
 			rxstatus_sequence<=store_rxcount=conv_integer(rx_q(13 downto 4));
+			rxstatus_err<=rx_q(3)='1';
 			case state is
 				when clstart => 
 					O_sdrc_rst_n<='1';
@@ -218,7 +220,7 @@ begin
 							count_adrrxbuf<=adrBuff_start;	
 							store_rxcount<=conv_integer(rx_q(13 downto 4))+1; 
 							state<=rxstep1; 
-						elsif not rxstatus_sequence or err_rxsequence='1' then-- error sequence
+						elsif not rxstatus_sequence or err_rxsequence='1' or rxstatus_err  then-- error sequence
 							store_rxcount<=0;
 							err_rxsequence<='1';
 							state<=rxdone;

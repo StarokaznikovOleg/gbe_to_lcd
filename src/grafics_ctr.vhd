@@ -85,13 +85,13 @@ begin
 				color_pixel<=pixel_txt;
 			else
 				act_pixel<=false;
-				color_pixel<=black;
+				color_pixel<=rgb_black;
 			end if;
 		end if;
 	end process mix_proc; 
 	lcd_txt : entity work.gen_txt 
 	generic map( vsize=>vsize,vblank=>vblank,hblank=>hblank,hsize=>hsize,
-		text_color=>white )
+		text_color=>rgb_white )
 	port map(
 		clock => pclk,
 		Vcount => Vcount,
@@ -115,7 +115,7 @@ begin
 	
 	lcd_err_ind0 : entity work.lcd_ind 
 	generic map( hsize=>hsize, hblank=>894, vsize=>vsize, vblank=>670, size=>16,
-	err_color=>green, mask_color=>white,
+	err_color=>rgb_green, mask_color=>rgb_white,
 	level=>len_lockerr, pulse=>0)
 	port map(
 		pclk => pclk,
@@ -126,7 +126,7 @@ begin
 		
 	lcd_err_ind1 : entity work.lcd_ind 
 	generic map( hsize=>hsize, hblank=>894, vsize=>vsize, vblank=>694, size=>16,
-	err_color=>red, mask_color=>white,
+	err_color=>rgb_red, mask_color=>rgb_white,
 	level=>0, pulse=>len_err-len_lockerr)
 	port map(
 		pclk => pclk,

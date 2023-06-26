@@ -10,7 +10,7 @@ use work.lcd_lib.all;
 
 entity lcd_ind is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=2; size:integer:=16;
-		err_color:type_rgb_color:=red; mask_color:type_rgb_color:=yellow;
+		err_color:type_rgb_color:=rgb_red; mask_color:type_rgb_color:=rgb_yellow;
 		level:integer:=3; pulse:integer:=3);
 	port(
 		pclk: in std_logic; 
@@ -98,7 +98,7 @@ begin
 				pixel<=mask_color; 
 			else
 				act<=false;
-				pixel<=black; 
+				pixel<=rgb_black; 
 			end if;
 		end if;
 	end process position_err; 

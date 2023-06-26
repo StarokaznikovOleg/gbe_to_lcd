@@ -24,29 +24,29 @@ package lcd_lib is
 		G : std_logic_vector(7 downto 0);
 		B : std_logic_vector(7 downto 0);
 	end record;
-	constant black 	: type_rgb_color := (x"00",x"00",x"00");	
+	constant rgb_black 	: type_rgb_color := (x"00",x"00",x"00");	
 	
-	constant white 	: type_rgb_color := (x"ff",x"ff",x"ff");	
-	constant red 	: type_rgb_color := (x"ff",x"00",x"00");	
-	constant lime 	: type_rgb_color := (x"00",x"ff",x"00");	
-	constant blue 	: type_rgb_color := (x"00",x"00",x"ff");
-	constant aqua 	: type_rgb_color := (x"00",x"ff",x"ff");	
-	constant magenta: type_rgb_color := (x"ff",x"00",x"ff");	
-	constant yellow : type_rgb_color := (x"ff",x"ff",x"00");	
+	constant rgb_white 	: type_rgb_color := (x"ff",x"ff",x"ff");	
+	constant rgb_red 	: type_rgb_color := (x"ff",x"00",x"00");	
+	constant rgb_lime 	: type_rgb_color := (x"00",x"ff",x"00");	
+	constant rgb_blue 	: type_rgb_color := (x"00",x"00",x"ff");
+	constant rgb_aqua 	: type_rgb_color := (x"00",x"ff",x"ff");	
+	constant rgb_magenta: type_rgb_color := (x"ff",x"00",x"ff");	
+	constant rgb_yellow : type_rgb_color := (x"ff",x"ff",x"00");	
 	
-	constant gray 	: type_rgb_color := (x"80",x"80",x"80");	
-	constant maroon : type_rgb_color := (x"80",x"00",x"00");	
-	constant green  : type_rgb_color := (x"00",x"80",x"00");
-	constant navy 	: type_rgb_color := (x"00",x"00",x"80");
-	constant teal 	: type_rgb_color := (x"00",x"80",x"80");
-	constant purpure: type_rgb_color := (x"80",x"00",x"80");	 
-	constant olive 	: type_rgb_color := (x"80",x"80",x"00");
+	constant rgb_gray 	: type_rgb_color := (x"80",x"80",x"80");	
+	constant rgb_maroon : type_rgb_color := (x"80",x"00",x"00");	
+	constant rgb_green  : type_rgb_color := (x"00",x"80",x"00");
+	constant rgb_navy 	: type_rgb_color := (x"00",x"00",x"80");
+	constant rgb_teal 	: type_rgb_color := (x"00",x"80",x"80");
+	constant rgb_purpure: type_rgb_color := (x"80",x"00",x"80");	 
+	constant rgb_olive 	: type_rgb_color := (x"80",x"80",x"00");
 	
-	constant gold 			: type_rgb_color := (x"ff",x"d7",x"00");	
-	constant dark_yellow 	: type_rgb_color := (x"33",x"33",x"00");	
-	constant indigo 		: type_rgb_color := (x"4b",x"00",x"82");	
-	constant chocolate 		: type_rgb_color := (x"d2",x"69",x"1e");	
-	constant sienna 		: type_rgb_color := (x"a0",x"52",x"2d");	
+	constant rgb_gold 			: type_rgb_color := (x"ff",x"d7",x"00");	
+	constant rgb_dark_yellow 	: type_rgb_color := (x"33",x"33",x"00");	
+	constant rgb_indigo 		: type_rgb_color := (x"4b",x"00",x"82");	
+	constant rgb_chocolate 		: type_rgb_color := (x"d2",x"69",x"1e");	
+	constant rgb_sienna 		: type_rgb_color := (x"a0",x"52",x"2d");	
 	
 	
 	type type_lcd_sync is record

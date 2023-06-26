@@ -32,7 +32,7 @@ architecture main of ethrx_module is
 	
 	constant ethPREA : std_logic_vector(39 downto 0):=x"55555555d5";
 	constant ethMACD : std_logic_vector(47 downto 0):=x"ffffffffffff";
-	--	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
+	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
 	
 	constant len_Vformat : integer:=8;
 	constant len_Vframe_seq : integer:=4;
@@ -94,7 +94,6 @@ begin
 			err_frame<='0';
 			err_sequence<='0';
 			adrBuffHi<='0';
---			numBuff<='0';
 			adrBuff<=0; 
 			ethv_wr<='0';
 			ethv_d<=(others=>'0'); 
@@ -114,7 +113,7 @@ begin
 		elsif rising_edge(clock) then 	
 			ok_PREA<=shift_txd(31 downto 0) & ethrx_d=ethPREA;
 			ok_MACD<=shift_txd(47 downto 0)=ethMACD;
-			ok_MACS<=true; --shift_txd(47 downto 0)=ethMACS;
+			ok_MACS<=shift_txd(47 downto 0)=ethMACS;
 			vsync<=boolean_to_data(Vcount=0);
 			shift_txd<=shift_txd(55 downto 0) & ethrx_d;	 
 			vsync_delay0<=boolean_to_data(Vcount=0);
@@ -214,19 +213,18 @@ begin
 					ethv_d(15)<='0';
 					ethv_d(14)<='0';
 					ethv_d(13 downto 4)<=conv_std_logic_vector(Vcount,10);
-					ethv_d(3)<='0';
+					ethv_d(3)<=err_len or err_crc or err_sequence;
 					ethv_d(2)<=numBuff;
 					ethv_d(1)<=boolean_to_data(Vcount=vsize/2-1);
 					ethv_d(0)<=boolean_to_data(Vcount=0);
 					ethv_wr<='1'; 
---					numBuff<=not numBuff;
 					Vcount<=Vcount+1;
 					state<=idle;
 				
 				when ethpause => 
 					ethv_wr<='0';
 					if ethrx_en='0' then 
-						Vcount<=Vcount+1;
+--						Vcount<=Vcount+1;
 						state<=idle;
 					end if;	
 				
@@ -234,7 +232,6 @@ begin
 					err_len<='0';
 					err_crc<='0';
 					err_sequence<='0';
-					numBuff<='0';
 					adrBuffHi<='0';
 					adrBuff<=0; 
 					ethv_wr<='0';

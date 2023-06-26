@@ -15,7 +15,7 @@ use work.lcd_lib.all;
 
 entity gen_txt is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23; 
-		text_color:type_rgb_color:=white);
+		text_color:type_rgb_color:=rgb_white);
 	port(
 		clock: in std_logic; 
 		Vcount,Hcount: in integer; 

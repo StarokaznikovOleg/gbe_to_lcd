@@ -34,6 +34,7 @@
         <File path="src/lcd_ind.vhd" type="file.vhdl" enable="1"/>
         <File path="src/lcd_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/lcd_module.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/mdio_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/resync.vhd" type="file.vhdl" enable="1"/>
         <File path="src/ser7to1.vhd" type="file.vhdl" enable="1"/>
         <File path="src/sync.vhd" type="file.vhdl" enable="1"/>
@@ -45,12 +46,13 @@
         <File path="src/vimon10.cst" type="file.cst" enable="1"/>
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_ethrx.rao" type="file.gao" enable="1"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpurx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_mdio.rao" type="file.gao" enable="0"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="1"/>
     </FileList>
 </Project>

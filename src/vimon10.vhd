@@ -38,7 +38,7 @@ entity vimon10 is
 		--		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
 		
 		--MDI port
-		MDC : out STD_LOGIC;
+		MDC : inout STD_LOGIC;
 		MDIO : inout STD_LOGIC;
 		
 		--internal SDRAM 
@@ -53,8 +53,6 @@ end vimon10;
 
 architecture main of vimon10 is	 
 	signal dbg : std_logic :='0'; -- switch on all debug functions after power up!!!!
-	--	constant dbg : boolean :=false; -- switch off all debug functions after power up!!!!
-	
 	
 	signal reset: std_logic:='0';	  
 	signal all_lock,sdrampll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
@@ -88,9 +86,7 @@ architecture main of vimon10 is
 	signal lcd_q: std_logic_vector(95 downto 0):=(others=>'0'); 
 	signal ethv_q,gpurx_q,gputx_q: std_logic_vector(31 downto 0):=(others=>'0'); 
 	
-	--	signal check_clk: std_logic_vector(7 downto 0); 
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
-	
 	
 	signal rst_hw,rst_gpu,rst_lcd,rst_eth: std_logic:='0';  
 	signal gpu_clk,sdram_clk: std_logic:='0';   
@@ -114,17 +110,15 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
-	signal link0,link1,power,video : std_logic;
+	signal link0,link1,power,video,eth0_link : std_logic;
 	
 begin  
 	
 	link0<= not ETH0_LED(2);
-	link1<='0';
+	link1<=eth0_link;
 	power<='0';
 	video<= not no_signal;
 	dbg<=SWIN;		
-	MDC<='0';
-	MDIO<='Z';
 	
 	--all_lock<=PWRGOOD and sdrampll_lock and lcd_lock and eth0rxpll_lock and eth1rxpll_lock;
 	all_lock<=sdrampll_lock and lcd_lock;
@@ -236,7 +230,6 @@ begin
 	
 	--------------------------------------------------------	
 	--  grafics_ctr		  
-	
 	grafics_ctr1 : entity work.grafics_ctr
 	generic map(hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank)
 	port map(
@@ -438,5 +431,13 @@ begin
 		grafics_color => grafics_color_pixel
 		); 
 	
+	mdio_module1 : entity work.mdio_module 
+	port map(
+		reset => reset,
+		clock => CLK_25M,
+		mdc => MDC,
+		mdio => MDIO,
+		link => eth0_link
+		);	
 end main;
 
