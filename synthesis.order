@@ -24,8 +24,6 @@ i<>.\src\gen_logo.vhd
 i<>.\src\lcd_ind.vhd
 i<>.\src\gowin_ip\intram\intram.v
 i<>.\src\corund10cpu.vhd
-i<>.\src\ethrx_ctr.vhd
-i<>.\src\ethtx_ctr.vhd
 i<>.\src\gowin_ip\video_mem\video_mem1024x32.vhd
 i<>.\src\gowin_ip\video_mem\video_mem4096x32.vhd
 i<>.\src\YCC420_to_YCC444div2.vhd

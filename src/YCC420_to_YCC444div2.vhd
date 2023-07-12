@@ -19,14 +19,17 @@ entity YCC420_to_YCC444div2 is
 		);
 end YCC420_to_YCC444div2;	  		 
 architecture main of YCC420_to_YCC444div2 is 
-	subtype type_video is std_logic_vector(7 downto 0);	
-	type type_video_2array is array (1 downto 0) of type_video; 
-	type type_video_2x2array is array (1 downto 0) of type_video_2array; 
-	signal s0_Y :type_video_2x2array;
-	signal s0_Cr,s0_Cb :type_video;
-	signal s1_Y :type_video_2array;
-	signal s1_Cr,s1_Cb :type_video;
-	signal s2_Y,s2_Cr,s2_Cb :type_video;
+	subtype type_video8 is std_logic_vector(7 downto 0);	
+	type type_video8_2array is array (1 downto 0) of type_video8; 
+	type type_video8_2x2array is array (1 downto 0) of type_video8_2array; 
+	subtype type_video9 is std_logic_vector(8 downto 0);	
+	type type_video9_2array is array (1 downto 0) of type_video9; 
+	type type_video9_2x2array is array (1 downto 0) of type_video9_2array; 
+	signal s0_Y :type_video8_2x2array;
+	signal s0_Cr,s0_Cb :type_video8;
+	signal s1_Y :type_video9_2array;
+	signal s1_Cr,s1_Cb :type_video8;
+	signal s2_Y,s2_Cr,s2_Cb :type_video8;
 	
 begin 
 	s0_Y(0)(0)<=YCC420(07 downto 00);
@@ -38,12 +41,15 @@ begin
 	delay_proc: process (clock)
 	begin
 		if rising_edge(clock) then 
-			s1_Y(0)<=conv_std_logic_vector((conv_integer(s0_Y(0)(0))+conv_integer(s0_Y(0)(1))),9)(8 downto 1);
-			s1_Y(1)<=conv_std_logic_vector((conv_integer(s0_Y(1)(0))+conv_integer(s0_Y(1)(1))),9)(8 downto 1);
+			s1_Y(0)<=conv_std_logic_vector((conv_integer(s0_Y(0)(0))+conv_integer(s0_Y(0)(1))),9);
+			s1_Y(1)<=conv_std_logic_vector((conv_integer(s0_Y(1)(0))+conv_integer(s0_Y(1)(1))),9);
 			s1_Cr<=s0_Cr;
 			s1_Cb<=s0_Cb;
-			
-			s2_Y<=conv_std_logic_vector((conv_integer(s1_Y(0))+conv_integer(s1_Y(1))),9)(8 downto 1);
+			if conv_std_logic_vector((conv_integer(s1_Y(0))+conv_integer(s1_Y(1))),10)(1)='0' then
+				s2_Y<=conv_std_logic_vector((conv_integer(s1_Y(0))+conv_integer(s1_Y(1))),10)(9 downto 2);
+			else
+				s2_Y<=conv_std_logic_vector((conv_integer(s1_Y(0))+conv_integer(s1_Y(1))),10)(9 downto 2)+1;
+			end if;
 			s2_Cr<=s1_Cr;
 			s2_Cb<=s1_Cb;
 		end if;

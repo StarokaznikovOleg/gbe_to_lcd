@@ -33,8 +33,6 @@
 .\src\YCC420_to_YCC444div2.vhd
 .\src\lcd_module.vhd
 .\src\gpu.vhd
-.\src\ethrx_ctr.vhd
-.\src\ethtx_ctr.vhd
 .\src\grafics_ctr.vhd
 .\src\mdio_module.vhd
 .\src\vimon10.vhd

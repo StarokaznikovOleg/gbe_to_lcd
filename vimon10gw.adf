@@ -58,7 +58,7 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem1024x32|Behavioral|0
+HierarchyInformation=video_mem1024x32|Behavioral|0 
 ShowHide=ShowTopLevel
 Selected=
 
@@ -145,3 +145,4 @@ Selected=
 .\src\grafics_ctr.vhd=VHDL Source Code
 .\src\mdio_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
+

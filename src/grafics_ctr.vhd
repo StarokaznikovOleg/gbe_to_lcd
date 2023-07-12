@@ -77,9 +77,6 @@ begin
 			elsif run_err='1' and act_errp then 
 				act_pixel<=true;
 				color_pixel<=pixel_errp;
---			elsif act_logo and (no_signal='1' or run_logo='1') then 
---				act_pixel<=true;
---				color_pixel<=pixel_logo;
 			elsif act_txt then 
 				act_pixel<=true;
 				color_pixel<=pixel_txt;
@@ -103,15 +100,6 @@ begin
 		map_wr => txt_mapwr,
 		map_din => txt_mapdin
 	);	
---	lcd_logo : entity work.gen_logo 
---	generic map( vsize=>vsize,vblank=>vblank,hblank=>hblank,hsize=>hsize,
---		logo_hsize=>256,logo_vsize=>300,top_plane=>olive,bottom_plane=>dark_yellow )
---	port map(
---		clock => pclk,
---		Vcount => Vcount,
---		Hcount => Hcount,
---		act => act_logo,
---		pixel => pixel_logo );	
 	
 	lcd_err_ind0 : entity work.lcd_ind 
 	generic map( hsize=>hsize, hblank=>894, vsize=>vsize, vblank=>670, size=>16,

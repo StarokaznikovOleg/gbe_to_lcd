@@ -38,17 +38,6 @@ entity lcd_module is
 end lcd_module;
 
 architecture main of lcd_module is	  	
-	--	constant lcd_err_val : integer :=16;
-	--	signal err_act,mask_act,err_sync: type_pulse_err:=(others=>'0'); 
-	
-	--	constant v_logo_min : integer :=0;
-	--	constant v_logo_max : integer :=vsize-300;
-	--	constant h_logo_min : integer :=hblank;
-	--	constant h_logo_max : integer :=hsize+hblank-256;
-	--	signal vs_logo,hs_logo : boolean; 
-	
-	--	signal pixel_logo,pixel_touch,pixel_err : type_lcd_color;
-	--	signal act_logo,act_touch,act_err :boolean;
 	
 	constant fps: integer :=60;
 	constant PWMfreq: integer :=18517;
@@ -73,9 +62,8 @@ architecture main of lcd_module is
 	signal Hphase : integer range 0 to 3 :=0;	
 	signal YCC420stream : std_logic_vector(47 downto 0):=(others=>'0');
 	signal err_sequence : std_logic;
-	--	signal store_Lcount : integer range 0 to 1280 :=0;	 
 	
-	signal YCCstream : type_ycc_color:=ycc_black;
+	signal YCC444stream : type_ycc_color:=ycc_black;
 	signal RGBstream : type_rgb_color:=rgb_black;
 	
 begin 
@@ -236,10 +224,10 @@ begin
 					end if;
 					if picturev_act and pictureh_act and Hphase=1 then  
 						adrBuff<=adrBuff+1;	
-						YCC420stream<= mem_q(95 downto 80) & mem_q(63 downto 32);	
+						YCC420stream<= mem_q(95 downto 80) & mem_q(63 downto 48) & mem_q(31 downto 16); --[Cb/Cr] & [Y11/Y10] & [Y01/Y00]
 						Hphase<=0;
 					else
-						YCC420stream<= mem_q(79 downto 64) & mem_q(31 downto 0);	
+						YCC420stream<= mem_q(79 downto 64) & mem_q(47 downto 32) & mem_q(15 downto 0);	--[Cb/Cr] & [Y11/Y10] & [Y01/Y00]
 						Hphase<=1;
 					end if;
 					if Vstop then	
@@ -274,12 +262,12 @@ begin
 	port map(
 		clock => pclk,
 		YCC420 => YCC420stream(47 downto 0),
-		YCbCr => YCCstream
+		YCbCr => YCC444stream
 		);
 	conv_ycc_to_rgb : entity work.ycc2rgb 
 	port map (
 		clock => pclk,
-		YCbCr => YCCstream,
+		YCbCr => YCC444stream,
 		RGB => RGBstream
 		);
 end main; 
