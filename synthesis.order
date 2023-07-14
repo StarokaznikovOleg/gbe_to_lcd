@@ -20,7 +20,6 @@ i<>.\src\gowin_ip\sdram_rpll\sdram_rpll.v
 i<>.\src\freq_read.vhd
 i<>.\src\gowin_ip\cos_table\cos_table.v
 i<>.\src\lcd_lib.vhd
-i<>.\src\gen_logo.vhd
 i<>.\src\lcd_ind.vhd
 i<>.\src\gowin_ip\intram\intram.v
 i<>.\src\corund10cpu.vhd

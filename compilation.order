@@ -25,7 +25,6 @@
 .\src\ser7to1.vhd
 .\src\ethrx_module.vhd
 .\src\LCDserializer.vhd
-.\src\gen_logo.vhd
 .\src\gen_txt.vhd
 .\src\text_ctr.vhd
 .\src\lcd_ind.vhd
