@@ -10,36 +10,37 @@ use work.lcd_lib.all;
 entity vimon10 is
 	port(	
 		--system
-		--		PWRGOOD	: in STD_LOGIC;
-		CLK_25M	: in STD_LOGIC;
+		PWG	: in STD_LOGIC;
+		CLK25M	: in STD_LOGIC;
 		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
-		SWIN : in STD_LOGIC;
+		DB : in STD_LOGIC_VECTOR(3 downto 0); 
 		
 		--LCD port
-		LCD_EN,LCD_PWM : out STD_LOGIC; 
-		--		LCD_EN_LED,LCD_RST : out STD_LOGIC; 
-		LCDA_CLK : out STD_LOGIC; 
-		LCDA : out STD_LOGIC_VECTOR(3 downto 0); 
+		LCD_EN_VDD,LCD_PWM : out STD_LOGIC; 
+		LCD_EN_LED,LCD_RST : out STD_LOGIC; 
+		LCD_DIM : in STD_LOGIC; 
+		LVDS_A_OUT_CLK : out STD_LOGIC; 
+		LVDS_A_OUTP : out STD_LOGIC_VECTOR(3 downto 0); 
 		
 		--ETH0 port
 		ETH0_RSTN : out STD_LOGIC;
-		ETH0_LED : in STD_LOGIC_VECTOR(2 downto 2); 
+		ETH0_CLKOUT : in STD_LOGIC; 
 		ETH0_RXCLK,ETH0_RXCTL : in STD_LOGIC; 
 		ETH0_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
 		ETH0_TXCLK,ETH0_TXCTL : out STD_LOGIC; 
 		ETH0_TXD : out STD_LOGIC_VECTOR(3 downto 0); 
 		
-		--		--ETH1 port
-		--		ETH1_RSTN : out STD_LOGIC;
-		--		ETH1_LED : in STD_LOGIC_VECTOR(2 downto 2); 
-		--		ETH1_RXCLK,ETH1_RXCTL : in STD_LOGIC; 
-		--		ETH1_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
-		--		ETH1_TXCLK,ETH1_TXCTL : out STD_LOGIC; 
-		--		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
+		--ETH1 port
+		ETH1_RSTN : out STD_LOGIC;
+		ETH1_CLKOUT : in STD_LOGIC; 
+		ETH1_RXCLK,ETH1_RXCTL : in STD_LOGIC; 
+		ETH1_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
+		ETH1_TXCLK,ETH1_TXCTL : out STD_LOGIC; 
+		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
 		
 		--MDI port
-		MDC : inout STD_LOGIC;
-		MDIO : inout STD_LOGIC;
+		ETH_MDC : inout STD_LOGIC;
+		ETH_MDIO : inout STD_LOGIC;
 		
 		--internal SDRAM 
 		O_sdram_clk,O_sdram_cke,O_sdram_cs_n,O_sdram_cas_n,O_sdram_ras_n,O_sdram_wen_n : out STD_LOGIC;
@@ -52,7 +53,6 @@ entity vimon10 is
 end vimon10;
 
 architecture main of vimon10 is	 
-	signal dbg : std_logic :='0'; -- switch on all debug functions after power up!!!!
 	
 	signal reset: std_logic:='0';	  
 	signal all_lock,sdrampll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
@@ -110,29 +110,29 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
-	signal link0,link1,power,video,eth0_link : std_logic;
+	signal power,video : std_logic;
+	signal eth_link : std_logic_vector(1 downto 0);
+	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
+	signal dbg : std_logic_vector(3 downto 0);
 	
 begin  
 	
-	link0<= not ETH0_LED(2);
-	link1<=eth0_link;
 	power<='0';
 	video<= not no_signal;
-	dbg<=SWIN;		
+	dbg<=DB(3 downto 0);		
 	
-	--all_lock<=PWRGOOD and sdrampll_lock and lcd_lock and eth0rxpll_lock and eth1rxpll_lock;
-	all_lock<=sdrampll_lock and lcd_lock;
+	all_lock<=PWG and sdrampll_lock and lcd_lock;
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
 	ETH0_RSTN<='1'; --not rst_hw;
-	--	ETH1_RSTN<=not rst_hw;
+	ETH1_RSTN<=not rst_hw;
 	
 	--------------------------------------------------------	
 	--  errors control	
 	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll ok
 	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll ok
-	err_clk(02)<=CLK_25M;		err_pulse(02)<=not ETH0_LED(2);	--eth0 link ok
+	err_clk(02)<=CLK25M;		err_pulse(02)<=eth_link(0);	--eth0 link ok
 	err_clk(03)<=gpu_clk;		err_pulse(03)<=not no_signal;	--eth0 video	ok
 	
 	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(0);		--RXETH: video packet crc32 error
@@ -156,7 +156,7 @@ begin
 	--  sdram pll	
 	sdram_rpll1 : entity work.sdram_rpll 
 	port map(
-		clkin => CLK_25M,
+		clkin => CLK25M,
 		lock => sdrampll_lock,
 		clkout => sdram_clk,
 		clkoutp => gpu_clk
@@ -166,7 +166,7 @@ begin
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
 	port map (
-		clkin => CLK_25M,		--reference 25MHz
+		clkin => CLK25M,		--reference 25MHz
 		lock => lcd_lock,
 		clkout => ref_sclk,		--clock 250MHz
 		clkoutp => lcd_sclk,	--clock 250MHz shift 45°
@@ -200,17 +200,38 @@ begin
 	
 	--	--------------------------------------------------------	
 	--	--  rx_eth1 path	
+	eth1rx_clock<=ETH1_RXCLK;
+	rgmii1_rxdin(4)<=ETH1_RXCTL;
+	rgmii1_rxdin(3 downto 0)<=ETH1_RXD;
+	rgmii1_rx2 : entity work.rgmii_rx 
+	port map( clk => eth1rx_clock,
+		din => rgmii1_rxdin,
+		q => rgmii1_rxdout );	
 	
-	
-	
+	eth1rx_mux_proc: process (eth1rx_clock)
+	begin
+		if rising_edge(eth1rx_clock) then 	
+			eth1rx_dv<=rgmii1_rxdout(4);
+			eth1rx_d<=rgmii1_rxdout(8 downto 5) & rgmii1_rxdout(3 downto 0); 
+		end if;
+	end process eth1rx_mux_proc;
 	--------------------------------------------------------
-	-- eth0 & eth1 connections
-	eth0tx_en<=eth0rx_dv;
-	eth0tx_d<=eth0rx_d;		  
-	ETH0_TXCLK<=eth0rx_clock;
-	--	eth1tx_en<=eth0rx_dv;
-	--	eth1tx_d<=eth0rx_d;
-	--	ETH1_TXCLK<=eth0rx_clock;
+	-- eth0 & eth1 connections 
+	eth0_clksel<="0010";
+	eth0tx_en<=eth1rx_dv;
+	eth0tx_d<=eth1rx_d;		  
+	eth1_clksel<="0001";
+	eth1tx_en<=eth0rx_dv;
+	eth1tx_d<=eth0rx_d;	 
+		eth0_txclock : entity work.eth_txclock 
+	port map(
+		clkout => ETH0_TXCLK, clksel => eth0_clksel,
+		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT);
+		eth1_txclock : entity work.eth_txclock 
+	port map(
+		clkout => ETH1_TXCLK, clksel => eth1_clksel,
+		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT);
+
 	--------------------------------------------------------	
 	--  tx_eth0 path	
 	rgmii0_txdin(9)<=eth0tx_en;
@@ -218,16 +239,23 @@ begin
 	rgmii0_txdin(4)<=eth0tx_en;
 	rgmii0_txdin(3 downto 0)<=eth0tx_d(3 downto 0);
 	rgmii0_tx1 : entity work.rgmii_tx 
-	port map( clk => clk_125MHz,
+	port map( clk => eth1rx_clock,
 		din => rgmii0_txdin,
 		q => rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
 	ETH0_TXCTL<=rgmii0_txdout(4);
 	--	--------------------------------------------------------	
-	--	--  tx_eth1 path	
-	
-	
-	
+	--	--  tx_eth1 path	 
+	rgmii1_txdin(9)<=eth1tx_en;
+	rgmii1_txdin(8 downto 5)<=eth1tx_d(7 downto 4);
+	rgmii1_txdin(4)<=eth1tx_en;
+	rgmii1_txdin(3 downto 0)<=eth1tx_d(3 downto 0);
+	rgmii1_tx1 : entity work.rgmii_tx 
+	port map( clk => eth0rx_clock,
+		din => rgmii1_txdin,
+		q => rgmii1_txdout );	
+	ETH1_TXD<=rgmii1_txdout(3 downto 0);
+	ETH1_TXCTL<=rgmii1_txdout(4);
 	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr
@@ -257,8 +285,8 @@ begin
 		map_adr => txt_mapadr,
 		map_wr => txt_mapwr,
 		map_dout => txt_mapdin,
-		link0 => link0,
-		link1 => link1,
+		link0 => eth_link(0),
+		link1 => eth_link(1),
 		power => power,
 		video => video
 		);
@@ -401,10 +429,8 @@ begin
 	-----------------------------------
 	-- LCD part	
 	set_LCD_EN<='1';
-	set_LCD_PWM<=x"f0"; 
-	LCD_EN<=not int_LCD_EN ;
-	--	LCD_EN_LED<=not rst_lcd;
-	--	LCD_RST<=not rst_lcd;
+	set_LCD_PWM<=x"f0"; -- backlight is fixed now :(
+	LCD_EN_LED<=not int_LCD_EN ;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
 	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
@@ -421,23 +447,26 @@ begin
 		mem_wr => lcd_wr,
 		mem_d => lcd_d,
 		mem_q => lcd_q,
+		LCD_EN_VDD => LCD_EN_VDD,
+		LCD_RST => LCD_RST,
+		LCD_READY => LCD_DIM,
 		LCD_EN => int_LCD_EN,
 		LCD_PWM => int_LCD_PWM,
-		lcd_a_clk => LCDA_CLK,
-		lcd_a => LCDA,
+		lcd_a_clk => LVDS_A_OUT_CLK,
+		lcd_a => LVDS_A_OUTP,
 		Vcount => lcd_Vcount,
 		Hcount => lcd_Hcount,
 		grafics_act => grafics_act_pixel,
 		grafics_color => grafics_color_pixel
 		); 
 	
-	mdio_module1 : entity work.mdio_module 
+	MDIO_module1 : entity work.MDIO_module 
 	port map(
 		reset => reset,
-		clock => CLK_25M,
-		mdc => MDC,
-		mdio => MDIO,
-		link => eth0_link
+		clock => CLK25M,
+		MDC => ETH_MDC,
+		MDIO => ETH_MDIO,
+		link => eth_link
 		);	
 end main;
 

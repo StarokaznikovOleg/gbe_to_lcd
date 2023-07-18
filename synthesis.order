@@ -33,3 +33,4 @@ i<>.\src\gowin_ip\table_FONT\table_FONT.v
 i<>.\src\gen_txt.vhd
 i<>.\src\text_ctr.vhd
 i<>.\src\mdio_module.vhd
+i<>.\src\gowin_ip\eth_txclock\eth_txclock.v

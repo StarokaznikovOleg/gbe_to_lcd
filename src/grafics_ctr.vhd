@@ -14,7 +14,8 @@ use work.lcd_lib.all;
 entity grafics_ctr is 
 	generic(hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23);
 	port( 
-		reset,dbg: in std_logic; 	
+		reset: in std_logic; 	
+		dbg: in std_logic_vector(3 downto 0); 	
 		err_clk,err_pulse: in type_pulse_err:=(others=>'0');   
 		
 		-- grafics interface		
@@ -33,51 +34,19 @@ architecture main of grafics_ctr is
 	
 	signal act_errl,act_errp,act_logo,act_txt : boolean;
 	signal pixel_errl,pixel_errp,pixel_logo,pixel_txt : type_rgb_color;
-	signal run_err,run_logo : std_logic;
-	signal dbg_on,dbg_off,dbg_on_avl,dbg_off_avl : std_logic;
 	
 begin
-	dbg_on<=not dbg;
-	dbg_off<=dbg; 
-	
-	dbg_on_pulse : entity work.sync 
-	generic map(regime=>"spuls", inDelay=>0, outDelay=>1)
-	port map( reset => '0',
-		clk_in => pclk, data_in => dbg_on,
-		clk_out => pclk, data_out => dbg_on_avl );	
-	
-	dbg_off_pulse : entity work.sync 
-	generic map(regime=>"spuls", inDelay=>0, outDelay=>1)
-	port map( reset => '0',
-		clk_in => pclk, data_in => dbg_off,
-		clk_out => pclk, data_out => dbg_off_avl );	
-	
-	reg_proc: process (reset,pclk)
-	begin
-		if reset='1' then
-			run_err<='1';  
-			run_logo<='1';	
-		elsif rising_edge(pclk) then  
-			if dbg_on_avl='1' then 
-				run_err<='1';  
-				run_logo<='1';	
-			elsif dbg_off_avl='1' then
-				run_err<='0';  
-				run_logo<='0';	
-			end if;
-		end if;
-	end process reg_proc;    
 	---------------------------------------------------------------------
 	mix_proc: process (pclk)
 	begin
 		if rising_edge(pclk)then 
-			if run_err='1' and act_errl then 
+			if act_errl and dbg(1)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_errl;
-			elsif run_err='1' and act_errp then 
+			elsif act_errp and dbg(2)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_errp;
-			elsif act_txt then 
+			elsif act_txt and dbg(3)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_txt;
 			else

@@ -27,7 +27,8 @@ entity lcd_module is
 		lcd_a_clk: out std_logic;
 		lcd_a : out std_logic_vector(3 downto 0);  
 		
-		LCD_EN,LCD_PWM : out STD_LOGIC; 
+		LCD_READY : in STD_LOGIC; 
+		LCD_EN_VDD,LCD_RST,LCD_EN,LCD_PWM : out STD_LOGIC; 
 		
 		mem_a : out std_logic_vector(9 downto 0);  
 		mem_wr: out std_logic;
@@ -44,6 +45,7 @@ architecture main of lcd_module is
 	constant PWMsize: integer :=256;
 	constant max_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) /(PWMfreq/fps*PWMsize);
 	constant corr_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) mod(PWMfreq/fps*PWMsize);
+	signal PWM_ena : std_logic;
 	constant picture_dalay: integer :=8;
 	
 	constant adrBuff_status : integer:=0;
@@ -70,15 +72,22 @@ begin
 	err<=err_sequence;	
 	Vcount<=intVcount;
 	Hcount<=intHcount;
-	EN_proc: process (pclk,Frame)
+	EN_proc: process (reset,pclk,Frame)
 		variable max_count : integer:=32;
 		variable count : integer range 0 to max_count-1;
 	begin
-		if rising_edge(pclk) and Frame then 
-			if count=max_count-1 then
-				LCD_EN<=EN;
-				count:=0;
-			else
+		if reset='1' then 
+			count:=0;  
+			LCD_EN_VDD<='0';  
+			LCD_RST<='0'; 
+			LCD_EN<='0'; 
+			PWM_ena<='0'; 
+		elsif rising_edge(pclk) and Frame then 	 
+			if count=1 then LCD_EN_VDD<='1'; LCD_RST<='1'; end if;
+			if count=10 then LCD_RST<='0'; end if;
+			if count>15 then LCD_EN<=EN; end if;
+			if count>30 then PWM_ena<=EN; end if;
+			if count/=max_count-1 then
 				count:=count+1;
 			end if;
 		end if;	   
@@ -91,7 +100,7 @@ begin
 	begin
 		if rising_edge(pclk)then 
 			if count_pwm=0 then
-				LCD_PWM<='1';	
+				LCD_PWM<=PWM_ena;	
 			elsif count_pwm=conv_integer(PWM) then
 				LCD_PWM<='0';	
 			end if;

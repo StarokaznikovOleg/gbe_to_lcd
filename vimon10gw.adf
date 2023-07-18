@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\VIMON\src
+fileopenfolder=D:\Projects\VIMON\src\gowin_ip\eth_txclock
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -73,6 +73,7 @@ Selected=
 /gowin_ip\main_osc\main_osc.vhd=-1
 /gowin_ip\rgmii_rx\rgmii_rx.v=-1
 /gowin_ip\rgmii_tx\rgmii_tx.v=-1
+/gowin_ip\eth_txclock\eth_txclock.v=-1
 /gowin_ip\sdram_int\sdram_int.v=-1
 /gowin_ip\sdram_rpll\sdram_rpll.v=-1
 /gowin_ip\cos_table\cos_table.v=-1
@@ -115,6 +116,7 @@ Selected=
 .\src\gowin_ip\main_osc\main_osc.vhd=VHDL Source Code
 .\src\gowin_ip\rgmii_rx\rgmii_rx.v=Verilog Source Code
 .\src\gowin_ip\rgmii_tx\rgmii_tx.v=Verilog Source Code
+.\src\gowin_ip\eth_txclock\eth_txclock.v=Verilog Source Code
 .\src\gowin_ip\sdram_int\sdram_int.v=Verilog Source Code
 .\src\gowin_ip\sdram_rpll\sdram_rpll.v=Verilog Source Code
 .\src\gowin_ip\cos_table\cos_table.v=Verilog Source Code
@@ -145,4 +147,3 @@ Selected=
 .\src\grafics_ctr.vhd=VHDL Source Code
 .\src\mdio_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
-
