@@ -5,10 +5,10 @@ use IEEE.std_logic_unsigned.all;
 package lcd_lib is  
 	--------------------------------------------------
 	----------        LCD parameters        ----------	
-	constant lcd_hsize:integer:=1280;
-	constant lcd_hblank:integer:=160; 
-	constant lcd_vsize:integer:=800; 
-	constant lcd_vblank:integer:=23;
+	constant lcd_hsize:integer:=1024;
+	constant lcd_hblank:integer:=320; 
+	constant lcd_vsize:integer:=768; 
+	constant lcd_vblank:integer:=38;
 	--------------------------------------------------
 	type type_ycc_color is record
 		Y : std_logic_vector(7 downto 0);
@@ -67,8 +67,6 @@ package lcd_lib is
 	subtype type_LCD_data is std_logic_vector(34 downto 0);  
 	
 	function lcd_to_data(d:type_LCD) return type_LCD_data;
-	--	function color_change_light(d:type_rgb_color) return type_rgb_color;
-	--	function color_change_dark(d:type_rgb_color) return type_rgb_color;
 	
 end lcd_lib;	
 
@@ -82,40 +80,8 @@ package body lcd_lib is
 		q(20 downto 14):=d.color.b(1) 	& d.color.b(0)	& d.color.g(5)	& d.color.g(4)	& d.color.g(3)	& d.color.g(2)	& d.color.g(1);
 		q(27 downto 21):=d.sync.de 		& d.sync.v 		& d.sync.h  	& d.color.b(5) 	& d.color.b(4) 	& d.color.b(3) 	& d.color.b(2); 
 		q(34 downto 28):=d.sync.x 		& d.color.b(7) 	& d.color.b(6) 	& d.color.g(7)	& d.color.g(6) 	& d.color.r(7)	& d.color.r(6);   
-		--		q(13 downto 07):=d.color.r(0) 	& d.color.r(1)	& d.color.r(2)	& d.color.r(3)	& d.color.r(4)	& d.color.r(5)	& d.color.g(0); 
-		--		q(20 downto 14):=d.color.g(1) 	& d.color.g(2)	& d.color.g(3)	& d.color.g(4)	& d.color.g(5)	& d.color.b(0)	& d.color.b(1);
-		--		q(27 downto 21):=d.color.b(2) 	& d.color.b(3) 	& d.color.b(4) 	& d.color.b(5)	& d.sync.h 		& d.sync.v 		& d.sync.de   ; 
-		--		q(34 downto 28):=d.color.r(6) 	& d.color.r(7) 	& d.color.g(6)	& d.color.g(7) 	& d.color.b(6)	& d.color.b(7)	& d.sync.x 	  ;   
 		return q; 
 	end lcd_to_data;
-	--	function color_change_light(d:type_rgb_color) return type_rgb_color is
-	--		variable q : type_rgb_color;
-	--	begin 
-	--		if 		d=white 	then 	q:=red 		; 
-	--		elsif 	d=red 		then 	q:=green 	;  
-	--		elsif 	d=green 	then 	q:=blue 	;  
-	--		elsif 	d=blue 		then 	q:=aqua 	;  
-	--		elsif 	d=aqua 		then 	q:=magenta	;  
-	--		elsif 	d=magenta 	then 	q:=yellow  	;  
-	--		else 						q:=white 	;	
-	--		end if;
-	--		return q; 
-	--	end color_change_light;	 
-	--	
-	--	function color_change_dark(d:type_rgb_color) return type_rgb_color is
-	--		variable q : type_rgb_color;
-	--	begin 
-	--		if 		d=gray 		then 	q:=maroon 	; 
-	--		elsif 	d=maroon 	then 	q:=office 	;  
-	--		elsif 	d=office 	then 	q:=navy 	;  
-	--		elsif 	d=navy 		then 	q:=teal 	;  
-	--		elsif 	d=teal 		then 	q:=purpure	;  
-	--		elsif 	d=purpure 	then 	q:=olive	;  
-	--		else 						q:=gray 	;	
-	--		end if;
-	--		return q; 
-	--	end color_change_dark;
-	
 	
 end lcd_lib;																
 

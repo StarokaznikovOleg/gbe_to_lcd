@@ -6,18 +6,17 @@
 
 -mod_name lcd_rpll
 -file_name lcd_rpll
--path D:/Projects/corund10gw/src/gowin_ip/lcd_rpll/
+-path D:/Projects/VIMON/src/gowin_ip/lcd_rpll/
 -type PLL
 -rPll true
 -file_type vhdl
 -dev_type GW2AR-18C
 -dyn_idiv_sel false
--idiv_sel 1
+-idiv_sel 2
 -dyn_fbdiv_sel false
--fbdiv_sel 10
+-fbdiv_sel 9
 -dyn_odiv_sel false
--odiv_sel 2
--dyn_sdiv_sel 2
+-odiv_sel 4
 -dyn_da_en false
 -rst_sig false
 -rst_sig_p false
@@ -29,7 +28,6 @@
 -clkoutp_bypass false
 -psda_sel 2
 -dutyda_sel 8
--en_clkoutd true
+-en_clkoutd false
 -clkoutd_bypass false
--clkoutd_src CLKOUTP
 -en_clkoutd3 false

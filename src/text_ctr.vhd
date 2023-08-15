@@ -21,7 +21,6 @@ entity text_ctr is
 		map_dout : out std_logic_vector(7 downto 0);
 		
 		link0,link1,power,video: in std_logic 
-		
 		);
 end text_ctr;
 
@@ -33,8 +32,8 @@ architecture main of text_ctr is
 	type array8_char_type is array (7 downto 0) of type_char;
 	
 	
-	constant vadrVersion : type_vadr :=conv_std_logic_vector(24,6);
-	constant hadrVersion : type_hadr :=conv_std_logic_vector(62,8);	  
+	constant vadrVersion : type_vadr :=conv_std_logic_vector(23,6);
+	constant hadrVersion : type_hadr :=conv_std_logic_vector(3,8);	  
 	constant hwv0 : type_char := conv_std_logic_vector(((hw_version/100) mod 10)+48,8);
 	constant hwv1 : type_char := conv_std_logic_vector(((hw_version/10) mod 10)+48,8);
 	constant hwv2 : type_char := conv_std_logic_vector((hw_version mod 10)+48,8);

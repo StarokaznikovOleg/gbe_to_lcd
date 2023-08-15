@@ -54,6 +54,7 @@
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
         <File path="src/stp_mdio.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_test.rao" type="file.gao" enable="1"/>
         <File path="src/stp_video.rao" type="file.gao" enable="0"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="1"/>
     </FileList>

@@ -4,7 +4,7 @@
 --GOWIN Version: V1.9.8.07
 --Part Number: GW2AR-LV18LQ144C7/I6
 --Device: GW2AR-18C
---Created Time: Wed Oct 26 22:46:01 2022
+--Created Time: Tue Aug 15 10:18:15 2023
 
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -14,13 +14,13 @@ entity lcd_rpll is
         clkout: out std_logic;
         lock: out std_logic;
         clkoutp: out std_logic;
-        clkoutd: out std_logic;
         clkin: in std_logic
     );
 end lcd_rpll;
 
 architecture Behavioral of lcd_rpll is
 
+    signal clkoutd_o: std_logic;
     signal clkoutd3_o: std_logic;
     signal gw_vcc: std_logic;
     signal gw_gnd: std_logic;
@@ -94,9 +94,9 @@ begin
             DYN_IDIV_SEL => "false",
             IDIV_SEL => 0,
             DYN_FBDIV_SEL => "false",
-            FBDIV_SEL => 9,
+            FBDIV_SEL => 8,
             DYN_ODIV_SEL => "false",
-            ODIV_SEL => 2,
+            ODIV_SEL => 4,
             PSDA_SEL => "0010",
             DYN_DA_EN => "false",
             DUTYDA_SEL => "1000",
@@ -109,14 +109,14 @@ begin
             CLKOUTP_BYPASS => "false",
             CLKOUTD_BYPASS => "false",
             DYN_SDIV_SEL => 2,
-            CLKOUTD_SRC => "CLKOUTP",
+            CLKOUTD_SRC => "CLKOUT",
             CLKOUTD3_SRC => "CLKOUT"
         )
         port map (
             CLKOUT => clkout,
             LOCK => lock,
             CLKOUTP => clkoutp,
-            CLKOUTD => clkoutd,
+            CLKOUTD => clkoutd_o,
             CLKOUTD3 => clkoutd3_o,
             RESET => gw_gnd,
             RESET_P => gw_gnd,

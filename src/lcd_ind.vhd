@@ -9,7 +9,7 @@ use work.vimon10_lib.all;
 use work.lcd_lib.all;
 
 entity lcd_ind is
-	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=2; size:integer:=16;
+	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=2;hstart:integer:=800; vstart:integer:=2; size:integer:=16;
 		err_color:type_rgb_color:=rgb_red; mask_color:type_rgb_color:=rgb_yellow;
 		level:integer:=3; pulse:integer:=3);
 	port(
@@ -56,18 +56,18 @@ begin
 			variable err_sign : std_logic:='0';
 		begin
 			if rising_edge(pclk) then 
-				if (Vcount=vblank or Vcount=vblank+size-1) and Hcount>=hblank and Hcount<hblank+size*(m+1) then
+				if (Vcount=vblank+vstart or Vcount=vblank+vstart+size-1) and Hcount>=hblank+hstart and Hcount<hblank+hstart+size*(m+1) then
 					mask_act(m)<='1';
-				elsif Vcount>vblank and Vcount<vblank+size then
-					if Hcount=hblank+size*m+0 then
+				elsif Vcount>vblank+vstart and Vcount<vblank+vstart+size then
+					if Hcount=hblank+hstart+size*m+0 then
 						mask_act(m)<='1';
-					elsif  Hcount=hblank+size*m+1 then
+					elsif  Hcount=hblank+hstart+size*m+1 then
 						mask_act(m)<='0';
 						ind_act(m)<=err_sign;
-					elsif Hcount=hblank+size*m+size-1 then
+					elsif Hcount=hblank+hstart+size*m+size-1 then
 						mask_act(m)<='1';
 						ind_act(m)<='0';
-					elsif Hcount=hblank+size*m+size then
+					elsif Hcount=hblank+hstart+size*m+size then
 						mask_act(m)<='0';
 					end if;
 				else

@@ -168,16 +168,16 @@ begin
 	port map (
 		clkin => CLK25M,		--reference 25MHz
 		lock => lcd_lock,
-		clkout => ref_sclk,		--clock 250MHz
-		clkoutp => lcd_sclk,	--clock 250MHz shift 45°
-		clkoutd => open --clk_125MHz   --clock 125MHz
+		clkout => ref_sclk,		--clock 228.571MHz
+		clkoutp => lcd_sclk		--clock 228.571MHz shift 45°
+--		clkoutd => open --clk_125MHz   --clock 125MHz
 		); 	 		 
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
 	port map(
 		resetn => '1',
-		hclkin => ref_sclk,	--clock 250MHz
-		clkout => lcd_pclk	 --clock 250MHz/3.5=71.429MHz
+		hclkin => ref_sclk,	--clock 228.571MHz
+		clkout => lcd_pclk	 --clock 228.571MHz/3.5=65.306MHz
 		);	
 	
 	--------------------------------------------------------	
@@ -429,8 +429,8 @@ begin
 	-----------------------------------
 	-- LCD part	
 	set_LCD_EN<='1';
-	set_LCD_PWM<=x"f0"; -- backlight is fixed now :(
-	LCD_EN_LED<=not int_LCD_EN ;
+	set_LCD_PWM<=DB(3 downto 0) & x"e"; -- backlight is fixed now :(
+	LCD_EN_LED<=int_LCD_EN ;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
 	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
