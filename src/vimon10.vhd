@@ -168,16 +168,16 @@ begin
 	port map (
 		clkin => CLK25M,		--reference 25MHz
 		lock => lcd_lock,
-		clkout => ref_sclk,		--clock 228.571MHz
-		clkoutp => lcd_sclk		--clock 228.571MHz shift 45°
+		clkout => ref_sclk,		--clock 225MHz
+		clkoutp => lcd_sclk		--clock 225MHz shift 45°
 --		clkoutd => open --clk_125MHz   --clock 125MHz
 		); 	 		 
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
 	port map(
 		resetn => '1',
-		hclkin => ref_sclk,	--clock 228.571MHz
-		clkout => lcd_pclk	 --clock 228.571MHz/3.5=65.306MHz
+		hclkin => ref_sclk,	--clock 225MHz
+		clkout => lcd_pclk	 --clock 225MHz/3.5=64.286MHz
 		);	
 	
 	--------------------------------------------------------	

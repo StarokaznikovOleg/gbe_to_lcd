@@ -18,6 +18,7 @@
 .\src\gowin_ip\video_mem\video_mem1024x32.vhd
 .\src\gowin_ip\table_MAP\table_MAP.v
 .\src\gowin_ip\table_FONT\table_FONT.v
+.\src\gowin_ip\table_TEXT\table_TEXT.v
 .\src\crc32.vhd
 .\src\sync.vhd
 .\src\resync.vhd

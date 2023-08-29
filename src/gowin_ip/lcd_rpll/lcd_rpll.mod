@@ -6,7 +6,7 @@
 
 -mod_name lcd_rpll
 -file_name lcd_rpll
--path D:/Projects/VIMON/src/gowin_ip/lcd_rpll/
+-path D:/Projects/vimon/src/gowin_ip/lcd_rpll/
 -type PLL
 -rPll true
 -file_type vhdl

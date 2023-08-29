@@ -4,7 +4,7 @@
 --GOWIN Version: V1.9.8.07
 --Part Number: GW2AR-LV18LQ144C7/I6
 --Device: GW2AR-18C
---Created Time: Tue Aug 15 10:18:15 2023
+--Created Time: Mon Aug 28 09:34:36 2023
 
 library IEEE;
 use IEEE.std_logic_1164.all;

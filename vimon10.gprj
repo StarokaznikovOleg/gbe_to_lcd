@@ -17,6 +17,7 @@
         <File path="src/gowin_ip/sdram_rpll/sdram_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/table_FONT/table_FONT.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/table_MAP/table_MAP.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/table_TEXT/table_TEXT.v" type="file.verilog" enable="1"/>
         <File path="src/LCDserializer.vhd" type="file.vhdl" enable="1"/>
         <File path="src/YCC420_to_YCC444div2.vhd" type="file.vhdl" enable="1"/>
         <File path="src/crc32.vhd" type="file.vhdl" enable="1"/>
@@ -54,7 +55,8 @@
         <File path="src/stp_gputx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_lcd.rao" type="file.gao" enable="0"/>
         <File path="src/stp_mdio.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_test.rao" type="file.gao" enable="1"/>
+        <File path="src/stp_test.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_text_mesage.rao" type="file.gao" enable="1"/>
         <File path="src/stp_video.rao" type="file.gao" enable="0"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="1"/>
     </FileList>
