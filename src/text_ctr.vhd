@@ -25,75 +25,64 @@ entity text_ctr is
 end text_ctr;
 
 architecture main of text_ctr is			 
-	subtype type_line is std_logic_vector(5 downto 0);
-	subtype type_hadr is std_logic_vector(7 downto 0);
-	subtype type_char is std_logic_vector(7 downto 0);
+	constant startLine : integer :=19;
+	constant maxRow : integer :=5;
+	constant maxCol : integer :=64;
+	constant msg_test0 : integer:=0;
+	constant msg_test1 : integer:=1;
+	constant msg_test2 : integer:=2;
+	constant msg_test3 : integer:=3;
+	constant msg_test4 : integer:=4;   
 	
-	constant ParamLine1 : type_line :=conv_std_logic_vector(19,6);
-	constant ParamLine2 : type_line :=conv_std_logic_vector(20,6);
-	constant ParamLine3 : type_line :=conv_std_logic_vector(21,6);
+	subtype type_message is integer range 0 to 31;
+	type type_message_array is array (0 to maxRow-1) of type_message;	
 	
-	type state_type is (idle,st_Lparam1,st_Lparam2);
+	type state_type is (idle,st_update);
 	signal state : state_type:=idle;	
-	signal line_sel : type_line;
+	signal row_count : integer range 0 to maxRow-1;
 	
 	signal text_adr: std_logic_vector(10 downto 0);
-	signal text_dout: type_char;
-	signal message: integer range 0 to 31; 
-	constant message_test0 : integer:=0;
-	constant message_test1 : integer:=1;
-	constant message_test2 : integer:=2;
-	constant message_test3 : integer:=3;
-	constant message_test4 : integer:=4;
-	signal col_count: integer range 0 to 255;
+	signal text_dout: std_logic_vector(7 downto 0);
+	signal message: type_message; 
+	signal message_line: type_message_array; 
+	signal col_count: integer range 0 to maxCol-1;
 begin
 	text_adr(10 downto 6)<=conv_std_logic_vector(message,5);
 	text_adr(5 downto 0)<=conv_std_logic_vector(col_count,6);
-	map_adr(13 downto 8)<=line_sel;
+	map_adr(13 downto 8)<=conv_std_logic_vector(startLine+row_count,6);
 	map_adr(7 downto 0)<=conv_std_logic_vector(col_count-1,8);
 	map_dout<=text_dout;
 	--------------------------------------------	
 	main: process (reset,clock)  
 	begin
 		if reset='1' then 	
-			state<=idle;
-		elsif rising_edge(clock)then 
+			map_wr<='0';
+			col_count<=0;
+			row_count<=0;
+			message<=0;
+			map_wr<='0';
+			message_line<=(others=>0);
+		elsif rising_edge(clock)then
+			message_line<=(0,1,2,3,4);
 			case state is
 				when idle => 
 					map_wr<='0';
 					col_count<=0;
-					state<=st_Lparam1;
+					row_count<=0;
+					message<=message_line(0);
+					map_wr<='0';
+					state<=st_update;
 				
-				when st_Lparam1 => 
-					line_sel<=ParamLine1;
-					if link0='1' then
-						message<=message_test1;
-					else
-						message<=message_test2;
-					end if;
-					if col_count>1 and col_count<62 then	
-						map_wr<='1';
-					end if;
+				when st_update => 
+					map_wr<='1';
 					if col_count=63 then
+						if row_count=4 then
+							state<=idle;
+						else
+							row_count<=row_count+1;
+							message<=message_line(row_count+1);
+						end if;
 						col_count<=0;
-						state<=st_Lparam2;
-					else
-						col_count<=col_count+1;
-					end if;	
-				
-				when st_Lparam2 => 
-					line_sel<=ParamLine2;
-					if link0='1' then
-						message<=message_test3;
-					else
-						message<=message_test4;
-					end if;
-					if col_count>1 and col_count<62 then	
-						map_wr<='1';
-					end if;
-					if col_count=63 then
-						col_count<=0;
-						state<=idle;
 					else
 						col_count<=col_count+1;
 					end if;	

@@ -83,14 +83,22 @@ begin
 			LCD_EN<='0'; 
 			PWM_ena<='0'; 
 		elsif rising_edge(pclk) and Frame then 	 
-			if count=1 then LCD_EN_VDD<='1'; LCD_RST<='1'; end if;
-			if count=10 then LCD_RST<='0'; end if;
-			if count>15 then LCD_EN<=EN; end if;
-			if count>30 then PWM_ena<=EN; end if;
-			if count/=max_count-1 then
-				count:=count+1;
+case count is
+when 00 => LCD_EN_VDD<='0'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
+when 01 => LCD_EN_VDD<='1'; LCD_RST<='1'; LCD_EN<='0'; PWM_ena<='0';
+when 10 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
+when 15 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='0';
+when 30 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='1';
+when others => null;
+end case;
+			if EN='1' then
+                if count/=max_count-1 then
+                    count:=count+1;
+                end if;
+            else 
+                count:=0;  
 			end if;
-		end if;	   
+        end if;	   
 	end process EN_proc; 
 	
 	PWM_proc: process (pclk)

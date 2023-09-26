@@ -125,8 +125,8 @@ begin
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
-	ETH0_RSTN<='1'; --not rst_hw;
-	ETH1_RSTN<=not rst_hw;
+	ETH0_RSTN<=not rst_eth;
+	ETH1_RSTN<=not rst_eth;
 	
 	--------------------------------------------------------	
 	--  errors control	
@@ -226,7 +226,8 @@ begin
 		eth0_txclock : entity work.eth_txclock 
 	port map(
 		clkout => ETH0_TXCLK, clksel => eth0_clksel,
-		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT);
+		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT); 
+		
 		eth1_txclock : entity work.eth_txclock 
 	port map(
 		clkout => ETH1_TXCLK, clksel => eth1_clksel,
@@ -316,11 +317,11 @@ begin
 	generic map( hsize => 1920, vsize => 1080)
 	port map(
 		reset => reset, --rst_eth,
-		clock => eth0rx_clock,
+		clock => eth1rx_clock,
 		err => ethrx_err,
 		vsync => eth_vsync,
-		ethrx_en => eth0rx_dv,
-		ethrx_d => eth0rx_d,
+		ethrx_en => eth1rx_dv,
+		ethrx_d => eth1rx_d,
 		ethv_a => ethv_a,
 		ethv_wr => ethv_wr,
 		ethv_d => ethv_d
@@ -329,7 +330,7 @@ begin
 	rx_video_mem : entity work.video_mem4096x32
 	port map(
 		reseta => reset, --rst_eth,
-		clka => eth0rx_clock,
+		clka => eth1rx_clock,
 		cea => '1',
 		ada => ethv_a,
 		wrea => ethv_wr,
@@ -462,7 +463,7 @@ begin
 	
 	MDIO_module1 : entity work.MDIO_module 
 	port map(
-		reset => reset,
+		reset => rst_eth,
 		clock => CLK25M,
 		MDC => ETH_MDC,
 		MDIO => ETH_MDIO,

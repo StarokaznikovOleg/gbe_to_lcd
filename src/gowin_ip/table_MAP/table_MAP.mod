@@ -6,7 +6,7 @@
 
 -mod_name table_MAP
 -file_name table_MAP
--path D:/Projects/VIMON/src/gowin_ip/table_MAP/
+-path D:/Projects/vimon/src/gowin_ip/table_MAP/
 -type RAM_SDP
 -file_type vlg
 -bram_b true
@@ -16,5 +16,5 @@
 -width_1 8
 -read_mode bypass
 -reset_mode sync
--init_file D:\Projects\VIMON\grafics\table_MAP.mi
+-init_file D:\Projects\vimon\grafics\table_MAP.mi
 -init_match port_A

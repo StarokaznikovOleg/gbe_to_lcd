@@ -1,8 +1,8 @@
-//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//Copyright (C)2014-2023 Gowin Semiconductor Corporation.
 //All rights reserved.
 //File Title: Post-PnR Simulation Model file
-//GOWIN Version: V1.9.8.07
-//Created Time: Mon May 22 19:22:55 2023
+//GOWIN Version: V1.9.9 Beta-3
+//Created Time: Tue Sep 26 09:43:21 2023
 
 `timescale 100 ps/100 ps
 module rgmii_rx(
@@ -41,7 +41,7 @@ IODELAY \iodelay_gen[0].iodelay_inst  (
 	.DO(iodly_o[0]),
 	.DF(\iodelay_gen[0].iodelay_inst_1_DF )
 );
-defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=104;
+defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=63;
 IODELAY \iodelay_gen[1].iodelay_inst  (
 	.DI(din[1]),
 	.SETN(GND),
@@ -50,7 +50,7 @@ IODELAY \iodelay_gen[1].iodelay_inst  (
 	.DO(iodly_o[1]),
 	.DF(\iodelay_gen[1].iodelay_inst_1_DF )
 );
-defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=104;
+defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=63;
 IODELAY \iodelay_gen[2].iodelay_inst  (
 	.DI(din[2]),
 	.SETN(GND),
@@ -59,7 +59,7 @@ IODELAY \iodelay_gen[2].iodelay_inst  (
 	.DO(iodly_o[2]),
 	.DF(\iodelay_gen[2].iodelay_inst_1_DF )
 );
-defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=104;
+defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=63;
 IODELAY \iodelay_gen[3].iodelay_inst  (
 	.DI(din[3]),
 	.SETN(GND),
@@ -68,7 +68,7 @@ IODELAY \iodelay_gen[3].iodelay_inst  (
 	.DO(iodly_o[3]),
 	.DF(\iodelay_gen[3].iodelay_inst_1_DF )
 );
-defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=104;
+defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=63;
 IODELAY \iodelay_gen[4].iodelay_inst  (
 	.DI(din[4]),
 	.SETN(GND),
@@ -77,7 +77,7 @@ IODELAY \iodelay_gen[4].iodelay_inst  (
 	.DO(iodly_o[4]),
 	.DF(\iodelay_gen[4].iodelay_inst_1_DF )
 );
-defparam \iodelay_gen[4].iodelay_inst .C_STATIC_DLY=104;
+defparam \iodelay_gen[4].iodelay_inst .C_STATIC_DLY=63;
 IDDR \iddr_gen[0].iddr_inst  (
 	.D(iodly_o[0]),
 	.CLK(clk),
