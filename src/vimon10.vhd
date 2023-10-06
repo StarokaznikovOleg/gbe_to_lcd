@@ -39,8 +39,10 @@ entity vimon10 is
 		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
 		
 		--MDI port
-		ETH_MDC : inout STD_LOGIC;
-		ETH_MDIO : inout STD_LOGIC;
+		ETH_MDC,ETH_MDIO : inout STD_LOGIC;	  
+		
+		--Sensor I2C  port
+		Sensor_SCL,Sensor_SDA	: inout STD_LOGIC;	 
 		
 		--internal SDRAM 
 		O_sdram_clk,O_sdram_cke,O_sdram_cs_n,O_sdram_cas_n,O_sdram_ras_n,O_sdram_wen_n : out STD_LOGIC;
@@ -113,7 +115,12 @@ architecture main of vimon10 is
 	signal power,video : std_logic;
 	signal eth_link : std_logic_vector(1 downto 0);
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
-	signal dbg : std_logic_vector(3 downto 0);
+	signal dbg : std_logic_vector(3 downto 0);	 
+	
+	signal temperature: std_logic_vector(19 downto 0); 
+	signal pressure: std_logic_vector(19 downto 0); 
+	signal humidity: std_logic_vector(19 downto 0); 
+	
 	
 begin  
 	
@@ -133,17 +140,18 @@ begin
 	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll ok
 	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll ok
 	err_clk(02)<=CLK25M;		err_pulse(02)<=eth_link(0);	--eth0 link ok
-	err_clk(03)<=gpu_clk;		err_pulse(03)<=not no_signal;	--eth0 video	ok
+	err_clk(03)<=CLK25M;		err_pulse(03)<=eth_link(1);	--eth1 link ok
+	err_clk(04)<=gpu_clk;		err_pulse(04)<=not no_signal;	--eth0 video	ok
 	
-	err_clk(04)<=eth0rx_clock;	err_pulse(04)<=ethrx_err(0);		--RXETH: video packet crc32 error
-	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(1); 		--RXETH: video packet frame error
-	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(2); 		--RXETH: video packet len error
-	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(3); 		--RXETH: video packet sequence error
-	err_clk(08)<=gpu_clk;		err_pulse(08)<=gpu_err(0);   		--GPU: video signature error
-	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(1);			--GPU: video sequence error
-	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(2);			--sdram wrd_ack error
-	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(3);			--sdram read timeout error
-	err_clk(12)<=lcd_pclk;		err_pulse(12)<=lcd_err;				--LCD: video sequence error
+	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(0);		--RXETH: video packet crc32 error
+	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(1); 		--RXETH: video packet frame error
+	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(2); 		--RXETH: video packet len error
+	err_clk(08)<=eth0rx_clock;	err_pulse(08)<=ethrx_err(3); 		--RXETH: video packet sequence error
+	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(0);   		--GPU: video signature error
+	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(1);			--GPU: video sequence error
+	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(2);			--sdram wrd_ack error
+	err_clk(12)<=gpu_clk;		err_pulse(12)<=gpu_err(3);			--sdram read timeout error
+	err_clk(13)<=lcd_pclk;		err_pulse(13)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
 	--  internal clock 2.3MHz	
@@ -170,7 +178,7 @@ begin
 		lock => lcd_lock,
 		clkout => ref_sclk,		--clock 225MHz
 		clkoutp => lcd_sclk		--clock 225MHz shift 45°
---		clkoutd => open --clk_125MHz   --clock 125MHz
+		--		clkoutd => open --clk_125MHz   --clock 125MHz
 		); 	 		 
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
@@ -223,16 +231,16 @@ begin
 	eth1_clksel<="0001";
 	eth1tx_en<=eth0rx_dv;
 	eth1tx_d<=eth0rx_d;	 
-		eth0_txclock : entity work.eth_txclock 
+	eth0_txclock : entity work.eth_txclock 
 	port map(
 		clkout => ETH0_TXCLK, clksel => eth0_clksel,
 		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT); 
-		
-		eth1_txclock : entity work.eth_txclock 
+	
+	eth1_txclock : entity work.eth_txclock 
 	port map(
 		clkout => ETH1_TXCLK, clksel => eth1_clksel,
 		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT);
-
+	
 	--------------------------------------------------------	
 	--  tx_eth0 path	
 	rgmii0_txdin(9)<=eth0tx_en;
@@ -469,5 +477,17 @@ begin
 		MDIO => ETH_MDIO,
 		link => eth_link
 		);	
+	bme280 : entity work.bme280_module
+	generic map( ref_freq => 25000000 )
+	port map(
+		reset => reset,
+		clock => CLK25M,
+		scl => Sensor_SCL,
+		sda => Sensor_SDA,
+		temperature => temperature,
+		pressure => pressure,
+		humidity => humidity
+		);	
+	
 end main;
 

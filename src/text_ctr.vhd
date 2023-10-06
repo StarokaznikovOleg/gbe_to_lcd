@@ -62,8 +62,28 @@ begin
 			message<=0;
 			map_wr<='0';
 			message_line<=(others=>0);
-		elsif rising_edge(clock)then
-			message_line<=(0,1,2,3,4);
+		elsif rising_edge(clock)then 
+			if link0='1' then	
+				message_line(0)<=1;
+			else
+				message_line(0)<=0;
+			end if;
+			if link1='1' then	
+				message_line(1)<=2;
+			else
+				message_line(1)<=0;
+			end if;
+			if power='1' then	
+				message_line(2)<=3;
+			else
+				message_line(2)<=0;
+			end if;
+			if video='1' then	
+				message_line(3)<=3;
+			else
+				message_line(3)<=0;
+			end if;
+			message_line(4)<=4;
 			case state is
 				when idle => 
 					map_wr<='0';
