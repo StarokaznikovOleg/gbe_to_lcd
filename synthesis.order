@@ -39,3 +39,7 @@ i<>.\src\bme280_module.vhd
 i<>.\src\I2C_interface.vhd
 i<>.\src\gowin_ip\i2c_rom\i2c_rom.v
 i<>.\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v
+i<>.\src\gowin_ip\mult32x32\mult32x32.v
+i<>.\src\gowin_ip\mult32x16\mult32x16.v
+i<>.\src\gowin_ip\mult16x16\mult16x16.v
+i<>.\src\common_lib.vhd

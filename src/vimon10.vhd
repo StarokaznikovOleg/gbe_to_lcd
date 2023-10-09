@@ -117,9 +117,8 @@ architecture main of vimon10 is
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
 	
-	signal temperature: std_logic_vector(19 downto 0); 
-	signal pressure: std_logic_vector(19 downto 0); 
-	signal humidity: std_logic_vector(19 downto 0); 
+	signal bme280_present: std_logic; 
+	signal bme280_press,bme280_temp,bme280_hum: std_logic_vector(15 downto 0); 
 	
 	
 begin  
@@ -484,9 +483,10 @@ begin
 		clock => CLK25M,
 		scl => Sensor_SCL,
 		sda => Sensor_SDA,
-		temperature => temperature,
-		pressure => pressure,
-		humidity => humidity
+		present => bme280_present,
+		temperature => bme280_temp,
+		pressure => bme280_press,
+		humidity => bme280_hum
 		);	
 	
 end main;
