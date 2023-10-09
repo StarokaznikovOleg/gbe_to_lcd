@@ -1,0 +1,23 @@
+-series GW2AR
+-device GW2AR-18
+-device_version C
+-package eLQFP144
+-part_number GW2AR-LV18EQ144C8/I7
+
+
+-mod_name mult32x16
+-file_name mult32x16
+-path D:/Projects/vimon/src/gowin_ip/mult32x16/
+-type MULT
+-file_type vlg
+-source_a parallel
+-source_b parallel
+-width_a 32
+-width_b 16
+-data_type_a signed
+-data_type_b signed
+-reset_mode sync
+-ina_reg registered
+-inb_reg registered
+-pipe_reg bypass
+-out_reg registered
