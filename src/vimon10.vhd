@@ -6,6 +6,7 @@ use IEEE.std_logic_unsigned.all;
 library work;
 use work.vimon10_lib.all;								    
 use work.lcd_lib.all;
+use work.bme280_lib.all;
 
 entity vimon10 is
 	port(	
@@ -117,8 +118,7 @@ architecture main of vimon10 is
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
 	
-	signal bme280_present: std_logic; 
-	signal bme280_press,bme280_temp,bme280_hum: std_logic_vector(15 downto 0); 
+	signal bme280: type_outBME280; 
 	
 	
 begin  
@@ -417,76 +417,73 @@ begin
 		IO_sdram_dq => IO_sdram_dq
 		);
 	
-	tx_video_mem_Y0 : entity work.video_mem1024x32 
-	port map(
-		reseta=>reset, --rst_gpu,
-		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
-		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
-	
-	tx_video_mem_Y1 : entity work.video_mem1024x32 
-	port map(
-	reseta=>reset, --rst_gpu,
-	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
-	
-	tx_video_mem_C : entity work.video_mem1024x32 
-	port map(
-	reseta=>reset, --rst_gpu,
-	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
-	-----------------------------------
-	-- LCD part	
-	set_LCD_EN<='1';
-	set_LCD_PWM<=DB(3 downto 0) & x"e"; -- backlight is fixed now :(
-	LCD_EN_LED<=int_LCD_EN ;
-	LCD_PWM<= not int_LCD_PWM; 	
-	lcd_module1 : entity work.lcd_module 
-	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
-		hpicture=>960, vfild=>32 )
-	port map(
-		reset => reset, --rst_lcd,
-		sclk => lcd_sclk,
-		pclk => lcd_pclk,
-		err => lcd_err,
-		vsync => lcd_vsync,
-		EN => set_LCD_EN,
-		PWM => set_LCD_PWM,
-		mem_a => lcd_a,
-		mem_wr => lcd_wr,
-		mem_d => lcd_d,
-		mem_q => lcd_q,
-		LCD_EN_VDD => LCD_EN_VDD,
-		LCD_RST => LCD_RST,
-		LCD_READY => LCD_DIM,
-		LCD_EN => int_LCD_EN,
-		LCD_PWM => int_LCD_PWM,
-		lcd_a_clk => LVDS_A_OUT_CLK,
-		lcd_a => LVDS_A_OUTP,
-		Vcount => lcd_Vcount,
-		Hcount => lcd_Hcount,
-		grafics_act => grafics_act_pixel,
-		grafics_color => grafics_color_pixel
-		); 
-	
-	MDIO_module1 : entity work.MDIO_module 
-	port map(
-		reset => rst_eth,
-		clock => CLK25M,
-		MDC => ETH_MDC,
-		MDIO => ETH_MDIO,
-		link => eth_link
-		);	
-	bme280 : entity work.bme280_module
+--	tx_video_mem_Y0 : entity work.video_mem1024x32 
+--	port map(
+--		reseta=>reset, --rst_gpu,
+--		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
+--		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
+--	
+--	tx_video_mem_Y1 : entity work.video_mem1024x32 
+--	port map(
+--	reseta=>reset, --rst_gpu,
+--	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+--	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
+--	
+--	tx_video_mem_C : entity work.video_mem1024x32 
+--	port map(
+--	reseta=>reset, --rst_gpu,
+--	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+--	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
+--	-----------------------------------
+--	-- LCD part	
+--	set_LCD_EN<='1';
+--	set_LCD_PWM<=DB(3 downto 0) & x"e"; -- backlight is fixed now :(
+--	LCD_EN_LED<=int_LCD_EN ;
+--	LCD_PWM<= not int_LCD_PWM; 	
+--	lcd_module1 : entity work.lcd_module 
+--	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
+--		hpicture=>960, vfild=>32 )
+--	port map(
+--		reset => reset, --rst_lcd,
+--		sclk => lcd_sclk,
+--		pclk => lcd_pclk,
+--		err => lcd_err,
+--		vsync => lcd_vsync,
+--		EN => set_LCD_EN,
+--		PWM => set_LCD_PWM,
+--		mem_a => lcd_a,
+--		mem_wr => lcd_wr,
+--		mem_d => lcd_d,
+--		mem_q => lcd_q,
+--		LCD_EN_VDD => LCD_EN_VDD,
+--		LCD_RST => LCD_RST,
+--		LCD_READY => LCD_DIM,
+--		LCD_EN => int_LCD_EN,
+--		LCD_PWM => int_LCD_PWM,
+--		lcd_a_clk => LVDS_A_OUT_CLK,
+--		lcd_a => LVDS_A_OUTP,
+--		Vcount => lcd_Vcount,
+--		Hcount => lcd_Hcount,
+--		grafics_act => grafics_act_pixel,
+--		grafics_color => grafics_color_pixel
+--		); 
+--	
+--	MDIO_module1 : entity work.MDIO_module 
+--	port map(
+--		reset => rst_eth,
+--		clock => CLK25M,
+--		MDC => ETH_MDC,
+--		MDIO => ETH_MDIO,
+--		link => eth_link
+--		);	
+	sensor1_bme280 : entity work.bme280_module
 	generic map( ref_freq => 25000000 )
 	port map(
 		reset => reset,
 		clock => CLK25M,
 		scl => Sensor_SCL,
 		sda => Sensor_SDA,
-		present => bme280_present,
-		temperature => bme280_temp,
-		pressure => bme280_press,
-		humidity => bme280_hum
+		bme280 => bme280
 		);	
 	
 end main;
