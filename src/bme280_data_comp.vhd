@@ -101,7 +101,7 @@ architecture rtl of bme280_data_comp is
 	constant C_PRESSURE_CONST2 : signed(63 downto 0) := x"0000_0000_0010_0000"; --1048576
 	constant C_PRESSURE_CONST3 : signed(63 downto 0) := x"0000_0000_0000_0C35"; --3125
 	constant C_HUMIDITY_CONST1 : signed(31 downto 0) := x"0001_2C00"; --76800
-	constant C_HUMIDITY_CONST2 : signed(31 downto 0) := x"0000_4000"; --16384
+	constant C_HUMIDITY_CONST2 : signed(31 downto 0) := x"0000_8000"; --32768
 	constant C_HUMIDITY_CONST3 : signed(31 downto 0) := x"0000_8000"; --32768
 	constant C_HUMIDITY_CONST4 : signed(31 downto 0) := x"0000_2000"; --8192
 	constant C_HUMIDITY_CONST5 : signed(31 downto 0) := x"0020_0000"; --2097152
@@ -205,7 +205,7 @@ begin
 				p_temp4 <= var3 + var4;
 				p_temp5 <= shift_right(signed(p_quotient) + p_temp4, 8);
 				p_temp6 <= p_temp5 + shift_left(dig_P7, 4);
-				p <= resize(unsigned(std_logic_vector(p_temp6)), 32);
+				p <= shift_right(resize(unsigned(std_logic_vector(p_temp6)), 32),8);
 			end if;
 			
 		end if;
@@ -226,20 +226,15 @@ begin
 			h_var2_temp1  <= shift_left(signed(i_adc_h), 14);
 			h_var2_temp2  <= shift_left(dig_H4, 20);
 			h_var2_temp3  <= resize(dig_H5 * h_var1, 32);
-			h_var2_temp4  <= shift_right(h_var2_temp1 - h_var2_temp2 - h_var2_temp3 + C_HUMIDITY_CONST2, 15);
+			h_var2_temp4  <= shift_right(h_var2_temp1 - h_var2_temp2 - h_var2_temp3 + C_HUMIDITY_CONST2, 15);	   
 			h_var2_temp5  <= shift_right(resize(h_var1 * dig_H6, 32), 10);
 			h_var2_temp6  <= shift_right(resize(h_var1 * dig_H3, 32), 11);
 			h_var2_temp7  <= h_var2_temp6 + C_HUMIDITY_CONST3;
 			h_var2_temp8  <= shift_right(resize(h_var2_temp5 * h_var2_temp7, 32), 10);
-			h_var2_temp9  <= dig_H2 + C_HUMIDITY_CONST4;
-			h_var2_temp10 <= (h_var2_temp8 + C_HUMIDITY_CONST5);
-			--h_var2_temp11_temp <= signed(std_logic_vector(resize(unsigned(std_logic_vector(h_var2_temp10 * h_var2_temp9)), 32)));
-			--h_var2_temp11_temp <= resize(h_var2_temp10 * h_var2_temp9, 32);
-			--h_var2_temp11 <= shift_right(h_var2_temp11_temp, 14);
-			--h_var2_temp11 <= shift_right(resize(h_var2_temp10 * h_var2_temp9, 32), 14);
-			--h_var2_temp11 <= resize(shift_right(h_var2_temp10 * h_var2_temp9, 14), 32); --original
-			h_var2_temp11 <= signed(std_logic_vector(resize(shift_right(unsigned(std_logic_vector(h_var2_temp10 * h_var2_temp9)), 14), 32)));
-			h_var2        <= signed(std_logic_vector(resize(unsigned(std_logic_vector(h_var2_temp4 * h_var2_temp11)), 32)));
+			h_var2_temp9  <= h_var2_temp8 + C_HUMIDITY_CONST5;
+			h_var2_temp10 <= resize(h_var2_temp9 * dig_H2, 32);
+			h_var2_temp11 <= shift_right(resize(h_var2_temp10 + C_HUMIDITY_CONST4, 32), 14);
+			h_var2        <= resize(h_var2_temp4 * h_var2_temp11, 32);
 			
 			h_var3_temp1 <= shift_right(h_var2, 15);
 			h_var3_temp2 <= shift_right(resize(h_var3_temp1 * h_var3_temp1, 32), 7);
@@ -248,11 +243,7 @@ begin
 			
 			if h_var3 < x"0000_0000" then
 				h <= (others => '0');
-			else
-				h <= resize(unsigned(std_logic_vector(shift_right(h_var3, 12))), 32);
-			end if;
-			
-			if h_var3 > C_HUMIDITY_CONST6 then
+			elsif h_var3 > C_HUMIDITY_CONST6 then
 				h <= resize(unsigned(std_logic_vector(shift_right(C_HUMIDITY_CONST6, 12))), 32);
 			else
 				h <= resize(unsigned(std_logic_vector(shift_right(h_var3, 12))), 32);

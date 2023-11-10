@@ -141,24 +141,24 @@ architecture main of bme280_module is
 	
 	signal dig_T1,dig_T2,dig_T3: std_logic_vector(15 downto 0); 
 	signal adc_T: std_logic_vector(19 downto 0); 
-	signal T_var2d: std_logic_vector(15 downto 0); 
-	signal T_var1,T_var1b,T_var2,T_var2b,T_var2c: std_logic_vector(31 downto 0); 
-	signal T_var1a,T_var2a,Ta: std_logic_vector(47 downto 0); 
-	signal t_fine: std_logic_vector(31 downto 0); 
-	signal T: std_logic_vector(15 downto 0); 	
+--	signal T_var2d: std_logic_vector(15 downto 0); 
+--	signal T_var1,T_var1b,T_var2,T_var2b,T_var2c: std_logic_vector(31 downto 0); 
+--	signal T_var1a,T_var2a,Ta: std_logic_vector(47 downto 0); 
+--	signal t_fine: std_logic_vector(31 downto 0); 
+--	signal T: std_logic_vector(15 downto 0); 	
 	
 	signal dig_P1,dig_P2,dig_P3,dig_P4,dig_P5,dig_P6,dig_P7,dig_P8,dig_P9: std_logic_vector(15 downto 0); 
 	signal adc_P: std_logic_vector(19 downto 0); 
-	signal P_var1a: std_logic_vector(31 downto 0); 
-	signal P_varXa: std_logic_vector(47 downto 0); 
-	signal P_var2b,P_var2c: std_logic_vector(51 downto 0); 
-	signal P_var2a: std_logic_vector(63 downto 0); 
+--	signal P_var1a: std_logic_vector(31 downto 0); 
+--	signal P_varXa: std_logic_vector(47 downto 0); 
+--	signal P_var2b,P_var2c: std_logic_vector(51 downto 0); 
+--	signal P_var2a: std_logic_vector(63 downto 0); 
 	
 	signal dig_H1,dig_H3,dig_H6: std_logic_vector(7 downto 0); 
 	signal dig_H4,dig_H5: std_logic_vector(11 downto 0); 
 	signal dig_H2: std_logic_vector(15 downto 0); 
 	signal adc_H: std_logic_vector(15 downto 0); 
-	signal H_var1: std_logic_vector(31 downto 0); 
+--	signal H_var1: std_logic_vector(31 downto 0); 
 	
 	signal present: std_logic;
 	signal inBME280,outBME280: type_inBME280; 
@@ -261,8 +261,7 @@ begin
 			if outBME280.act='1' then	
 				BME280.P<=outBME280.P(15 downto 0); 
 				BME280.T<=outBME280.T(15 downto 0); 
-				BME280.H<=T(15 downto 0); 
---				BME280.H<=outBME280.H(15 downto 0); 
+				BME280.H<=outBME280.H(15 downto 0); 
 			end if;
 			
 			if i2c_valid and conv_integer(i2c_adr_mem)=adr_bme280 then	present<=boolean_to_data(i2c_q=bme280_ID); end if;
