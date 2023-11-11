@@ -47,3 +47,4 @@
 .\src\bme280_data_comp.vhd
 .\src\bme280_module.vhd
 .\src\vimon10.vhd
+.\src\lpm_divide_s64.v

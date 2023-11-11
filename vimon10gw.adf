@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\vimon\src\gowin_ip\lpm_divide_s64
+fileopenfolder=D:\Projects\vimon\src
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -58,7 +58,7 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem1024x32|Behavioral|0 
+HierarchyInformation=video_mem1024x32|Behavioral|0
 ShowHide=ShowTopLevel
 Selected=
 
@@ -115,6 +115,7 @@ Selected=
 /bme280_data_comp.vhd=-1
 /bme280_module.vhd=-1
 /vimon10.vhd=-1
+/lpm_divide_s64.v=-1
 
 [Files.Data]
 .\src\lcd_lib.vhd=VHDL Source Code
@@ -169,3 +170,5 @@ Selected=
 .\src\bme280_data_comp.vhd=VHDL Source Code
 .\src\bme280_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
+.\src\lpm_divide_s64.v=Verilog Source Code
+

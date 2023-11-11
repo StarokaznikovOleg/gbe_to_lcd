@@ -57,7 +57,7 @@
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/eth_test.rao" type="file.gao" enable="0"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_bme280.rao" type="file.gao" enable="1"/>
+        <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>
