@@ -9,41 +9,6 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-package bme280_lib is  	   
-	subtype type_inbme280val is std_logic_vector(31 downto 0);	
-	type type_dig_P is array (9 downto 1) of std_logic_vector(15 downto 0);
-	constant clear_dig_P : type_dig_P := ((others=>(others=>'0')));	
-	type type_dig_T is array (3 downto 1) of std_logic_vector(15 downto 0);
-	constant clear_dig_T : type_dig_T := ((others=>(others=>'0')));	
-	type type_dig_H is array (6 downto 1) of std_logic_vector(15 downto 0);
-	constant clear_dig_H : type_dig_H := ((others=>(others=>'0')));	
-	type type_inBME280 is record
-		act : boolean;
-		adc_P : std_logic_vector(19 downto 0);
-		dig_P : type_dig_P;
-		adc_T : std_logic_vector(19 downto 0);
-		dig_T : type_dig_T;
-		adc_H : std_logic_vector(15 downto 0);
-		dig_H : type_dig_H;
-	end record;	
-	constant clear_inbme280 : type_inBME280 := (false,(others=>'0'),clear_dig_P,(others=>'0'),clear_dig_T,(others=>'0'),clear_dig_H);	
-	
-	constant max_bme280val : integer :=16; 	  
-	subtype type_bme280val is std_logic_vector(max_bme280val-1 downto 0);	 
-	type type_outBME280 is record
-		act : boolean;
-		P : type_bme280val;
-		T : type_bme280val;
-		H : type_bme280val;
-	end record;
-	constant clear_outbme280 : type_outBME280 := (false,(others=>'0'),(others=>'0'),(others=>'0'));	
-end bme280_lib;
--------------------------------------------------------------------------------
-library IEEE;
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
 library work;
 use work.common_lib.all;
 use work.i2c_lib.all;
@@ -343,7 +308,7 @@ begin
 	
 	bme280_data_calc1 : entity work.bme280_data_comp 
 	port map( reset => reset, clock => clock,
-		inBME280 => inBME280,
-		outBME280 => bme280
+		i_BME280 => inBME280,
+		o_BME280 => bme280
 		);
 end main; 

@@ -26,6 +26,7 @@
         <File path="src/LCDserializer.vhd" type="file.vhdl" enable="1"/>
         <File path="src/YCC420_to_YCC444div2.vhd" type="file.vhdl" enable="1"/>
         <File path="src/bme280_data_comp.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/bme280_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/bme280_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/common_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/crc32.vhd" type="file.vhdl" enable="1"/>
@@ -57,7 +58,7 @@
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/eth_test.rao" type="file.gao" enable="0"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_bme280.rao" type="file.gao" enable="1"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>

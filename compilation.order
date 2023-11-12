@@ -1,8 +1,10 @@
 .\src\lcd_lib.vhd
 .\src\common_lib.vhd
 .\src\vimon10_lib.vhd
+.\src\bme280_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
+.\src\lpm_divide_s64.v
 .\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd
 .\src\gowin_ip\lcd_rpll\lcd_rpll.vhd
 .\src\gowin_ip\logo_rom\logo_rom.v
@@ -47,4 +49,3 @@
 .\src\bme280_data_comp.vhd
 .\src\bme280_module.vhd
 .\src\vimon10.vhd
-.\src\lpm_divide_s64.v

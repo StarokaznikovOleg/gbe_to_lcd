@@ -1,4 +1,4 @@
-timestamp=1699740255544
+timestamp=1699747797069
 
 [$root]
 A/$root=22|""|0|1*9541281
@@ -41,33 +41,33 @@ R=./src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [bme280_data_comp]
-A/main=21|./src/bme280_data_comp.vhd|15|1*10034649
-A/rtl=+21|./src/bme280_data_comp.vhd|15|1*9192609
-BinI32/main=3*605957
-I=0*3241632
-I/main=0*3246475
-M=11|0|v98|1699740187991|./src/bme280_data_comp.vhd|0*3241185*0x50f437a38bc647bed373b29a34d91f4dd1bb5acd|0*3241539*0xab32bc1a2daf049573e14469f634e0e6
+A/main=+21|./src/bme280_data_comp.vhd|15|1*10034649
+A/rtl=21|./src/bme280_data_comp.vhd|21|1*10771112
+BinI32/rtl=3*668548
+I=0*3398910
+I/rtl=0*3542198
+M=11|0|v98|1699747788442|./src/bme280_data_comp.vhd|0*3398464*0x835e8d9164fc407040de927e6ab876c8c1d93477|0*3398817*0xab32bc1a2daf049573e14469f634e0e6
 M/main=21|0|v98|1699740244038|./src/bme280_data_comp.vhd|0*3241861*0x7a1158b41df1415a13146cfeac6f94447b58589f|0*3246374*0xb33770ff1c10522f9491560174ac8e6c
-M/rtl=21|0|v98|1699717842906|./src/bme280_data_comp.vhd|0*2957182*0x0a198b1464a20617de3b6e6ec369e2c556c898df|0*2965387*0xb33770ff1c10522f9491560174ac8e6c
-R=./src/bme280_data_comp.vhd|6
+M/rtl=21|0|v98|1699747788448|./src/bme280_data_comp.vhd|0*3533712*0xf5e3cd99f41aa9c9db65510c8710bdeca447ae27|0*3542098*0xb33770ff1c10522f9491560174ac8e6c
+R=./src/bme280_data_comp.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/rtl=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [bme280_lib]
-E=1*9475187
-I=0*3073936
-M=3|0|v98|1699737164227|./src/bme280_module.vhd|0*3072677*0x7f76469a1371769b8e7a85057f65478e63a13760|0*3073852*0xab32bc1a2daf049573e14469f634e0e6
-R=./src/bme280_module.vhd|12
+E=1*10767875
+I=0*3553591
+M=3|0|v98|1699747772183|./src/bme280_lib.vhd|0*3552408*0xb1be93eee14b547116da167ee613c920caa1995b|0*3553510*0xab32bc1a2daf049573e14469f634e0e6
+R=./src/bme280_lib.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [bme280_module]
-A/main=21|./src/bme280_module.vhd|59|1*10050502
-BinI32/main=3*607079
+A/main=21|./src/bme280_module.vhd|24|1*10788225
+BinI32/main=3*676945
 I=0*3227437
-I/main=0*3254652
-M=11|0|v98|1699739912310|./src/bme280_module.vhd|0*3226897*0x98dffdce2a740ea2ba9eb56e13ede8e5c5c328df|0*3227350*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1699740255482|./src/bme280_module.vhd|0*3246709*0xc298ac27d263c7ad3cb4ace33b201ed82bd71c46|0*3254557*0xb33770ff1c10522f9491560174ac8e6c
+I/main=0*3550373
+M=11|0|v98|1699747780328|./src/bme280_module.vhd|0*3226897*0x98dffdce2a740ea2ba9eb56e13ede8e5c5c328df|0*3227350*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1699747797009|./src/bme280_module.vhd|0*3542431*0x7677f3c41e045cc1c4d95bf677626cb8b3ade15d|0*3550278*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/bme280_module.vhd|52
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -529,7 +529,7 @@ D:/Projects/VIMON/src/gowin_ip/logo_rom/logo_rom.v=0*746311*753058
 D:/Projects/VIMON/src/gowin_ip/rgmii_rx/rgmii_rx.v_rgmii_tx.v_eth_txclock.v_sdram_int.v_sdram_rpll.v_cos_table.v_intram.v_indexDDR_table.v=0*880996*922792
 D:/Projects/VIMON/src/gowin_ip/table_MAP/table_MAP.v_table_FONT.v=0*946593*965500
 LastVerilogToplevel=lpm_divide_s64
-ModifyID=13960
+ModifyID=14275
 Version=73
 d:/Projects/vimon/src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v=0*2194428*2195232
 d:/Projects/vimon/src/gowin_ip/ddrout/ddrout.v=0*2604217*2604767
@@ -548,9 +548,9 @@ d:/Projects/vimon/src/gowin_ip/table_TEXT/table_TEXT.v=0*1281246*1282413
 d:/Projects/vimon/src/lpm_divide_s64.v=0*3093263*3093821
 
 [~MFT]
-0=3012|0vimon10.mgf|3254652|1961658
-1=1492|1vimon10.mgf|10050502|8848765
-3=1460|3vimon10.mgf|607079|546133
+0=3318|0vimon10.mgf|3553591|2260283
+1=1584|1vimon10.mgf|10788225|9586550
+3=1546|3vimon10.mgf|676945|608724
 
 [~U]
 $root=12|0*3091354|
@@ -559,8 +559,8 @@ $root=12|0*3091354|
 \~top.sdram_int \=12|0*1721941||0x80
 \~user_interface.sdram_int \=12|0*1666333||0x80
 bme240_i2cmem=12|0*2192982||0x90
-bme280_data_comp=11|0*3240933|
-bme280_lib=3|0*3071093|0*3071713
+bme280_data_comp=11|0*3398213|
+bme280_lib=3|0*3550910|0*3551502
 bme280_module=11|0*3226592|
 common_lib=3|0*2511155|0*2511231
 cos_table=12|0*1734372||0x90

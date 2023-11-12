@@ -46,3 +46,4 @@ i<>.\src\gowin_ip\mult32x16\mult36x16.v
 i<>.\src\gowin_ip\mult32x16\mult32x32.v
 i<>.\src\bme280_data_comp.vhd
 i<>.\src\lpm_divide_s64.v
+i<>.\src\bme280_lib.vhd
