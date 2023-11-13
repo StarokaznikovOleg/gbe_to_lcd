@@ -1,10 +1,10 @@
 //
 //Written by GowinSynthesis
-//Product Version "GowinSynthesis V1.9.8.07"
-//Fri Oct 21 16:25:49 2022
+//Product Version "V1.9.9 Beta-3"
+//Mon Nov 13 17:01:54 2023
 
 //Source file index table:
-//file0 "\D:/Gowin/Gowin_V1.9.8.07/IDE/ipcore/DDR/data/ddr.v"
+//file0 "\D:/Gowin/Gowin_V1.9.9Beta-3/IDE/ipcore/DDR/data/ddr.v"
 `timescale 100 ps/100 ps
 module rgmii_tx (
   din,

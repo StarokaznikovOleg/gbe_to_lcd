@@ -136,9 +136,7 @@ architecture main of bme280_module is
 --	signal adc_H: std_logic_vector(15 downto 0); 
 --	signal H_var1: std_logic_vector(31 downto 0); 
 	
-	signal present: std_logic;
 	signal inBME280: type_inBME280; 
---	signal outBME280: type_outBME280; 
 	
 begin
 --	--------------------------------------------
@@ -231,11 +229,10 @@ begin
 	main_proc: process (reset,clock,ena)
 	begin
 		if reset='1' then 	
-			present<='0';
 			inBME280<=clear_inbme280; 
 		elsif rising_edge(clock) and ena then 
 			
-			if i2c_valid and conv_integer(i2c_adr_mem)=adr_bme280 then	present<=boolean_to_data(i2c_q=bme280_ID); end if;
+			if i2c_valid and conv_integer(i2c_adr_mem)=adr_bme280 then	inBME280.act<=i2c_q=bme280_ID; end if;
 			--------------------------------------------	
 			if i2c_valid and conv_integer(i2c_adr_mem)=adr_digT1_h then	inBME280.dig_T(1)(15 downto 8)<=i2c_q; end if;
 			if i2c_valid and conv_integer(i2c_adr_mem)=adr_digT1_l then	inBME280.dig_T(1)(7 downto 0)<=i2c_q; end if;
@@ -310,5 +307,7 @@ begin
 	port map( reset => reset, clock => clock,
 		i_BME280 => inBME280,
 		o_BME280 => bme280
-		);
+		); 
+--bme280<=clear_bme280;
+
 end main; 

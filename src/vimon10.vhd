@@ -59,7 +59,8 @@ architecture main of vimon10 is
 	
 	signal reset: std_logic:='0';	  
 	signal all_lock,sdrampll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
-	signal clock_2MHz,clk_125MHz: std_logic:='0';	
+	signal clk_125MHz: std_logic:='0';	
+--	signal clock_2MHz,clk_125MHz: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
 	signal eth0rx_ref,eth1rx_ref: std_logic:='0';  
@@ -113,18 +114,17 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
-	signal power,video : std_logic;
+	signal power,detect_video,detect_voice : std_logic;
 	signal eth_link : std_logic_vector(1 downto 0);
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
 	
 	signal bme280: type_outBME280; 
-	
+	signal LCD_backlight : integer range 0 to 100;
 	
 begin  
 	
 	power<='0';
-	video<= not no_signal;
 	dbg<=DB(3 downto 0);		
 	
 	all_lock<=PWG and sdrampll_lock and lcd_lock;
@@ -135,29 +135,15 @@ begin
 	ETH1_RSTN<=not rst_eth;
 	
 	--------------------------------------------------------	
-	--  errors control	
-	err_clk(00)<=gpu_clk;		err_pulse(00)<=sdrampll_lock; 	--GPU and SDRAM pll ok
-	err_clk(01)<=lcd_pclk;		err_pulse(01)<=lcd_lock;		--LCD pll ok
-	err_clk(02)<=CLK25M;		err_pulse(02)<=eth_link(0);	--eth0 link ok
-	err_clk(03)<=CLK25M;		err_pulse(03)<=eth_link(1);	--eth1 link ok
-	err_clk(04)<=gpu_clk;		err_pulse(04)<=not no_signal;	--eth0 video	ok
-	
-	err_clk(05)<=eth0rx_clock;	err_pulse(05)<=ethrx_err(0);		--RXETH: video packet crc32 error
-	err_clk(06)<=eth0rx_clock;	err_pulse(06)<=ethrx_err(1); 		--RXETH: video packet frame error
-	err_clk(07)<=eth0rx_clock;	err_pulse(07)<=ethrx_err(2); 		--RXETH: video packet len error
-	err_clk(08)<=eth0rx_clock;	err_pulse(08)<=ethrx_err(3); 		--RXETH: video packet sequence error
-	err_clk(09)<=gpu_clk;		err_pulse(09)<=gpu_err(0);   		--GPU: video signature error
-	err_clk(10)<=gpu_clk;		err_pulse(10)<=gpu_err(1);			--GPU: video sequence error
-	err_clk(11)<=gpu_clk;		err_pulse(11)<=gpu_err(2);			--sdram wrd_ack error
-	err_clk(12)<=gpu_clk;		err_pulse(12)<=gpu_err(3);			--sdram read timeout error
-	err_clk(13)<=lcd_pclk;		err_pulse(13)<=lcd_err;				--LCD: video sequence error
-	
-	--------------------------------------------------------	
-	--  internal clock 2.3MHz	
-	gen_2M : entity work.main_OSC 
-	port map(
-		oscout => clock_2MHz 	--clock 2MHz
-		);	 
+	err_clk(00)<=eth0rx_clock;	err_pulse(00)<=ethrx_err(0);		--RXETH: video packet crc32 error
+	err_clk(01)<=eth0rx_clock;	err_pulse(01)<=ethrx_err(1); 		--RXETH: video packet frame error
+	err_clk(02)<=eth0rx_clock;	err_pulse(02)<=ethrx_err(2); 		--RXETH: video packet len error
+	err_clk(03)<=eth0rx_clock;	err_pulse(03)<=ethrx_err(3); 		--RXETH: video packet sequence error
+	err_clk(04)<=gpu_clk;		err_pulse(04)<=gpu_err(0);   		--GPU: video signature error
+	err_clk(05)<=gpu_clk;		err_pulse(05)<=gpu_err(1);			--GPU: video sequence error
+	err_clk(06)<=gpu_clk;		err_pulse(06)<=gpu_err(2);			--sdram wrd_ack error
+	err_clk(07)<=gpu_clk;		err_pulse(07)<=gpu_err(3);			--sdram read timeout error
+	err_clk(08)<=lcd_pclk;		err_pulse(08)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
 	--  sdram pll	
@@ -177,7 +163,6 @@ begin
 		lock => lcd_lock,
 		clkout => ref_sclk,		--clock 225MHz
 		clkoutp => lcd_sclk		--clock 225MHz shift 45°
-		--		clkoutd => open --clk_125MHz   --clock 125MHz
 		); 	 		 
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
@@ -224,21 +209,10 @@ begin
 	end process eth1rx_mux_proc;
 	--------------------------------------------------------
 	-- eth0 & eth1 connections 
-	eth0_clksel<="0010";
 	eth0tx_en<=eth1rx_dv;
 	eth0tx_d<=eth1rx_d;		  
-	eth1_clksel<="0001";
 	eth1tx_en<=eth0rx_dv;
 	eth1tx_d<=eth0rx_d;	 
-	eth0_txclock : entity work.eth_txclock 
-	port map(
-		clkout => ETH0_TXCLK, clksel => eth0_clksel,
-		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT); 
-	
-	eth1_txclock : entity work.eth_txclock 
-	port map(
-		clkout => ETH1_TXCLK, clksel => eth1_clksel,
-		clk0 => eth0rx_clock, clk1 => eth1rx_clock, clk2 => ETH0_CLKOUT, clk3 => ETH1_CLKOUT);
 	
 	--------------------------------------------------------	
 	--  tx_eth0 path	
@@ -252,6 +226,7 @@ begin
 		q => rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
 	ETH0_TXCTL<=rgmii0_txdout(4);
+	ETH0_TXCLK<=eth1rx_clock;
 	--	--------------------------------------------------------	
 	--	--  tx_eth1 path	 
 	rgmii1_txdin(9)<=eth1tx_en;
@@ -264,6 +239,7 @@ begin
 		q => rgmii1_txdout );	
 	ETH1_TXD<=rgmii1_txdout(3 downto 0);
 	ETH1_TXCTL<=rgmii1_txdout(4);
+	ETH1_TXCLK<=eth0rx_clock;
 	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr
@@ -280,40 +256,34 @@ begin
 		act_pixel => grafics_act_pixel,
 		color_pixel => grafics_color_pixel,
 		
+		txt_mapclk => CLK25M,
 		txt_mapadr => txt_mapadr,
-		txt_mapclk => lcd_pclk,
 		txt_mapwr => txt_mapwr,
 		txt_mapdin => txt_mapdin
 		);	
-	
-	text_ctr1 : entity work.text_ctr 
+	detect_video<=not no_signal;
+	detect_voice<='1';
+	stat_module1 : entity work.stat_module 
 	port map(
 		reset => reset,
-		clock => lcd_pclk,
-		map_adr => txt_mapadr,
-		map_wr => txt_mapwr,
-		map_dout => txt_mapdin,
-		link0 => eth_link(0),
-		link1 => eth_link(1),
-		power => power,
-		video => video
-		);
-	
-	--------------------------------------------------------	
-	sysled3 : entity work.sysled 
-	generic map( max_lock=>len_lockerr, max_err=>len_err-len_lockerr)
-	port map( reset => rst_hw, clock => clock_2MHz,
-		LED_GREEN => LED_GREEN, LED_BLUE => LED_BLUE, LED_RED => LED_RED,
-		lock => err_pulse(len_lockerr-1 downto 0),
-		lock_clk => err_clk(len_lockerr-1 downto 0),
-		err => err_pulse(len_err-1 downto len_lockerr),
-		err_clk => err_clk(len_err-1 downto len_lockerr)
+		clock => CLK25M,
+		bme280 => bme280,
+		eth_link => eth_link(1), 
+		detect_video => detect_video, 
+		detect_voice => detect_voice, 
+		LCD_backlight => LCD_backlight,
+		MAPTXT_a => txt_mapadr,
+		MAPTXT_d => txt_mapdin,
+		MAPTXT_wr => txt_mapwr
 		);	
+	LED_GREEN<='1';
+	LED_BLUE<='1';
+	LED_RED<='1';
 	
 	sync_all : entity work.resync 
 	port map(
 		reset => reset,
-		clock => clock_2MHz,
+		clock => CLK25M,
 		rst_hw => rst_hw,
 		rst_eth => rst_eth,
 		rst_gpu => rst_gpu,
@@ -417,65 +387,66 @@ begin
 		IO_sdram_dq => IO_sdram_dq
 		);
 	
---	tx_video_mem_Y0 : entity work.video_mem1024x32 
---	port map(
---		reseta=>reset, --rst_gpu,
---		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
---		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
---	
---	tx_video_mem_Y1 : entity work.video_mem1024x32 
---	port map(
---	reseta=>reset, --rst_gpu,
---	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
---	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
---	
---	tx_video_mem_C : entity work.video_mem1024x32 
---	port map(
---	reseta=>reset, --rst_gpu,
---	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
---	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
---	-----------------------------------
---	-- LCD part	
---	set_LCD_EN<='1';
---	set_LCD_PWM<=DB(3 downto 0) & x"e"; -- backlight is fixed now :(
---	LCD_EN_LED<=int_LCD_EN ;
---	LCD_PWM<= not int_LCD_PWM; 	
---	lcd_module1 : entity work.lcd_module 
---	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
---		hpicture=>960, vfild=>32 )
---	port map(
---		reset => reset, --rst_lcd,
---		sclk => lcd_sclk,
---		pclk => lcd_pclk,
---		err => lcd_err,
---		vsync => lcd_vsync,
---		EN => set_LCD_EN,
---		PWM => set_LCD_PWM,
---		mem_a => lcd_a,
---		mem_wr => lcd_wr,
---		mem_d => lcd_d,
---		mem_q => lcd_q,
---		LCD_EN_VDD => LCD_EN_VDD,
---		LCD_RST => LCD_RST,
---		LCD_READY => LCD_DIM,
---		LCD_EN => int_LCD_EN,
---		LCD_PWM => int_LCD_PWM,
---		lcd_a_clk => LVDS_A_OUT_CLK,
---		lcd_a => LVDS_A_OUTP,
---		Vcount => lcd_Vcount,
---		Hcount => lcd_Hcount,
---		grafics_act => grafics_act_pixel,
---		grafics_color => grafics_color_pixel
---		); 
---	
---	MDIO_module1 : entity work.MDIO_module 
---	port map(
---		reset => rst_eth,
---		clock => CLK25M,
---		MDC => ETH_MDC,
---		MDIO => ETH_MDIO,
---		link => eth_link
---		);	
+	tx_video_mem_Y0 : entity work.video_mem1024x32 
+	port map(
+		reseta=>reset, --rst_gpu,
+		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
+		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
+	
+	tx_video_mem_Y1 : entity work.video_mem1024x32 
+	port map(
+	reseta=>reset, --rst_gpu,
+	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
+	
+	tx_video_mem_C : entity work.video_mem1024x32 
+	port map(
+	reseta=>reset, --rst_gpu,
+	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
+	-----------------------------------
+	-- LCD part	
+	set_LCD_EN<='1';
+	LCD_backlight<=100; -- backlight is fixed now :(
+	LCD_EN_LED<=int_LCD_EN ;
+	LCD_PWM<= not int_LCD_PWM; 	
+	lcd_module1 : entity work.lcd_module 
+	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
+		hpicture=>960, vfild=>32 )
+	port map(
+		reset => reset, --rst_lcd,
+		sclk => lcd_sclk,
+		pclk => lcd_pclk,
+		err => lcd_err,
+		vsync => lcd_vsync,
+		EN => set_LCD_EN,
+		backlight => LCD_backlight,
+		mem_a => lcd_a,
+		mem_wr => lcd_wr,
+		mem_d => lcd_d,
+		mem_q => lcd_q,
+		LCD_EN_VDD => LCD_EN_VDD,
+		LCD_RST => LCD_RST,
+		LCD_READY => LCD_DIM,
+		LCD_EN => int_LCD_EN,
+		LCD_PWM => int_LCD_PWM,
+		lcd_a_clk => LVDS_A_OUT_CLK,
+		lcd_a => LVDS_A_OUTP,
+		Vcount => lcd_Vcount,
+		Hcount => lcd_Hcount,
+		grafics_act => grafics_act_pixel,
+		grafics_color => grafics_color_pixel
+		); 
+	
+	MDIO_module1 : entity work.MDIO_module 
+	port map(
+		reset => rst_eth,
+		clock => CLK25M,
+		MDC => ETH_MDC,
+		MDIO => ETH_MDIO,
+		link => eth_link
+		);	
+	
 	sensor1_bme280 : entity work.bme280_module
 	generic map( ref_freq => 25000000 )
 	port map(

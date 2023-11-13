@@ -18,8 +18,6 @@
 .\src\gowin_ip\i2c_rom\i2c_rom.v
 .\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v
-.\src\gowin_ip\video_mem\video_mem4096x32.vhd
-.\src\gowin_ip\video_mem\video_mem1024x32.vhd
 .\src\gowin_ip\table_MAP\table_MAP.v
 .\src\gowin_ip\table_FONT\table_FONT.v
 .\src\gowin_ip\table_TEXT\table_TEXT.v
@@ -28,6 +26,8 @@
 .\src\gowin_ip\mult16x16\mult16x16.v
 .\src\gowin_ip\mult32x16\mult32x32.v
 .\src\gowin_ip\mult32x16\mult36x16.v
+.\src\gowin_ip\video_mem\video_mem1024x32.v
+.\src\gowin_ip\video_mem\video_mem4096x32.v
 .\src\crc32.vhd
 .\src\sync.vhd
 .\src\resync.vhd
@@ -46,6 +46,8 @@
 .\src\grafics_ctr.vhd
 .\src\mdio_module.vhd
 .\src\I2C_interface.vhd
+.\src\hex_to_dec.vhd
+.\src\stat_module.vhd
 .\src\bme280_data_comp.vhd
 .\src\bme280_module.vhd
 .\src\vimon10.vhd

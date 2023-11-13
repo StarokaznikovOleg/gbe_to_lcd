@@ -2,7 +2,7 @@
 ipc_version=4
 file=sdram_rpll
 module=sdram_rpll
-target_device=gw2ar18c-003
+target_device=gw2ar18c-004
 type=clock_rpll
 version=1.0
 

@@ -160,56 +160,56 @@ begin
 	end process;
 	
 	
-	process (clock)
-	begin
-		if rising_edge(clock) then
-			p_var1_temp1 <= resize(t_fine, 64) - C_PRESSURE_CONST1;
-			p_var1_temp2 <= resize(p_var1_temp1 * p_var1_temp1, 64);
-			p_var1_temp3 <= shift_right(resize(p_var1_temp2 * dig_P3, 64), 8);
-			--p_var1_temp3 <= resize(shift_right(p_var1_temp2 * dig_P3, 8), 64);
-			p_var1_temp4 <= shift_left(resize(p_var1_temp1 * dig_P2, 64), 12);
-			--p_var1_temp4 <= resize(shift_left(p_var1_temp1 * dig_P2, 12), 64);
-			p_var1_temp5 <= p_var1_temp3 + p_var1_temp4;
-			p_var1_temp6 <= shift_left(signed'(x"0000_0000_0000_0001"), 47) + p_var1_temp5;
-			p_var1       <= shift_right(resize(p_var1_temp6 * dig_P1, 64), 33);
-			--p_var1       <= resize(shift_right(p_var1_temp6 * dig_P1, 33), 64);
-			
-			p_var2_temp1 <= resize(p_var1_temp2 * dig_P6, 64);
-			p_var2_temp2 <= shift_left(resize(p_var1_temp1 * dig_P5, 64), 17);
-			p_var2_temp2 <= resize(shift_left(p_var1_temp1 * dig_P5, 17), 64);
-			p_var2_temp3 <= p_var2_temp1 + p_var2_temp2;
-			p_var2_temp4 <= shift_left(dig_P4, 35);
-			p_var2 <= p_var2_temp3 + p_var2_temp4;
-			
-			if p_var1 = signed'(x"0000_0000_0000_0000") then
-				o_bme280.P    <= (others => '0');
-			else
-				p_temp1 <= C_PRESSURE_CONST2 - resize(signed(i_bme280.adc_P), 64);
-				p_temp2 <= shift_left(p_temp1, 31) - p_var2;
-				p_temp3 <= resize(p_temp2 * C_PRESSURE_CONST3, 64);
-				--numenator <= p_temp3;
-				--denumenator <= p_var1;
-				--p_quotient
-				var3_temp1 <= resize(shift_right(signed(p_quotient), 13) * shift_right(signed(p_quotient), 13), 64);
-				var3 <= shift_right(resize(dig_P9 * var3_temp1, 64), 25);
-				--var3 <= resize(shift_right(dig_P9 * var3_temp1, 25), 64);
-				var4 <= shift_right(resize(dig_P8 * signed(p_quotient), 64), 19);
-				--var4 <= resize(shift_right(dig_P8 * signed(p_quotient), 19), 64);
-				p_temp4 <= var3 + var4;
-				p_temp5 <= shift_right(signed(p_quotient) + p_temp4, 8);
-				p_temp6 <= p_temp5 + shift_left(dig_P7, 4);
-				o_bme280.P    <= std_logic_vector(shift_right(resize(unsigned(std_logic_vector(p_temp6)), 32),8));
-			end if;
-			
-		end if;
-	end process;
-	
-	lpm_divide_s64_1 : entity work.lpm_divide_s64 
-	port map(
-		rstn => '1', clk => clock,
-		dividend => std_logic_vector(p_temp3),
-		divisor => std_logic_vector(p_var1),
-		quotient => p_quotient);
+--	process (clock)
+--	begin
+--		if rising_edge(clock) then
+--			p_var1_temp1 <= resize(t_fine, 64) - C_PRESSURE_CONST1;
+--			p_var1_temp2 <= resize(p_var1_temp1 * p_var1_temp1, 64);
+--			p_var1_temp3 <= shift_right(resize(p_var1_temp2 * dig_P3, 64), 8);
+--			--p_var1_temp3 <= resize(shift_right(p_var1_temp2 * dig_P3, 8), 64);
+--			p_var1_temp4 <= shift_left(resize(p_var1_temp1 * dig_P2, 64), 12);
+--			--p_var1_temp4 <= resize(shift_left(p_var1_temp1 * dig_P2, 12), 64);
+--			p_var1_temp5 <= p_var1_temp3 + p_var1_temp4;
+--			p_var1_temp6 <= shift_left(signed'(x"0000_0000_0000_0001"), 47) + p_var1_temp5;
+--			p_var1       <= shift_right(resize(p_var1_temp6 * dig_P1, 64), 33);
+--			--p_var1       <= resize(shift_right(p_var1_temp6 * dig_P1, 33), 64);
+--			
+--			p_var2_temp1 <= resize(p_var1_temp2 * dig_P6, 64);
+--			p_var2_temp2 <= shift_left(resize(p_var1_temp1 * dig_P5, 64), 17);
+--			p_var2_temp2 <= resize(shift_left(p_var1_temp1 * dig_P5, 17), 64);
+--			p_var2_temp3 <= p_var2_temp1 + p_var2_temp2;
+--			p_var2_temp4 <= shift_left(dig_P4, 35);
+--			p_var2 <= p_var2_temp3 + p_var2_temp4;
+--			
+--			if p_var1 = signed'(x"0000_0000_0000_0000") then
+--				o_bme280.P    <= (others => '0');
+--			else
+--				p_temp1 <= C_PRESSURE_CONST2 - resize(signed(i_bme280.adc_P), 64);
+--				p_temp2 <= shift_left(p_temp1, 31) - p_var2;
+--				p_temp3 <= resize(p_temp2 * C_PRESSURE_CONST3, 64);
+--				--numenator <= p_temp3;
+--				--denumenator <= p_var1;
+--				--p_quotient
+--				var3_temp1 <= resize(shift_right(signed(p_quotient), 13) * shift_right(signed(p_quotient), 13), 64);
+--				var3 <= shift_right(resize(dig_P9 * var3_temp1, 64), 25);
+--				--var3 <= resize(shift_right(dig_P9 * var3_temp1, 25), 64);
+--				var4 <= shift_right(resize(dig_P8 * signed(p_quotient), 64), 19);
+--				--var4 <= resize(shift_right(dig_P8 * signed(p_quotient), 19), 64);
+--				p_temp4 <= var3 + var4;
+--				p_temp5 <= shift_right(signed(p_quotient) + p_temp4, 8);
+--				p_temp6 <= p_temp5 + shift_left(dig_P7, 4);
+--				o_bme280.P    <= std_logic_vector(shift_right(resize(unsigned(std_logic_vector(p_temp6)), 32),8));
+--			end if;
+--			
+--		end if;
+--	end process;
+--	
+--	lpm_divide_s64_1 : entity work.lpm_divide_s64 
+--	port map(
+--		rstn => '1', clk => clock,
+--		dividend => std_logic_vector(p_temp3),
+--		divisor => std_logic_vector(p_var1),
+--		quotient => p_quotient);
 	
 	process (clock)
 	begin

@@ -5,6 +5,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
+use work.common_lib.all;
 use work.vimon10_lib.all;
 use work.lcd_lib.all;
 
@@ -16,7 +17,7 @@ entity lcd_module is
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
 		EN : in std_logic;  
-		PWM : in std_logic_vector(7 downto 0);  
+		backlight : in integer;  
 		err,vsync: out std_logic; 	
 		
 		
@@ -102,18 +103,19 @@ end case;
 	end process EN_proc; 
 	
 	PWM_proc: process (pclk)
-		variable count_pwm : integer range 0 to PWMsize-1;
+		constant max_count_pwm : integer:=99;
+		variable count_pwm : integer range 0 to max_count_pwm;
 		variable count : integer range 0 to corr_PWMcount+max_PWMcount-1;
 		variable count_pwm_inc : boolean:= false;
 	begin
 		if rising_edge(pclk)then 
 			if count_pwm=0 then
 				LCD_PWM<=PWM_ena;	
-			elsif count_pwm=conv_integer(PWM) then
+			elsif count_pwm=backlight then
 				LCD_PWM<='0';	
 			end if;
 			if count_pwm_inc then
-				if count_pwm=255 then
+				if count_pwm=max_count_pwm then
 					count_pwm:=0;
 				else 
 					count_pwm:=count_pwm+1;

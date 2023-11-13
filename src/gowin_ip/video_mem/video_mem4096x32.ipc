@@ -2,7 +2,7 @@
 ipc_version=4
 file=video_mem4096x32
 module=video_mem4096x32
-target_device=gw2ar18c-003
+target_device=gw2ar18c-004
 type=ram_dpb
 version=1.0
 
@@ -11,7 +11,7 @@ Area=false
 BYTE_SIZE=0
 DEPTH_A=4096
 DEPTH_B=4096
-LANG=1
+LANG=0
 READ_A=0
 READ_B=0
 RESET_MODE=true

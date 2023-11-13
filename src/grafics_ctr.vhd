@@ -40,10 +40,11 @@ begin
 	mix_proc: process (pclk)
 	begin
 		if rising_edge(pclk)then 
-			if act_errl and dbg(1)='1' then 
-				act_pixel<=true;
-				color_pixel<=pixel_errl;
-			elsif act_errp and dbg(2)='1' then 
+--			if act_errl and dbg(1)='1' then 
+--				act_pixel<=true;
+--				color_pixel<=pixel_errl;
+--			els
+			if act_errp and dbg(2)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_errp;
 			elsif act_txt and dbg(3)='1' then 
@@ -70,25 +71,25 @@ begin
 		map_din => txt_mapdin
 	);	
 	
-	lcd_err_ind0 : entity work.lcd_ind 
-	generic map( hsize=>hsize, hblank=>hblank, vsize=>vsize, vblank=>vblank, hstart=>40, vstart=>536, size=>16,
-	err_color=>rgb_green, mask_color=>rgb_white,
-	level=>len_lockerr, pulse=>0)
-	port map(
-		pclk => pclk,
-		Vcount => Vcount, Hcount => Hcount,
-		ind_clk => err_clk(len_lockerr-1 downto 0), ind_data => err_pulse(len_lockerr-1 downto 0),
-		act => act_errl,
-		pixel => pixel_errl );	
+--	lcd_err_ind0 : entity work.lcd_ind 
+--	generic map( hsize=>hsize, hblank=>hblank, vsize=>vsize, vblank=>vblank, hstart=>40, vstart=>536, size=>16,
+--	err_color=>rgb_green, mask_color=>rgb_white,
+--	level=>len_lockerr, pulse=>0)
+--	port map(
+--		pclk => pclk,
+--		Vcount => Vcount, Hcount => Hcount,
+--		ind_clk => err_clk(len_lockerr-1 downto 0), ind_data => err_pulse(len_lockerr-1 downto 0),
+--		act => act_errl,
+--		pixel => pixel_errl );	
 		
 	lcd_err_ind1 : entity work.lcd_ind 
 	generic map( hsize=>hsize, hblank=>hblank, vsize=>vsize, vblank=>vblank, hstart=>838, vstart=>536, size=>16,
 	err_color=>rgb_red, mask_color=>rgb_white,
-	level=>0, pulse=>len_err-len_lockerr)
+	level=>0, pulse=>len_err)
 	port map(
 		pclk => pclk,
 		Vcount => Vcount, Hcount => Hcount,
-		ind_clk => err_clk(len_err-1 downto len_lockerr), ind_data => err_pulse(len_err-1 downto len_lockerr),
+		ind_clk => err_clk(len_err-1 downto 0), ind_data => err_pulse(len_err-1 downto 0),
 		act => act_errp,
 		pixel => pixel_errp );	  
 	

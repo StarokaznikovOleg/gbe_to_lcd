@@ -2,7 +2,7 @@
 ipc_version=4
 file=lcd_rpll
 module=lcd_rpll
-target_device=gw2ar18c-003
+target_device=gw2ar18c-004
 type=clock_rpll
 version=1.0
 
@@ -16,11 +16,11 @@ CLKOUTP_BYPASS=false
 CLKOUTP_DUTY_CYCLE=6
 CLKOUTP_PHASE=2
 CLKOUT_BYPASS=false
-CLKOUT_DIVIDE_DYN=false
+CLKOUT_DIVIDE_DYN=true
 CLKOUT_FREQ=225
 CLKOUT_TOLERANCE=0
 DYNAMIC=false
-LANG=1
+LANG=0
 LOCK_EN=true
 MODE_GENERAL=true
 PLL_PWD=false

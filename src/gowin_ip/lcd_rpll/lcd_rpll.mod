@@ -1,7 +1,8 @@
 -series GW2AR
--device GW2AR-18C
--package LQFP144
--part_number GW2AR-LV18LQ144C7/I6
+-device GW2AR-18
+-device_version C
+-package eLQFP144
+-part_number GW2AR-LV18EQ144C8/I7
 
 
 -mod_name lcd_rpll
@@ -9,10 +10,10 @@
 -path D:/Projects/vimon/src/gowin_ip/lcd_rpll/
 -type PLL
 -rPll true
--file_type vhdl
+-file_type vlg
 -dev_type GW2AR-18C
 -dyn_idiv_sel false
--idiv_sel 2
+-idiv_sel 1
 -dyn_fbdiv_sel false
 -fbdiv_sel 9
 -dyn_odiv_sel false

@@ -9,7 +9,7 @@
  "CPU" : false,
  "CRC_CHECK" : true,
  "Clock_Conversion" : true,
- "Clock_Route_Order" : 0,
+ "Clock_Route_Order" : 1,
  "Correct_Hold_Violation" : true,
  "DONE" : false,
  "DOWNLOAD_SPEED" : "default",

@@ -6,6 +6,7 @@ use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
 use work.vimon10_lib.all;
+use work.common_lib.all;
 
 entity gpu is
 	port(
@@ -64,7 +65,7 @@ architecture main of gpu is
 	signal count_adrrxbuf,count_adrtxbuf : integer range 0 to 2**11-1 :=0;
 	signal seltxbuf: std_logic_vector(2 downto 0);
 	signal count_adrmem,REQ0adrmem,REQ1adrmem : integer range 0 to 2**(mem_val-1-Smem_val)-1 :=0;
---	signal Vcount : integer range 0 to 2047 :=0;
+	--	signal Vcount : integer range 0 to 2047 :=0;
 	signal numBufftx,numBuffrx : std_logic:='1';
 	signal adrBuffmemHi,adrBufftxHi,adrBuffrxHi,numBuffmem_wr,numBuffmem_rd : std_logic:='0';
 	signal txstatus_start,rxstatus_start,txstatus_tmpstart,rxstatus_tmpstart,txstatus_signature,rxstatus_signature,rxstatus_sequence,rxstatus_err: boolean;
@@ -211,13 +212,13 @@ begin
 						numBuffrx<=rx_q(2);
 						adrBuffmemHi<=numBuffmem_wr; 
 						count_adrmem<=conv_integer(adrDDR);
+						count_adrrxbuf<=adrBuff_start;	
 						if not rxstatus_signature then --error signature ?
 							err_rxsignature<='1';
 							state<=rxdone;
 						elsif rx_q(0)='1' then -- start frame
 							err_rxsequence<='0';
 							adrBuffrxHi<=rx_q(2);
-							count_adrrxbuf<=adrBuff_start;	
 							store_rxcount<=conv_integer(rx_q(13 downto 4))+1; 
 							state<=rxstep1; 
 						elsif not rxstatus_sequence or err_rxsequence='1' or rxstatus_err  then-- error sequence
@@ -230,7 +231,6 @@ begin
 								wd_clear<=true;
 							end if;	
 							adrBuffrxHi<=rx_q(2);
-							count_adrrxbuf<=adrBuff_start;	
 							store_rxcount<=conv_integer(rx_q(13 downto 4))+1; 
 							state<=rxstep1; 
 						end if;
@@ -278,7 +278,7 @@ begin
 					if count/=0 then
 						count:=count-1;
 					end if;	
-					
+				
 				when rxdone =>   
 					O_sdrc_rst_n<='1';
 					O_sdrc_wr_n<='1';
@@ -289,7 +289,7 @@ begin
 						state<=idle;
 						count:=2;
 					end if;	
-				
+					
 				
 				when txcheck => 
 					seltxbuf<="001";

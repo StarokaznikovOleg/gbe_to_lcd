@@ -2,11 +2,11 @@
 ipc_version=4
 file=lcd_clkdiv
 module=lcd_clkdiv
-target_device=gw2ar18c-003
+target_device=gw2ar18c-004
 type=clock_clkdiv
 version=1.0
 
 [Config]
 Calibration=false
 Division_Factor=3.5
-Language=1
+Language=0

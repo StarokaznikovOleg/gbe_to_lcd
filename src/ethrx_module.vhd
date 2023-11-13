@@ -5,6 +5,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
+use work.common_lib.all;
 use work.vimon10_lib.all;
 
 entity ethrx_module is
@@ -228,22 +229,22 @@ begin
 						state<=idle;
 					end if;	
 				
-				when others =>	--err_cycle
-					err_len<='0';
-					err_crc<='0';
-					err_sequence<='0';
-					adrBuffHi<='0';
-					adrBuff<=0; 
-					ethv_wr<='0';
-					ethv_d<=(others=>'0'); 
-					intcrc_clr<='0';
-					intcrc_en<='0';
-					ok_PREA<=false;
-					ok_MACD<=false;
-					ok_MACS<=false;
-					plen_count<=0;
-					count:=0;
-					state<=ethpause;
+--				when others =>	--err_cycle
+--					err_len<='0';
+--					err_crc<='0';
+--					err_sequence<='0';
+--					adrBuffHi<='0';
+--					adrBuff<=0; 
+--					ethv_wr<='0';
+--					ethv_d<=(others=>'0'); 
+--					intcrc_clr<='0';
+--					intcrc_en<='0';
+--					ok_PREA<=false;
+--					ok_MACD<=false;
+--					ok_MACS<=false;
+--					plen_count<=0;
+--					count:=0;
+--					state<=ethpause;
 				
 			end case;		
 		end if;

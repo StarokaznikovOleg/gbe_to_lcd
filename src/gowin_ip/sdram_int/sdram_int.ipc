@@ -2,7 +2,7 @@
 ipc_version=4
 file=sdram_int
 module=sdram_int
-target_device=gw2ar18c-003
+target_device=gw2ar18c-004
 type=sdrc_emb
 version=3.0
 

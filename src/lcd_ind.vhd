@@ -5,6 +5,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
+use work.common_lib.all;
 use work.vimon10_lib.all;
 use work.lcd_lib.all;
 

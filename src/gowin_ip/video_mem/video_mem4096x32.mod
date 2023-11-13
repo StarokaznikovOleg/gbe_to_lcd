@@ -1,14 +1,15 @@
 -series GW2AR
--device GW2AR-18C
--package LQFP144
--part_number GW2AR-LV18LQ144C7/I6
+-device GW2AR-18
+-device_version C
+-package eLQFP144
+-part_number GW2AR-LV18EQ144C8/I7
 
 
 -mod_name video_mem4096x32
 -file_name video_mem4096x32
--path D:/Projects/VIMON/src/gowin_ip/video_mem/
+-path D:/Projects/vimon/src/gowin_ip/video_mem/
 -type RAM_DP
--file_type vhdl
+-file_type vlg
 -bram_b true
 -dev_type GW2AR-18C
 -depth_0 4096

@@ -23,8 +23,6 @@ i<>.\src\lcd_lib.vhd
 i<>.\src\lcd_ind.vhd
 i<>.\src\gowin_ip\intram\intram.v
 i<>.\src\corund10cpu.vhd
-i<>.\src\gowin_ip\video_mem\video_mem1024x32.vhd
-i<>.\src\gowin_ip\video_mem\video_mem4096x32.vhd
 i<>.\src\YCC420_to_YCC444div2.vhd
 i<>.\src\gowin_ip\indexDDR_table\indexDDR_table.v
 i<>.\src\ycc2rgb.vhd
@@ -47,3 +45,7 @@ i<>.\src\gowin_ip\mult32x16\mult32x32.v
 i<>.\src\bme280_data_comp.vhd
 i<>.\src\lpm_divide_s64.v
 i<>.\src\bme280_lib.vhd
+i<>.\src\stat_module.vhd
+i<>.\src\hex_to_dec.vhd
+i<>.\src\gowin_ip\video_mem\video_mem1024x32.v
+i<>.\src\gowin_ip\video_mem\video_mem4096x32.v

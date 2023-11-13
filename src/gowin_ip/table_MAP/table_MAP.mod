@@ -1,5 +1,6 @@
 -series GW2AR
--device GW2AR-18C
+-device GW2AR-18
+-device_version C
 -package eLQFP144
 -part_number GW2AR-LV18EQ144C8/I7
 
@@ -16,5 +17,5 @@
 -width_1 8
 -read_mode bypass
 -reset_mode sync
--init_file D:\Projects\vimon\grafics\table_MAP.mi
+-init_file D:\Projects\vimon\src\gowin_ip\table_MAP\table_MAP.mi
 -init_match port_A

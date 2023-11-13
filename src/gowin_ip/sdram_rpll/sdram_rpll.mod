@@ -1,12 +1,13 @@
 -series GW2AR
--device GW2AR-18C
--package LQFP144
--part_number GW2AR-LV18LQ144C7/I6
+-device GW2AR-18
+-device_version C
+-package eLQFP144
+-part_number GW2AR-LV18EQ144C8/I7
 
 
 -mod_name sdram_rpll
 -file_name sdram_rpll
--path D:/Projects/corund10/src/gowin_ip/sdram_rpll/
+-path D:/Projects/vimon/src/gowin_ip/sdram_rpll/
 -type PLL
 -rPll true
 -file_type vlg

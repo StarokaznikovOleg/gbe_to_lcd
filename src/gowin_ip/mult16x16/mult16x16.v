@@ -5,7 +5,7 @@
 //Part Number: GW2AR-LV18EQ144C8/I7
 //Device: GW2AR-18
 //Device Version: C
-//Created Time: Sun Oct 08 16:05:38 2023
+//Created Time: Mon Nov 13 17:01:01 2023
 
 module mult16x16 (dout, a, b, ce, clk, reset);
 
