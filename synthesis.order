@@ -49,3 +49,4 @@ i<>.\src\stat_module.vhd
 i<>.\src\hex_to_dec.vhd
 i<>.\src\gowin_ip\video_mem\video_mem1024x32.v
 i<>.\src\gowin_ip\video_mem\video_mem4096x32.v
+i<>.\src\gowin_ip\common_rpll\common_rpll.v

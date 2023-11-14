@@ -54,17 +54,17 @@ architecture main of stat_module is
 	end record;
 	type type_array_HV is array (0 to max_st_count-1) of type_HV;
 	constant conf_TXT: type_array_HV:=(
-	(20,17),	-- P=(XXXX.XX)
-	(21,17),	-- T=(±XXX.XX)
-	(22,17),	-- H=(XXX.XXX)
-	(23,13), 	--hw_version(XXX)
-	(23,17),	--fw_version(XXX)
-	(23,21),	--fw_revision(XXX)
-	(23,25), 	--fw_test(XXX)
-	(19,59), 	--link (ХXXX)есть\нет
-	(20,59), 	--video (ХXXX)есть\нет
-	(21,59), 	--voice (ХXXX)есть\нет
-	(22,56) 	--backlight (ХXXX)
+	(20,52),	-- P(XXXX.XX)
+	(21,52),	-- T(±XXX.XX)
+	(22,52),	-- H(XXX.XXX)
+	(23,47), 	--hw_version(XXX)
+	(23,51),	--fw_version(XXX)
+	(23,55),	--fw_revision(XXX)
+	(23,59), 	--fw_test(XXX)
+	(19,23), 	--link (ХXXX)есть\нет
+	(20,23), 	--video (ХXXX)есть\нет
+	(21,23), 	--voice (ХXXX)есть\нет
+	(22,26) 	--backlight (ХXXX)
 	);
 	subtype type_char is STD_LOGIC_VECTOR(7 downto 0);		
 	type type_array4_char is array (0 to 3) of type_char;

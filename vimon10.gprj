@@ -6,6 +6,7 @@
     <Device name="GW2AR-18C" pn="GW2AR-LV18EQ144C8/I7">gw2ar18c-004</Device>
     <FileList>
         <File path="src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/common_rpll/common_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/ddrout/ddrout.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/indexDDR_table/indexDDR_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/intram/intram.v" type="file.verilog" enable="1"/>

@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\vimon\src\gowin_ip\video_mem
+fileopenfolder=D:\Projects\vimon\src\gowin_ip\common_rpll
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -58,7 +58,7 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem1024x32|Behavioral|0
+HierarchyInformation=video_mem1024x32|Behavioral|0 
 ShowHide=ShowTopLevel
 Selected=
 
@@ -72,6 +72,7 @@ Selected=
 /lpm_divide_s64.v=-1
 /gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd=-1
 /gowin_ip\lcd_rpll\lcd_rpll.vhd=-1
+/gowin_ip\common_rpll\common_rpll.v=-1
 /gowin_ip\logo_rom\logo_rom.v=-1
 /gowin_ip\main_osc\main_osc.vhd=-1
 /gowin_ip\rgmii_rx\rgmii_rx.v=-1
@@ -130,6 +131,7 @@ Selected=
 .\src\lpm_divide_s64.v=Verilog Source Code
 .\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd=VHDL Source Code
 .\src\gowin_ip\lcd_rpll\lcd_rpll.vhd=VHDL Source Code
+.\src\gowin_ip\common_rpll\common_rpll.v=Verilog Source Code
 .\src\gowin_ip\logo_rom\logo_rom.v=Verilog Source Code
 .\src\gowin_ip\main_osc\main_osc.vhd=VHDL Source Code
 .\src\gowin_ip\rgmii_rx\rgmii_rx.v=Verilog Source Code

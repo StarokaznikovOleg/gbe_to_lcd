@@ -58,9 +58,8 @@ end vimon10;
 architecture main of vimon10 is	 
 	
 	signal reset: std_logic:='0';	  
-	signal all_lock,sdrampll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
+	signal all_lock,sdrampll_lock,commonpll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
 	signal clk_125MHz: std_logic:='0';	
---	signal clock_2MHz,clk_125MHz: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
 	signal eth0rx_ref,eth1rx_ref: std_logic:='0';  
@@ -93,7 +92,7 @@ architecture main of vimon10 is
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
 	
 	signal rst_hw,rst_gpu,rst_lcd,rst_eth: std_logic:='0';  
-	signal gpu_clk,sdram_clk: std_logic:='0';   
+	signal gpu_clk,sdram_clk,common_clk: std_logic:='0';   
 	signal lcd_vsync,eth_vsync: std_logic:='0';   	  
 	
 	signal sdrc_rst_n,sdrc_selfrefresh,sdrc_power_down,sdrc_wr_n,sdrc_rd_n,sdrc_init_done,sdrc_busy_n,sdrc_rd_valid,sdrc_wrd_ack : std_logic:='0'; 
@@ -127,7 +126,7 @@ begin
 	power<='0';
 	dbg<=DB(3 downto 0);		
 	
-	all_lock<=PWG and sdrampll_lock and lcd_lock;
+	all_lock<=PWG and sdrampll_lock and lcd_lock and commonpll_lock;
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
@@ -146,30 +145,32 @@ begin
 	err_clk(08)<=lcd_pclk;		err_pulse(08)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
+	--  common pll	
+	common_rpll1 : entity work.common_rpll 
+	port map( clkin=>CLK25M,
+		lock=>commonpll_lock,
+		clkout=>common_clk );	
+	--------------------------------------------------------	
 	--  sdram pll	
 	sdram_rpll1 : entity work.sdram_rpll 
-	port map(
-		clkin => CLK25M,
-		lock => sdrampll_lock,
-		clkout => sdram_clk,
-		clkoutp => gpu_clk
-		);	
+	port map( clkin=>CLK25M,
+		lock=>sdrampll_lock,
+		clkout=>sdram_clk,
+		clkoutp=>gpu_clk );	
 	
 	--------------------------------------------------------	
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
-	port map (
-		clkin => CLK25M,		--reference 25MHz
-		lock => lcd_lock,
-		clkout => ref_sclk,		--clock 225MHz
-		clkoutp => lcd_sclk		--clock 225MHz shift 45°
-		); 	 		 
+	port map ( clkin=>CLK25M,		--reference 25MHz
+		lock=>lcd_lock,
+		clkout=>ref_sclk,		--clock 225MHz
+		clkoutp=>lcd_sclk ); 		--clock 225MHz shift 45°
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
 	port map(
-		resetn => '1',
-		hclkin => ref_sclk,	--clock 225MHz
-		clkout => lcd_pclk	 --clock 225MHz/3.5=64.286MHz
+		resetn=>'1',
+		hclkin=>ref_sclk,	--clock 225MHz
+		clkout=>lcd_pclk	 --clock 225MHz/3.5=64.286MHz
 		);	
 	
 	--------------------------------------------------------	
@@ -178,9 +179,9 @@ begin
 	rgmii0_rxdin(4)<=ETH0_RXCTL;
 	rgmii0_rxdin(3 downto 0)<=ETH0_RXD;
 	rgmii0_rx1 : entity work.rgmii_rx 
-	port map( clk => eth0rx_clock,
-		din => rgmii0_rxdin,
-		q => rgmii0_rxdout );	
+	port map( clk=>eth0rx_clock,
+		din=>rgmii0_rxdin,
+		q=>rgmii0_rxdout );	
 	
 	eth0rx_mux_proc: process (eth0rx_clock)
 	begin
@@ -196,9 +197,9 @@ begin
 	rgmii1_rxdin(4)<=ETH1_RXCTL;
 	rgmii1_rxdin(3 downto 0)<=ETH1_RXD;
 	rgmii1_rx2 : entity work.rgmii_rx 
-	port map( clk => eth1rx_clock,
-		din => rgmii1_rxdin,
-		q => rgmii1_rxdout );	
+	port map( clk=>eth1rx_clock,
+		din=>rgmii1_rxdin,
+		q=>rgmii1_rxdout );	
 	
 	eth1rx_mux_proc: process (eth1rx_clock)
 	begin
@@ -221,9 +222,9 @@ begin
 	rgmii0_txdin(4)<=eth0tx_en;
 	rgmii0_txdin(3 downto 0)<=eth0tx_d(3 downto 0);
 	rgmii0_tx1 : entity work.rgmii_tx 
-	port map( clk => eth1rx_clock,
-		din => rgmii0_txdin,
-		q => rgmii0_txdout );	
+	port map( clk=>eth1rx_clock,
+		din=>rgmii0_txdin,
+		q=>rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
 	ETH0_TXCTL<=rgmii0_txdout(4);
 	ETH0_TXCLK<=eth1rx_clock;
@@ -234,9 +235,9 @@ begin
 	rgmii1_txdin(4)<=eth1tx_en;
 	rgmii1_txdin(3 downto 0)<=eth1tx_d(3 downto 0);
 	rgmii1_tx1 : entity work.rgmii_tx 
-	port map( clk => eth0rx_clock,
-		din => rgmii1_txdin,
-		q => rgmii1_txdout );	
+	port map( clk=>eth0rx_clock,
+		din=>rgmii1_txdin,
+		q=>rgmii1_txdout );	
 	ETH1_TXD<=rgmii1_txdout(3 downto 0);
 	ETH1_TXCTL<=rgmii1_txdout(4);
 	ETH1_TXCLK<=eth0rx_clock;
@@ -245,147 +246,134 @@ begin
 	grafics_ctr1 : entity work.grafics_ctr
 	generic map(hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank)
 	port map(
-		reset => rst_gpu, 
-		dbg => dbg,
-		err_clk => err_clk,
-		err_pulse => err_pulse,
+		reset=>rst_gpu, 
+		dbg=>dbg,
+		err_clk=>err_clk,
+		err_pulse=>err_pulse,
 		
-		pclk => lcd_pclk,
-		Vcount => lcd_Vcount,
-		Hcount => lcd_Hcount,
-		act_pixel => grafics_act_pixel,
-		color_pixel => grafics_color_pixel,
+		pclk=>lcd_pclk,
+		Vcount=>lcd_Vcount,
+		Hcount=>lcd_Hcount,
+		act_pixel=>grafics_act_pixel,
+		color_pixel=>grafics_color_pixel,
 		
-		txt_mapclk => CLK25M,
-		txt_mapadr => txt_mapadr,
-		txt_mapwr => txt_mapwr,
-		txt_mapdin => txt_mapdin
-		);	
+		txt_mapclk=>common_clk,
+		txt_mapadr=>txt_mapadr,
+		txt_mapwr=>txt_mapwr,
+		txt_mapdin=>txt_mapdin );	
 	detect_video<=not no_signal;
 	detect_voice<='1';
+
 	stat_module1 : entity work.stat_module 
-	port map(
-		reset => reset,
-		clock => CLK25M,
-		bme280 => bme280,
-		eth_link => eth_link(1), 
-		detect_video => detect_video, 
-		detect_voice => detect_voice, 
-		LCD_backlight => LCD_backlight,
-		MAPTXT_a => txt_mapadr,
-		MAPTXT_d => txt_mapdin,
-		MAPTXT_wr => txt_mapwr
-		);	
+	port map( reset=>reset, clock=>common_clk,
+		bme280=>bme280,
+		eth_link=>eth_link(1), 
+		detect_video=>detect_video, 
+		detect_voice=>detect_voice, 
+		LCD_backlight=>LCD_backlight,
+		MAPTXT_a=>txt_mapadr,
+		MAPTXT_d=>txt_mapdin,
+		MAPTXT_wr=>txt_mapwr );	
 	LED_GREEN<='1';
 	LED_BLUE<='1';
 	LED_RED<='1';
 	
 	sync_all : entity work.resync 
-	port map(
-		reset => reset,
-		clock => CLK25M,
-		rst_hw => rst_hw,
-		rst_eth => rst_eth,
-		rst_gpu => rst_gpu,
-		rst_lcd => rst_lcd
-		);		
+	port map( reset=>reset, clock=>common_clk,
+		rst_hw=>rst_hw,
+		clk_eth=>eth1rx_clock,
+		rst_eth=>rst_eth,
+		clk_gpu=>gpu_clk,
+		rst_gpu=>rst_gpu,
+		clk_lcd=>lcd_pclk,
+		rst_lcd=>rst_lcd );		
 	
 	ethrx_module1 : entity work.ethrx_module 
-	generic map( hsize => 1920, vsize => 1080)
-	port map(
-		reset => reset, --rst_eth,
-		clock => eth1rx_clock,
-		err => ethrx_err,
-		vsync => eth_vsync,
-		ethrx_en => eth1rx_dv,
-		ethrx_d => eth1rx_d,
-		ethv_a => ethv_a,
-		ethv_wr => ethv_wr,
-		ethv_d => ethv_d
-		);	
+	generic map( hsize=>1920, vsize=>1080)
+	port map( reset=>rst_eth, clock=>eth1rx_clock,
+		err=>ethrx_err,
+		vsync=>eth_vsync,
+		ethrx_en=>eth1rx_dv,
+		ethrx_d=>eth1rx_d,
+		ethv_a=>ethv_a,
+		ethv_wr=>ethv_wr,
+		ethv_d=>ethv_d );	
 	
 	rx_video_mem : entity work.video_mem4096x32
-	port map(
-		reseta => reset, --rst_eth,
-		clka => eth1rx_clock,
-		cea => '1',
-		ada => ethv_a,
-		wrea => ethv_wr,
-		dina => ethv_d,
-		ocea => '1',
-		douta => ethv_q,
-		resetb => rst_gpu,
-		clkb => gpu_clk,
-		ceb => '1',
-		adb => gpurx_a,
-		wreb => gpurx_wr,
-		dinb => gpurx_d,
-		oceb => '1',
-		doutb => gpurx_q
-		);
+	port map( reseta=>rst_eth, clka=>eth1rx_clock,
+		cea=>'1',
+		ada=>ethv_a,
+		wrea=>ethv_wr,
+		dina=>ethv_d,
+		ocea=>'1',
+		douta=>ethv_q,
+		resetb=>rst_gpu,
+		clkb=>gpu_clk,
+		ceb=>'1',
+		adb=>gpurx_a,
+		wreb=>gpurx_wr,
+		dinb=>gpurx_d,
+		oceb=>'1',
+		doutb=>gpurx_q  );
 	
 	gpu1 : entity work.gpu 
-	port map(
-		reset => reset, --rst_gpu,
-		clock => gpu_clk,
-		err => gpu_err,
-		no_signal => no_signal,
+	port map( reset=>rst_gpu, clock=>gpu_clk,
+		err=>gpu_err,
+		no_signal=>no_signal,
 		
-		rx_a => gpurx_a,
-		rx_wr => gpurx_wr,
-		rx_d => gpurx_d,
-		rx_q => gpurx_q,
-		tx_sel => gputx_sel,
-		tx_a => gputx_a,
-		tx_wr => gputx_wr,
-		tx_d => gputx_d,
-		tx_q => gputx_q,
+		rx_a=>gpurx_a,
+		rx_wr=>gpurx_wr,
+		rx_d=>gpurx_d,
+		rx_q=>gpurx_q,
+		tx_sel=>gputx_sel,
+		tx_a=>gputx_a,
+		tx_wr=>gputx_wr,
+		tx_d=>gputx_d,
+		tx_q=>gputx_q,
 		
-		O_sdrc_rst_n => sdrc_rst_n,
-		O_sdrc_power_down => sdrc_power_down,
-		O_sdrc_selfrefresh => sdrc_selfrefresh,
-		O_sdrc_data_len => sdrc_data_len,
-		I_sdrc_init_done => sdrc_init_done,
-		I_sdrc_busy_n => sdrc_busy_n,
-		O_sdrc_addr => sdrc_addr,
-		O_sdrc_wr_n => sdrc_wr_n,
-		O_sdrc_rd_n => sdrc_rd_n,
-		I_sdrc_wrd_ack => sdrc_wrd_ack,
-		O_sdrc_dqm => sdrc_dqm,
-		O_sdrc_data => sdrc_data,
-		I_sdrc_data => sdrc_data_out,
-		I_sdrc_rd_valid => sdrc_rd_valid
-		);
+		O_sdrc_rst_n=>sdrc_rst_n,
+		O_sdrc_power_down=>sdrc_power_down,
+		O_sdrc_selfrefresh=>sdrc_selfrefresh,
+		O_sdrc_data_len=>sdrc_data_len,
+		I_sdrc_init_done=>sdrc_init_done,
+		I_sdrc_busy_n=>sdrc_busy_n,
+		O_sdrc_addr=>sdrc_addr,
+		O_sdrc_wr_n=>sdrc_wr_n,
+		O_sdrc_rd_n=>sdrc_rd_n,
+		I_sdrc_wrd_ack=>sdrc_wrd_ack,
+		O_sdrc_dqm=>sdrc_dqm,
+		O_sdrc_data=>sdrc_data,
+		I_sdrc_data=>sdrc_data_out,
+		I_sdrc_rd_valid=>sdrc_rd_valid );
 	
 	sdram_int1 : entity work.sdram_int 
 	port map(
-		I_sdrc_rst_n => sdrc_rst_n,
-		I_sdrc_clk => gpu_clk,
-		I_sdram_clk => sdram_clk,
-		I_sdrc_selfrefresh => sdrc_selfrefresh,
-		I_sdrc_power_down => sdrc_power_down,
-		O_sdrc_init_done => sdrc_init_done,
-		O_sdrc_busy_n => sdrc_busy_n,
-		I_sdrc_addr => sdrc_addr,
-		I_sdrc_data_len => sdrc_data_len,
-		I_sdrc_wr_n => sdrc_wr_n,
-		I_sdrc_rd_n => sdrc_rd_n,
-		O_sdrc_wrd_ack => sdrc_wrd_ack,
-		I_sdrc_dqm => sdrc_dqm,
-		I_sdrc_data => sdrc_data,
-		O_sdrc_data => sdrc_data_out,
-		O_sdrc_rd_valid => sdrc_rd_valid,
+		I_sdrc_rst_n=>sdrc_rst_n,
+		I_sdrc_clk=>gpu_clk,
+		I_sdram_clk=>sdram_clk,
+		I_sdrc_selfrefresh=>sdrc_selfrefresh,
+		I_sdrc_power_down=>sdrc_power_down,
+		O_sdrc_init_done=>sdrc_init_done,
+		O_sdrc_busy_n=>sdrc_busy_n,
+		I_sdrc_addr=>sdrc_addr,
+		I_sdrc_data_len=>sdrc_data_len,
+		I_sdrc_wr_n=>sdrc_wr_n,
+		I_sdrc_rd_n=>sdrc_rd_n,
+		O_sdrc_wrd_ack=>sdrc_wrd_ack,
+		I_sdrc_dqm=>sdrc_dqm,
+		I_sdrc_data=>sdrc_data,
+		O_sdrc_data=>sdrc_data_out,
+		O_sdrc_rd_valid=>sdrc_rd_valid,
 		O_sdram_clk =>O_sdram_clk,
-		O_sdram_cke => O_sdram_cke,
-		O_sdram_cs_n => O_sdram_cs_n,
-		O_sdram_cas_n => O_sdram_cas_n,
-		O_sdram_ras_n => O_sdram_ras_n,
-		O_sdram_wen_n => O_sdram_wen_n,
-		O_sdram_addr => O_sdram_addr,
-		O_sdram_ba => O_sdram_ba,
-		O_sdram_dqm => O_sdram_dqm,
-		IO_sdram_dq => IO_sdram_dq
-		);
+		O_sdram_cke=>O_sdram_cke,
+		O_sdram_cs_n=>O_sdram_cs_n,
+		O_sdram_cas_n=>O_sdram_cas_n,
+		O_sdram_ras_n=>O_sdram_ras_n,
+		O_sdram_wen_n=>O_sdram_wen_n,
+		O_sdram_addr=>O_sdram_addr,
+		O_sdram_ba=>O_sdram_ba,
+		O_sdram_dqm=>O_sdram_dqm,
+		IO_sdram_dq=>IO_sdram_dq );
 	
 	tx_video_mem_Y0 : entity work.video_mem1024x32 
 	port map(
@@ -413,49 +401,39 @@ begin
 	lcd_module1 : entity work.lcd_module 
 	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
 		hpicture=>960, vfild=>32 )
-	port map(
-		reset => reset, --rst_lcd,
-		sclk => lcd_sclk,
-		pclk => lcd_pclk,
-		err => lcd_err,
-		vsync => lcd_vsync,
-		EN => set_LCD_EN,
-		backlight => LCD_backlight,
-		mem_a => lcd_a,
-		mem_wr => lcd_wr,
-		mem_d => lcd_d,
-		mem_q => lcd_q,
-		LCD_EN_VDD => LCD_EN_VDD,
-		LCD_RST => LCD_RST,
-		LCD_READY => LCD_DIM,
-		LCD_EN => int_LCD_EN,
-		LCD_PWM => int_LCD_PWM,
-		lcd_a_clk => LVDS_A_OUT_CLK,
-		lcd_a => LVDS_A_OUTP,
-		Vcount => lcd_Vcount,
-		Hcount => lcd_Hcount,
-		grafics_act => grafics_act_pixel,
-		grafics_color => grafics_color_pixel
-		); 
+	port map( reset=>reset, --rst_lcd,
+		sclk=>lcd_sclk,
+		pclk=>lcd_pclk,
+		err=>lcd_err,
+		vsync=>lcd_vsync,
+		EN=>set_LCD_EN,
+		backlight=>LCD_backlight,
+		mem_a=>lcd_a,
+		mem_wr=>lcd_wr,
+		mem_d=>lcd_d,
+		mem_q=>lcd_q,
+		LCD_EN_VDD=>LCD_EN_VDD,
+		LCD_RST=>LCD_RST,
+		LCD_READY=>LCD_DIM,
+		LCD_EN=>int_LCD_EN,
+		LCD_PWM=>int_LCD_PWM,
+		lcd_a_clk=>LVDS_A_OUT_CLK,
+		lcd_a=>LVDS_A_OUTP,
+		Vcount=>lcd_Vcount,
+		Hcount=>lcd_Hcount,
+		grafics_act=>grafics_act_pixel,
+		grafics_color=>grafics_color_pixel ); 
 	
 	MDIO_module1 : entity work.MDIO_module 
-	port map(
-		reset => rst_eth,
-		clock => CLK25M,
-		MDC => ETH_MDC,
-		MDIO => ETH_MDIO,
-		link => eth_link
-		);	
+	port map( reset=>rst_eth, clock=>common_clk,
+		MDC=>ETH_MDC, MDIO=>ETH_MDIO,
+		link=>eth_link );	
 	
 	sensor1_bme280 : entity work.bme280_module
-	generic map( ref_freq => 25000000 )
-	port map(
-		reset => reset,
-		clock => CLK25M,
-		scl => Sensor_SCL,
-		sda => Sensor_SDA,
-		bme280 => bme280
-		);	
+	generic map( ref_freq=>12500000 )
+	port map( reset=>reset, clock=>common_clk,
+		scl=>Sensor_SCL, sda=>Sensor_SDA,
+		bme280=>bme280 );	
 	
 end main;
 
