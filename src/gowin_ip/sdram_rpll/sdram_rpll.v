@@ -5,7 +5,7 @@
 //Part Number: GW2AR-LV18EQ144C8/I7
 //Device: GW2AR-18
 //Device Version: C
-//Created Time: Mon Nov 13 17:04:18 2023
+//Created Time: Wed Nov 15 07:19:43 2023
 
 module sdram_rpll (clkout, lock, clkoutp, clkin);
 

@@ -18,224 +18,161 @@ entity bme280_data_comp is
 		);
 end entity bme280_data_comp;
 
-architecture rtl of bme280_data_comp is
-	
-	constant dig_T1 : signed(31 downto 0) := to_signed(28383, 32);
-	constant dig_T2 : signed(31 downto 0) := to_signed(26777, 32);
-	constant dig_T3 : signed(31 downto 0) := to_signed(   50, 32);
-	
-	constant dig_P1 : signed(63 downto 0) := to_signed( 36602, 64);
-	constant dig_P2 : signed(63 downto 0) := to_signed(-10496, 64);
-	constant dig_P3 : signed(63 downto 0) := to_signed(  3024, 64);
-	constant dig_P4 : signed(63 downto 0) := to_signed(  6826, 64);
-	constant dig_P5 : signed(63 downto 0) := to_signed(  19, 64);
-	constant dig_P6 : signed(63 downto 0) := to_signed(    -7, 64);
-	constant dig_P7 : signed(63 downto 0) := to_signed( 9900, 64);
-	constant dig_P8 : signed(63 downto 0) := to_signed(-10230, 64);
-	constant dig_P9 : signed(63 downto 0) := to_signed(  4285, 64);
-	
-	constant dig_H1 : signed(31 downto 0) := to_signed( 75, 32);
-	constant dig_H2 : signed(31 downto 0) := to_signed(370, 32);
-	constant dig_H3 : signed(31 downto 0) := to_signed(  0, 32);
-	constant dig_H4 : signed(31 downto 0) := to_signed(300, 32);
-	constant dig_H5 : signed(31 downto 0) := to_signed( 50, 32);
-	constant dig_H6 : signed(31 downto 0) := to_signed( 30, 32);
-	
+architecture main of bme280_data_comp is
 	-- Temperature
-	--	signal t_var1       : signed(31 downto 0);
-	signal t_var1_temp1 : signed(31 downto 0);
-	signal t_var1_temp2 : signed(31 downto 0);
-	--	signal t_var2       : signed(31 downto 0);
-	signal t_var2_temp1 : signed(31 downto 0);
-	signal t_var2_temp2 : signed(31 downto 0);
-	signal t_var2_temp3 : signed(31 downto 0);
-	signal t_fine       : signed(31 downto 0);
+	constant t_width : integer :=32;  
+	constant t_pipeline_lenght : integer := 7;
+	type type_t_dig is array (1 to 3) of integer;
+	constant t_dig : type_t_dig := (28383,26777,50);	 
+	type type_t_var is array (4 downto 0) of signed(t_width-1 downto 0);
+	signal t_var : type_t_var;
+	signal t_fine : signed(t_width-1 downto 0);
 	
 	-- Pressure
-	signal p_var1_temp1 : signed(63 downto 0);
-	signal p_var1_temp2 : signed(63 downto 0);
-	signal p_var1_temp3 : signed(63 downto 0);
-	signal p_var1_temp4 : signed(63 downto 0);
-	signal p_var1_temp5 : signed(63 downto 0);
-	signal p_var1_temp6 : signed(63 downto 0);
-	signal p_var1_temp7 : signed(63 downto 0);
-	signal p_var1       : signed(63 downto 0);
-	signal p_var2_temp1 : signed(63 downto 0);
-	signal p_var2_temp2 : signed(63 downto 0);
-	signal p_var2_temp3 : signed(63 downto 0);
-	signal p_var2_temp4 : signed(63 downto 0);
-	signal p_var2       : signed(63 downto 0);
-	signal p_temp1      : signed(63 downto 0);
-	signal p_temp2      : signed(63 downto 0);
-	signal p_temp3      : signed(63 downto 0);
-	signal var3_temp1   : signed(63 downto 0);
-	signal var3         : signed(63 downto 0);
-	signal var4         : signed(63 downto 0);
-	signal p_temp4      : signed(63 downto 0);
-	signal p_temp5      : signed(63 downto 0);
-	signal p_temp6      : signed(63 downto 0);
+	constant p_width : integer :=34;  
+	constant p_pipeline_lenght : integer := 22;
+	type type_p_dig is array (1 to 9) of integer;
+	constant p_dig : type_p_dig := (36602,-10496,3024,6826,19,-7,9900,-10230,4285);	 
+	type type_p_const is array (1 to 4) of integer;
+	constant p_const : type_p_const := (64000,1048576,6250,32768);
+	type type_p_var is array (19 downto 0) of signed(p_width-1 downto 0);
+	signal p_var : type_p_var;
 	
 	-- Humidity
-	signal h_var1        : signed(31 downto 0);
-	signal h_var2_temp1  : signed(31 downto 0);
-	signal h_var2_temp2  : signed(31 downto 0);
-	signal h_var2_temp3  : signed(31 downto 0);
-	signal h_var2_temp4  : signed(31 downto 0);
-	signal h_var2_temp5  : signed(31 downto 0);
-	signal h_var2_temp6  : signed(31 downto 0);
-	signal h_var2_temp7  : signed(31 downto 0);
-	signal h_var2_temp8  : signed(31 downto 0);
-	signal h_var2_temp9  : signed(31 downto 0);
-	signal h_var2_temp10 : signed(31 downto 0);
-	signal h_var2_temp11 : signed(31 downto 0);
-	signal h_var2_temp11_temp : signed(31 downto 0);
-	signal h_var2        : signed(31 downto 0);
-	--	signal h_var3_temp1  : signed(31 downto 0);
-	signal h_var3_temp2  : signed(31 downto 0);
-	signal h_var3_temp3  : signed(31 downto 0);
-	signal h_var3        : signed(31 downto 0);
+	constant h_width : integer :=32;  
+	constant h_pipeline_lenght  : integer := 18;
+	type type_h_dig is array (1 to 6) of integer;
+	constant h_dig : type_h_dig := (75,370,0,300,50,30);	 
+	type type_h_const is array (1 to 6) of integer;
+	constant h_const : type_h_const := (76800,32768,32768,8192,2097152,419430400);
+	type type_h_var is array (15 downto 0) of signed(h_width-1 downto 0);
+	signal h_var : type_h_var; 
 	
-	-- Constants in calculation formulars
-	constant C_PRESSURE_CONST1 : signed(63 downto 0) := x"0000_0000_0000_FA00"; --64000
-	constant C_PRESSURE_CONST2 : signed(63 downto 0) := x"0000_0000_0010_0000"; --1048576
-	constant C_PRESSURE_CONST3 : signed(63 downto 0) := x"0000_0000_0000_186a"; --6250
-	constant C_PRESSURE_CONST4 : signed(63 downto 0) := x"0000_0000_0000_8000"; --32768
-	constant C_HUMIDITY_CONST1 : signed(31 downto 0) := x"0001_2C00"; --76800
-	constant C_HUMIDITY_CONST2 : signed(31 downto 0) := x"0000_8000"; --32768
-	constant C_HUMIDITY_CONST3 : signed(31 downto 0) := x"0000_8000"; --32768
-	constant C_HUMIDITY_CONST4 : signed(31 downto 0) := x"0000_2000"; --8192
-	constant C_HUMIDITY_CONST5 : signed(31 downto 0) := x"0020_0000"; --2097152
-	constant C_HUMIDITY_CONST6 : signed(31 downto 0) := x"1900_0000"; --419430400
-	
-	
-	constant C_TEMP_PIPELINE_LENGTH : integer := 6;
-	constant C_PRES_PIPELINE_LENGTH : integer := 18;
-	constant C_DIV_PIPELINE_LENGTH  : integer := 0;
-	constant C_HUM_PIPELINE_LENGTH  : integer := 11;
-	constant C_PIPELINE_LENGTH      : integer := C_TEMP_PIPELINE_LENGTH + C_PRES_PIPELINE_LENGTH + C_DIV_PIPELINE_LENGTH + C_HUM_PIPELINE_LENGTH;
-	--	signal vld_pipeline : std_logic_vector(C_PIPELINE_LENGTH - 1 downto 0);	 
-	type type_array_boolean is array (C_PIPELINE_LENGTH - 1 downto 0) of boolean;
-	signal temp_vld_pipeline : type_array_boolean;
-	--	signal valid        : std_logic;
-	signal p_quotient : std_logic_vector(63 downto 0);
-	
-begin
-	
-	Valid_proc: process (reset,clock)
+	constant pipeline_lenght      : integer := t_pipeline_lenght + p_pipeline_lenght + h_pipeline_lenght;
+	signal count_vid : integer range 0 to pipeline_lenght;
+	signal p_div_valid : boolean;
+begin				   
+	valid_proc: process (reset,clock)
 	begin
 		if reset = '1' then
-			temp_vld_pipeline <= (others => false);
+			count_vid<=pipeline_lenght;
 			o_bme280.act <= false;
 		elsif rising_edge(clock) then
-			temp_vld_pipeline <= i_bme280.act & temp_vld_pipeline(C_PIPELINE_LENGTH - 1 downto 1);
-			
-			if temp_vld_pipeline(0) then
-				o_bme280.act <= true;
-			elsif i_bme280.act then
-				o_bme280.act <= false;
+			if not i_bme280.act then
+				count_vid<=pipeline_lenght;
+			elsif count_vid/=0 then
+				count_vid<=count_vid-1;
 			end if;
+			o_bme280.act <= count_vid=0 and p_div_valid;
 		end if;
-	end process Valid_proc;
+	end process valid_proc;
 	
-	Tcalc_proc: process (clock)
+	t_calc_proc: process (clock)
 	begin
 		if rising_edge(clock) then         
-			t_var1_temp1 <= shift_right(signed(i_bme280.adc_T), 3) - signed(shift_left(dig_T1, 1));
-			t_var1_temp2 <= resize(t_var1_temp1 * dig_T2, 32);
-			t_var2_temp1 <= shift_right(signed(i_bme280.adc_T), 4) - signed(dig_T1);
-			t_var2_temp2 <= shift_right(resize(t_var2_temp1 * t_var2_temp1, 32), 12);
-			t_var2_temp3 <= resize(t_var2_temp2 * dig_T3, 32);
-			t_fine <= shift_right(signed(t_var1_temp2), 11) + shift_right(t_var2_temp3, 14);
-			o_bme280.T <= std_logic_vector(shift_right(resize(t_fine * 5, 32) + x"00000080", 8));
+			t_var(0) <= shift_right(resize(signed(i_bme280.adc_T),t_width), 3) - signed(shift_left(to_signed(t_dig(1),t_width), 1));
+			t_var(1) <= resize(t_var(0) * t_dig(2), t_width);
+			t_var(2) <= shift_right(resize(signed(i_bme280.adc_T),t_width), 4) - signed(to_signed(t_dig(1),t_width));
+			t_var(3) <= shift_right(resize(t_var(2) * t_var(2), t_width), 12);
+			t_var(4) <= resize(t_var(3) * t_dig(3), t_width);
+			t_fine <= shift_right(signed(t_var(1)), 11) + shift_right(t_var(4), 14);
+			o_bme280.T <= std_logic_vector(shift_right(resize(t_fine * 5, outbme280_width) + 128, 8));
 		end if;
-	end process Tcalc_proc;
+	end process t_calc_proc;
 	
-	
-	Pcalc1_proc: process (clock)
+	p_calc_proc: process (clock)
 	begin
 		if rising_edge(clock) then
-			p_var1_temp1 <= shift_right(resize(t_fine, 64) - C_PRESSURE_CONST1, 2);
-			p_var1_temp2 <= resize(p_var1_temp1 * p_var1_temp1, 64);
-			p_var2_temp1 <= shift_right(resize(p_var1_temp2 * dig_P6, 64), 15); 
-			p_var2_temp2 <= shift_left(resize(p_var1_temp1 * dig_P5, 64), 1);
-			p_var2_temp3 <= p_var2_temp1 + p_var2_temp2;
-			p_var2_temp4 <= shift_right(p_var2_temp3,2) + shift_left(dig_P4, 16);
-			
-			p_var1_temp3 <= shift_right(resize(p_var1_temp2 * dig_P3, 64), 19);
-			p_var1_temp4 <= shift_right(resize(p_var1_temp1 * dig_P2, 64), 19);
-			p_var1_temp5 <= p_var1_temp3 + p_var1_temp4;   
-			p_var1_temp6 <= shift_right(C_PRESSURE_CONST4 + p_var1_temp5,15);
-			p_var1_temp7 <= resize(p_var1_temp6 * dig_P1, 64);
-			p_temp1 <= C_PRESSURE_CONST2 - resize(signed(i_bme280.adc_P), 64);
-			p_temp2 <= p_temp1-shift_right(p_var2_temp4, 12);
-			p_temp3 <= resize(p_temp2 * C_PRESSURE_CONST3, 64);
-			--numenator <= p_temp3;
-			--denumenator <= p_var1_temp7;
-			--p_temp4<=p_quotient
-			var3_temp1 <= resize(shift_right(p_temp4, 13) * shift_right(p_temp4, 13), 64);
-			var3 <= shift_right(resize(dig_P9 * var3_temp1, 64), 7);
-			var4 <= shift_right(resize(dig_P8 * p_temp4, 64), 15);
-			p_temp5 <= var3 + var4;
-			p_temp6 <= shift_left(p_temp5 + dig_P7, 4);
-			o_bme280.P <= std_logic_vector(shift_right(resize(unsigned(std_logic_vector(p_temp4+p_temp6)), 32),8));
+			p_var(0) <= shift_right(resize(t_fine, p_width),1) - p_const(1);
+			p_var(1) <= resize(p_var(0) * p_var(0), p_width);
+			p_var(2) <= shift_right(resize(p_var(1) * p_dig(6), p_width), 15); 
+			p_var(3) <= shift_left(resize(p_var(0) * p_dig(5), p_width), 1);
+			p_var(4) <= p_var(2) + p_var(3);
+			p_var(5) <= shift_right(p_var(4),2) + shift_left(to_signed(p_dig(4),p_width), 16);
+			p_var(6) <= shift_right(resize(p_var(1) * p_dig(3), p_width), 19);
+			p_var(7) <= resize(p_var(0) * p_dig(2), p_width);
+			p_var(8) <= shift_right(p_var(6) + p_var(7), 19);  
+			p_var(9) <= p_const(4) + p_var(8);
+			p_var(10) <= shift_right(resize(p_var(9) * p_dig(1), p_width),15);
+			p_var(11) <= p_const(2) - resize(signed(i_bme280.adc_P), p_width);
+			p_var(12) <= p_var(11)-shift_right(p_var(5), 12);
+			p_var(13) <= resize(p_var(12) * p_const(3), p_width);
+			--					numenator 	<= p_var(13);
+			--					denumenator <= p_var(10);
+			--	p_var(14)	<=	p_quotient
+			p_var(15) <= resize(shift_right(p_var(14), 8) * shift_right(p_var(14), 13), p_width);
+			p_var(16) <= shift_right(resize(p_dig(9) * p_var(15), p_width), 15);
+			p_var(17) <= shift_right(resize(p_dig(8) * p_var(14), p_width), 15);
+			p_var(18) <= p_var(16) + p_var(17);
+			p_var(19) <= shift_right(p_var(18) + p_dig(7), 4);
+			o_bme280.P <= std_logic_vector(resize(p_var(14)+p_var(19), outbme280_width));
 			
 		end if;
-	end process Pcalc1_proc;
+	end process p_calc_proc;
 	
-	--	lpm_divide_s64_1 : entity work.lpm_divide_s64 
-	--	port map(
-	--		rstn => '1', clk => clock,
-	--		dividend => std_logic_vector(p_temp3),
-	--		divisor => std_logic_vector(p_var1_temp7),
-	--		quotient => p_quotient); 
-	--	p_temp4<=signed(p_quotient);
-	
-	lpm_divide_s64_1: process (clock)
-		variable int_p_temp3 : signed(63 downto 0);
-		variable int_p_var1 : signed(63 downto 0);
-		variable int_p_quotient : std_logic_vector(63 downto 0);
+	p_divide_proc: process (reset,clock)
+		constant zero : signed(63 downto 0) := (others=>'0'); 
+		variable valid : boolean;
+		variable dividend : signed(p_width-1 downto 0);
+		variable divisor : signed(p_width-1 downto 0);
+		variable quotient : std_logic_vector(p_width-1 downto 0);
 	begin
-		if rising_edge(clock) then	
-			if int_p_temp3<int_p_var1 then
-				int_p_temp3:=int_p_temp3-int_p_var1;
-				int_p_quotient:=std_logic_vector(resize(signed(int_p_quotient) + 1,64));
+		if reset='1' then	
+			p_div_valid<=false;
+			valid:=false;
+			dividend:=(others=>'0');
+			divisor:=(others=>'0');
+			p_var(14)<=(others=>'0');
+			quotient:=(others=>'0'); 
+		elsif rising_edge(clock) then	
+			if  dividend<divisor then
+				if divisor/=zero and i_bme280.act then
+					p_div_valid<=valid;
+					valid:=true;
+				else
+					p_div_valid<=false;
+					valid:=false;
+				end if;
+			end if;
+			if  dividend<divisor or divisor=zero or not i_bme280.act then
+				dividend:=p_var(13);
+				divisor:=p_var(10);
+				p_var(14)<=signed(quotient);
+				quotient:=(others=>'0'); 
 			else
-				int_p_temp3:=p_temp3;
-				int_p_var1:=p_var1_temp7;
-				p_temp4<=signed(int_p_quotient);
-				int_p_quotient:=(others=>'0'); 
+				dividend:=dividend-divisor;
+				quotient:=std_logic_vector(resize(signed(quotient) + 1,p_width));
 			end if;
 		end if;
-	end process lpm_divide_s64_1;
+	end process p_divide_proc;	  
 	
-	Hcalc_proc: process (clock)
+	h_calc_proc: process (clock)
 	begin
 		if rising_edge(clock) then
-			h_var1 <= t_fine - C_HUMIDITY_CONST1;
-			h_var2_temp1  <= shift_left(resize(signed(i_bme280.adc_h),32), 14);
-			h_var2_temp2  <= shift_left(dig_H4, 20);
-			h_var2_temp3  <= resize(dig_H5 * h_var1, 32);
-			h_var2_temp4  <= shift_right(h_var2_temp1 - h_var2_temp2 - h_var2_temp3 + C_HUMIDITY_CONST2, 15);	   
-			h_var2_temp5  <= shift_right(resize(h_var1 * dig_H6, 32), 10);
-			h_var2_temp6  <= shift_right(resize(h_var1 * dig_H3, 32), 11);
-			h_var2_temp7  <= h_var2_temp6 + C_HUMIDITY_CONST3;
-			h_var2_temp8  <= shift_right(resize(h_var2_temp5 * h_var2_temp7, 32), 10);
-			h_var2_temp9  <= h_var2_temp8 + C_HUMIDITY_CONST5;
-			h_var2_temp10 <= resize(h_var2_temp9 * dig_H2, 32);
-			h_var2_temp11 <= shift_right(resize(h_var2_temp10 + C_HUMIDITY_CONST4, 32), 14);
-			h_var2        <= resize(h_var2_temp4 * h_var2_temp11, 32);
-			h_var3_temp2 <= shift_right(resize(shift_right(h_var2, 15) * shift_right(h_var2, 15), 32), 7);
-			h_var3_temp3 <= shift_right(resize(h_var3_temp2 * dig_H1, 32), 4);
-			h_var3       <= h_var2 - h_var3_temp3;
-			if h_var3 < x"0000_0000" then
+			h_var(0) <= t_fine - h_const(1);
+			h_var(1)  <= shift_left(resize(signed(i_bme280.adc_h),h_width), 14);
+			h_var(2)  <= shift_left(to_signed(h_dig(4),h_width), 20);
+			h_var(3)  <= resize(h_dig(5) * h_var(0), h_width);
+			h_var(4)  <= shift_right(h_var(1) - h_var(2) - h_var(3) + h_const(2), 15);	   
+			h_var(5)  <= shift_right(resize(h_var(0) * h_dig(6), h_width), 10);
+			h_var(6)  <= shift_right(resize(h_var(0) * h_dig(3), h_width), 11);
+			h_var(7)  <= h_var(6) + h_const(3);
+			h_var(8)  <= shift_right(resize(h_var(5) * h_var(7), h_width), 10);
+			h_var(9)  <= h_var(8) + h_const(5);
+			h_var(10) <= resize(h_var(9) * h_dig(2), h_width);
+			h_var(11) <= shift_right(resize(h_var(10) + h_const(4), h_width), 14);
+			h_var(12) <= resize(h_var(4) * h_var(11), h_width);
+			h_var(13) <= shift_right(resize(shift_right(h_var(12), 15) * shift_right(h_var(12), 15), h_width), 7);
+			h_var(14) <= shift_right(resize(h_var(13) * h_dig(1), h_width), 4);
+			h_var(15)       <= h_var(12) - h_var(14);
+			if h_var(15) < x"0000_0000" then
 				o_bme280.H  <= (others => '0');
-			elsif h_var3 > C_HUMIDITY_CONST6 then
-				o_bme280.H    <= std_logic_vector(resize(unsigned(std_logic_vector(shift_right(C_HUMIDITY_CONST6, 12))), 32));
+			elsif h_var(15) > h_const(6) then
+				o_bme280.H    <= std_logic_vector(shift_right(to_signed(h_const(6),outbme280_width), 12));
 			else
-				o_bme280.H    <= std_logic_vector(resize(unsigned(std_logic_vector(shift_right(h_var3, 12))), 32));
+				o_bme280.H    <= std_logic_vector(shift_right(resize(h_var(15),outbme280_width), 12));
 			end if;
 		end if;
-	end process Hcalc_proc;
-	
-end architecture rtl;
+	end process h_calc_proc;
+end architecture main;
 

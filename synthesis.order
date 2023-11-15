@@ -10,8 +10,6 @@ i<>.\src\LCDserializer.vhd
 i<>.\src\ser7to1.vhd
 i<>.\src\gowin_ip\video_mem\video_mem.vhd
 i<>.\src\gowin_ip\ddrout\ddrout.v
-i<>.\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd
-i<>.\src\gowin_ip\lcd_rpll\lcd_rpll.vhd
 i<>.\src\gowin_ip\logo_rom\logo_rom.v
 i<>.\src\gowin_ip\main_osc\main_osc.vhd
 i<>.\src\gowin_ip\rgmii_rx\rgmii_rx.v

@@ -61,10 +61,10 @@ architecture main of stat_module is
 	(23,51),	--fw_version(XXX)
 	(23,55),	--fw_revision(XXX)
 	(23,59), 	--fw_test(XXX)
-	(19,23), 	--link (ХXXX)есть\нет
-	(20,23), 	--video (ХXXX)есть\нет
-	(21,23), 	--voice (ХXXX)есть\нет
-	(22,26) 	--backlight (ХXXX)
+	(19,24), 	--link (ХXXX)есть\нет
+	(20,24), 	--video (ХXXX)есть\нет
+	(21,24), 	--voice (ХXXX)есть\нет
+	(22,27) 	--backlight (ХXXX)
 	);
 	subtype type_char is STD_LOGIC_VECTOR(7 downto 0);		
 	type type_array4_char is array (0 to 3) of type_char;

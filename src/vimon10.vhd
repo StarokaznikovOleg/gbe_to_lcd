@@ -62,7 +62,7 @@ architecture main of vimon10 is
 	signal clk_125MHz: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
-	signal eth0rx_ref,eth1rx_ref: std_logic:='0';  
+	signal ethtx_clock,eth0rx_ref,eth1rx_ref: std_logic:='0';  
 	signal eth0rx_clock,eth0_txclk_int,eth0_txclk_ext,eth0rxpll_lock: std_logic:='0';  
 	signal eth1rx_clock,eth1_txclk_int,eth1_txclk_ext,eth1rxpll_lock: std_logic:='0';  
 	
@@ -157,7 +157,7 @@ begin
 		lock=>sdrampll_lock,
 		clkout=>sdram_clk,
 		clkoutp=>gpu_clk );	
-	
+	ethtx_clock<=gpu_clk;
 	--------------------------------------------------------	
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
@@ -210,10 +210,10 @@ begin
 	end process eth1rx_mux_proc;
 	--------------------------------------------------------
 	-- eth0 & eth1 connections 
-	eth0tx_en<=eth1rx_dv;
-	eth0tx_d<=eth1rx_d;		  
-	eth1tx_en<=eth0rx_dv;
-	eth1tx_d<=eth0rx_d;	 
+	eth0tx_en<='0'; --eth1rx_dv;
+	eth0tx_d<=x"00"; --eth1rx_d;		  
+	eth1tx_en<='0'; --eth0rx_dv;
+	eth1tx_d<=x"00"; --eth0rx_d;	 
 	
 	--------------------------------------------------------	
 	--  tx_eth0 path	
@@ -227,7 +227,7 @@ begin
 		q=>rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
 	ETH0_TXCTL<=rgmii0_txdout(4);
-	ETH0_TXCLK<=eth1rx_clock;
+	ETH0_TXCLK<=ethtx_clock;
 	--	--------------------------------------------------------	
 	--	--  tx_eth1 path	 
 	rgmii1_txdin(9)<=eth1tx_en;
@@ -240,7 +240,7 @@ begin
 		q=>rgmii1_txdout );	
 	ETH1_TXD<=rgmii1_txdout(3 downto 0);
 	ETH1_TXCTL<=rgmii1_txdout(4);
-	ETH1_TXCLK<=eth0rx_clock;
+	ETH1_TXCLK<=ethtx_clock;
 	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr

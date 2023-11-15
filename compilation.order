@@ -5,8 +5,6 @@
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
 .\src\lpm_divide_s64.v
-.\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.vhd
-.\src\gowin_ip\lcd_rpll\lcd_rpll.vhd
 .\src\gowin_ip\common_rpll\common_rpll.v
 .\src\gowin_ip\logo_rom\logo_rom.v
 .\src\gowin_ip\main_osc\main_osc.vhd
