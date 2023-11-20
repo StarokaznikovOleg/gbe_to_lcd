@@ -10,7 +10,7 @@ package vimon10_lib is
 	constant hw_version:	integer :=9;
 	constant fw_version:	integer :=2;
 	constant fw_revision:	integer :=0;
-	constant fw_test:		integer :=27;  
+	constant fw_test:		integer :=29;  
 	--------------------------------------------------	
 	
 	constant V_marker : integer :=01; 

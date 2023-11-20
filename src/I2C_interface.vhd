@@ -6,24 +6,19 @@
 -------------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
-package i2c_lib is  
-	subtype type_mem_i2c is std_logic_vector(8 downto 0);
-	subtype type_data_i2c is std_logic_vector(7 downto 0);
-end i2c_lib;	
-
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.std_logic_unsigned.all; 
+use IEEE.std_logic_arith.all;
 library work;
-use work.i2c_lib.all;
+use work.i2c_lib.all; 
+
 entity i2c_interface is
 	generic( ref_freq : integer:=125000000; scl_freq : integer:=5000000);
 	port(
 		reset,clock: in std_logic; 
 		scl,sda: inout std_logic;
 		ena: out boolean;
-		adr: out type_mem_i2c;
-		data: in type_mem_i2c;
+		adr: out type_mem_a_i2c;
+		data: in type_mem_d_i2c;
 		i2c_valid: out boolean;
 		i2c_q: out type_data_i2c
 		);
@@ -34,12 +29,12 @@ architecture main of i2c_interface is
 	constant value_pause: integer :=2047;
 	constant value_goto: integer :=2;
 	constant value_shift: integer :=9;
-	constant code_read: type_data_i2c :=x"F0";
-	constant code_start: type_data_i2c :=x"F1";
-	constant code_stop: type_data_i2c :=x"F2";
-	constant code_pause: type_data_i2c :=x"F3";
-	constant code_goto: type_data_i2c :=x"F4";
-	constant code_check: type_data_i2c :=x"F5";
+	constant code_read: integer :=0;
+	constant code_start: integer :=1;
+	constant code_stop: integer :=2;
+	constant code_pause: integer :=3;
+	constant code_goto: integer :=4;
+	constant code_check: integer :=5;
 	
 	subtype type_shift_i2c is std_logic_vector(value_shift-1 downto 0);
 	
@@ -59,11 +54,11 @@ architecture main of i2c_interface is
 	
 	constant div_clk: integer :=ref_freq/scl_freq/4;
 	signal en: boolean:= false; 
-	signal adr_count: type_mem_i2c;
+	signal adr_count: integer range 0 to 4095;
 begin					   
 	--------------------------------------------	
 	ena<=en; 
-	adr<=adr_count;
+	adr<=conv_std_logic_vector(adr_count,11);
 	i2c_proc: process (reset,clock,en)
 		type state_type is (start,wait_i2c,
 		state_start,state_stop,state_pause,state_goto,state_check,
@@ -71,7 +66,8 @@ begin
 		state_read_1,state_read_2,state_read_3,
 		error_state);
 		variable state : state_type:=start;	
-		variable shift_wrreg,shift_rdreg: type_shift_i2c;  	   
+		variable shift_wrreg,shift_rdreg: type_shift_i2c;  
+		variable adr_hi: std_logic_vector(3 downto 0);
 		variable count: integer range 0 to value_pause; 
 	begin
 		if reset='1' then 	
@@ -79,6 +75,7 @@ begin
 			sda<='Z';
 			i2c_valid<=false;
 			count:=0;
+			adr_hi:=(others=>'0');
 			shift_wrreg:=(others=>'0');
 			shift_rdreg:=(others=>'0');
 			state:=start; 
@@ -89,14 +86,15 @@ begin
 					scl<='1';
 					sda<='1';
 					i2c_valid<=false;
-					adr_count<=(others=>'0');
+					adr_count<=0;
 					state:=wait_i2c; 
 				
 				when wait_i2c =>  
 					i2c_valid<=false;
 					adr_count<=adr_count+1;
+					adr_hi:=data(3 downto 0);
 					if data(8)='1' then
-						case data(7 downto 0) is	
+						case conv_integer(data(7 downto 4)) is	
 							when code_start => 
 								count:=value_start;
 								state:=state_start; 
@@ -161,7 +159,7 @@ begin
 				
 				when state_goto => 
 					if count=0 then
-						adr_count<=data;
+						adr_count<=conv_integer(adr_hi & data(7 downto 0));
 						state:=wait_i2c;
 					else
 						count:=count-1;
@@ -176,7 +174,7 @@ begin
 							adr_count<=adr_count+1;	 
 						end if;
 					elsif count=0 then
-						adr_count<=data;
+						adr_count<=conv_integer(adr_hi & data(7 downto 0));
 						state:=wait_i2c;
 					end if;
 					if count/=0 then

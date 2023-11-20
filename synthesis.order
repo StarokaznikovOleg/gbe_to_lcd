@@ -28,7 +28,6 @@ i<>.\src\gowin_ip\table_MAP\table_MAP.v
 i<>.\src\gowin_ip\table_FONT\table_FONT.v
 i<>.\src\gen_txt.vhd
 i<>.\src\text_ctr.vhd
-i<>.\src\mdio_module.vhd
 i<>.\src\gowin_ip\table_TEXT\table_TEXT.v
 i<>.\src\bme280_module.vhd
 i<>.\src\I2C_interface.vhd
@@ -48,3 +47,12 @@ i<>.\src\hex_to_dec.vhd
 i<>.\src\gowin_ip\video_mem\video_mem1024x32.v
 i<>.\src\gowin_ip\video_mem\video_mem4096x32.v
 i<>.\src\gowin_ip\common_rpll\common_rpll.v
+i<>.\src\mdio_interface.vhd
+i<>.\src\i2c_lib.vhd
+i<>.\src\mdio_lib.vhd
+i<>.\src\YT8531_module.vhd
+i<>.\src\gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v
+i<>.\src\cmd_module.vhd
+i<>.\src\ethtx_module.vhd
+i<>.\src\eth_lib.vhd
+i<>.\src\gowin_ip\CMDtxmem\CMDtxmem.v

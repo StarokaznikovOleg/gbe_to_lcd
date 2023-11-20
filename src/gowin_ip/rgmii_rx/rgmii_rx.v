@@ -1,7 +1,7 @@
 //
 //Written by GowinSynthesis
 //Product Version "V1.9.9 Beta-3"
-//Mon Nov 13 17:01:38 2023
+//Sun Nov 19 22:56:34 2023
 
 //Source file index table:
 //file0 "\D:/Gowin/Gowin_V1.9.9Beta-3/IDE/ipcore/DDR/data/ddr.v"
@@ -31,7 +31,7 @@ wire GND;
     .VALUE(GND),
     .SETN(GND) 
 );
-defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=63;
+defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=0;
   IODELAY \iodelay_gen[1].iodelay_inst  (
     .DO(iodly_o[1]),
     .DF(\iodelay_gen[1].iodelay_inst_1_DF ),
@@ -40,7 +40,7 @@ defparam \iodelay_gen[0].iodelay_inst .C_STATIC_DLY=63;
     .VALUE(GND),
     .SETN(GND) 
 );
-defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=63;
+defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=0;
   IODELAY \iodelay_gen[2].iodelay_inst  (
     .DO(iodly_o[2]),
     .DF(\iodelay_gen[2].iodelay_inst_1_DF ),
@@ -49,7 +49,7 @@ defparam \iodelay_gen[1].iodelay_inst .C_STATIC_DLY=63;
     .VALUE(GND),
     .SETN(GND) 
 );
-defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=63;
+defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=0;
   IODELAY \iodelay_gen[3].iodelay_inst  (
     .DO(iodly_o[3]),
     .DF(\iodelay_gen[3].iodelay_inst_1_DF ),
@@ -58,7 +58,7 @@ defparam \iodelay_gen[2].iodelay_inst .C_STATIC_DLY=63;
     .VALUE(GND),
     .SETN(GND) 
 );
-defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=63;
+defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=0;
   IODELAY \iodelay_gen[4].iodelay_inst  (
     .DO(iodly_o[4]),
     .DF(\iodelay_gen[4].iodelay_inst_1_DF ),
@@ -67,7 +67,7 @@ defparam \iodelay_gen[3].iodelay_inst .C_STATIC_DLY=63;
     .VALUE(GND),
     .SETN(GND) 
 );
-defparam \iodelay_gen[4].iodelay_inst .C_STATIC_DLY=63;
+defparam \iodelay_gen[4].iodelay_inst .C_STATIC_DLY=0;
   IDDR \iddr_gen[0].iddr_inst  (
     .Q0(q[0]),
     .Q1(q[5]),

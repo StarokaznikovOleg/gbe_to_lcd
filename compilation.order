@@ -2,6 +2,9 @@
 .\src\common_lib.vhd
 .\src\vimon10_lib.vhd
 .\src\bme280_lib.vhd
+.\src\i2c_lib.vhd
+.\src\eth_lib.vhd
+.\src\mdio_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
 .\src\lpm_divide_s64.v
@@ -16,6 +19,8 @@
 .\src\gowin_ip\intram\intram.v
 .\src\gowin_ip\i2c_rom\i2c_rom.v
 .\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v
+.\src\gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v
+.\src\gowin_ip\CMDtxmem\CMDtxmem.v
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v
 .\src\gowin_ip\table_MAP\table_MAP.v
 .\src\gowin_ip\table_FONT\table_FONT.v
@@ -33,7 +38,9 @@
 .\src\freq_read.vhd
 .\src\sysled.vhd
 .\src\ser7to1.vhd
-.\src\ethrx_module.vhd
+.\src\hex_to_dec.vhd
+.\src\I2C_interface.vhd
+.\src\mdio_interface.vhd
 .\src\LCDserializer.vhd
 .\src\gen_txt.vhd
 .\src\text_ctr.vhd
@@ -43,10 +50,11 @@
 .\src\lcd_module.vhd
 .\src\gpu.vhd
 .\src\grafics_ctr.vhd
-.\src\mdio_module.vhd
-.\src\I2C_interface.vhd
-.\src\hex_to_dec.vhd
+.\src\ethrx_module.vhd
+.\src\cmd_module.vhd
 .\src\stat_module.vhd
+.\src\ethtx_module.vhd
 .\src\bme280_data_comp.vhd
 .\src\bme280_module.vhd
+.\src\YT8531_module.vhd
 .\src\vimon10.vhd

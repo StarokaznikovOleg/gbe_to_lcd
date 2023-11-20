@@ -1,7 +1,7 @@
 [General]
 ipc_version=4
-file=bme240_i2cmem
-module=bme240_i2cmem
+file=YT8531_mdiomem
+module=YT8531_mdiomem
 target_device=gw2ar18c-004
 type=ram_prom
 version=1.0
@@ -9,7 +9,7 @@ version=1.0
 [Config]
 DEPTH=2048
 LANG=0
-MEM_FILE=bme280_map.mi
+MEM_FILE=YT8531_map.mi
 READ=0
 RESET_MODE=true
 WIDTH=9

@@ -5,9 +5,9 @@
 -part_number GW2AR-LV18EQ144C8/I7
 
 
--mod_name bme240_i2cmem
--file_name bme240_i2cmem
--path D:/Projects/vimon/src/gowin_ip/bme240_i2cmem/
+-mod_name YT8531_mdiomem
+-file_name YT8531_mdiomem
+-path D:/Projects/vimon/src/gowin_ip/YT8531_mdiomem/
 -type RAM_ROM
 -file_type vlg
 -pROM true
@@ -15,4 +15,4 @@
 -width 9
 -read_mode bypass
 -reset_mode sync
--init_file D:\Projects\vimon\src\gowin_ip\bme240_i2cmem\bme280_map.mi
+-init_file D:\Projects\vimon\src\gowin_ip\YT8531_mdiomem\YT8531_map.mi

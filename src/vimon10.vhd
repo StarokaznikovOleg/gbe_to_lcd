@@ -7,6 +7,7 @@ library work;
 use work.vimon10_lib.all;								    
 use work.lcd_lib.all;
 use work.bme280_lib.all;
+use work.eth_lib.all;
 
 entity vimon10 is
 	port(	
@@ -59,7 +60,6 @@ architecture main of vimon10 is
 	
 	signal reset: std_logic:='0';	  
 	signal all_lock,sdrampll_lock,commonpll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
-	signal clk_125MHz: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
 	signal ethtx_clock,eth0rx_ref,eth1rx_ref: std_logic:='0';  
@@ -119,7 +119,12 @@ architecture main of vimon10 is
 	signal dbg : std_logic_vector(3 downto 0);	 
 	
 	signal bme280: type_outBME280; 
-	signal LCD_backlight : integer range 0 to 100;
+	signal LCD_backlight : integer range 0 to 100; 
+	
+	signal CMDTX_status: std_logic :='0';
+	signal CMDTX_wr: std_logic :='0';
+	signal CMDTX_ad,CMDTX_aq: type_CMD_mem_adr:=(others=>'0'); 
+	signal CMDTX_d,CMDTX_q: type_CMD_mem_data:=(others=>'0');
 	
 begin  
 	
@@ -207,15 +212,36 @@ begin
 			eth1rx_dv<=rgmii1_rxdout(4);
 			eth1rx_d<=rgmii1_rxdout(8 downto 5) & rgmii1_rxdout(3 downto 0); 
 		end if;
-	end process eth1rx_mux_proc;
-	--------------------------------------------------------
+	end process eth1rx_mux_proc;  
+	--------------------------------------------------------	
+	cmd_module1 : entity work.cmd_module
+	generic map( ref_freq => 12500000, hfilter => 4 )
+	port map( reset => rst_eth, clock => common_clk,
+		mem_status => CMDtx_status, mem_wr => CMDtx_wr, mem_adr => CMDtx_ad, mem_data => CMDtx_d,
+		key => DB(3 downto 1) );	
+	
+	CMDTX_mem : entity work.CMDtxmem
+	port map( reseta=>'0', clka=>common_clk, cea=>CMDtx_wr, ada=>CMDtx_ad, din=>CMDtx_d,
+	resetb=>'0',ceb=>'1',oce=>'1', clkb=>ethtx_clock, adb=>CMDtx_aq, dout=>CMDtx_q);	 
+	
+	ethtx_module1 : entity work.ethtx_module
+	generic map( ref_freq => 125000000	)
+	port map( reset => rst_eth, clock => ethtx_clock,
+		CMD_clock => common_clk,
+		CMD_status => CMDtx_status,
+		CMDmem_aq => CMDtx_aq,
+		CMDmem_q => CMDtx_q,
+		ethtx_en => eth0tx_en,
+		ethtx_d => eth0tx_d );	
+	--------------------------------------------------------	
+		
 	-- eth0 & eth1 connections 
-	eth0tx_en<='0'; --eth1rx_dv;
-	eth0tx_d<=x"00"; --eth1rx_d;		  
+--	eth0tx_en<='0'; --eth1rx_dv;
+--	eth0tx_d<=x"00"; --eth1rx_d;		  
 	eth1tx_en<='0'; --eth0rx_dv;
 	eth1tx_d<=x"00"; --eth0rx_d;	 
 	
-	--------------------------------------------------------	
+	--------------------------------------------------------
 	--  tx_eth0 path	
 	rgmii0_txdin(9)<=eth0tx_en;
 	rgmii0_txdin(8 downto 5)<=eth0tx_d(7 downto 4);
@@ -240,7 +266,8 @@ begin
 		q=>rgmii1_txdout );	
 	ETH1_TXD<=rgmii1_txdout(3 downto 0);
 	ETH1_TXCTL<=rgmii1_txdout(4);
-	ETH1_TXCLK<=ethtx_clock;
+	ETH1_TXCLK<=ethtx_clock;   
+	
 	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr
@@ -263,7 +290,7 @@ begin
 		txt_mapdin=>txt_mapdin );	
 	detect_video<=not no_signal;
 	detect_voice<='1';
-
+	
 	stat_module1 : entity work.stat_module 
 	port map( reset=>reset, clock=>common_clk,
 		bme280=>bme280,
@@ -424,9 +451,10 @@ begin
 		grafics_act=>grafics_act_pixel,
 		grafics_color=>grafics_color_pixel ); 
 	
-	MDIO_module1 : entity work.MDIO_module 
+	YT8531_module1 : entity work.YT8531_module 
+	generic map(ref_freq => 12500000)
 	port map( reset=>rst_eth, clock=>common_clk,
-		MDC=>ETH_MDC, MDIO=>ETH_MDIO,
+		mdc=>ETH_MDC, mdio=>ETH_MDIO,
 		link=>eth_link );	
 	
 	sensor1_bme280 : entity work.bme280_module

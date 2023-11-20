@@ -1,0 +1,21 @@
+-series GW2AR
+-device GW2AR-18
+-device_version C
+-package eLQFP144P
+-part_number GW2AR-LV18EQ144PC8/I7
+
+
+-mod_name CMDtxmem
+-file_name CMDtxmem
+-path D:/Projects/vimon/src/gowin_ip/CMDtxmem/
+-type RAM_SDP
+-file_type vlg
+-bram_b true
+-depth_0 2048
+-depth_1 2048
+-width_0 9
+-width_1 9
+-read_mode bypass
+-reset_mode sync
+-init_file D:\Projects\vimon\src\gowin_ip\CMDtxmem\CMDtx_map.mi
+-init_match port_A
