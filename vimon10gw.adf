@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\vimon\src\gowin_ip\CMDtxmem
+fileopenfolder=D:\Projects\vimon\src\gowin_ip\visca_cmd
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -63,9 +63,9 @@ ShowHide=ShowTopLevel
 Selected=
 
 [Files]
+/vimon10_lib.vhd=-1
 /lcd_lib.vhd=-1
 /common_lib.vhd=-1
-/vimon10_lib.vhd=-1
 /bme280_lib.vhd=-1
 /i2c_lib.vhd=-1
 /eth_lib.vhd=-1
@@ -84,6 +84,9 @@ Selected=
 /gowin_ip\intram\intram.v=-1
 /gowin_ip\i2c_rom\i2c_rom.v=-1
 /gowin_ip\bme240_i2cmem\bme240_i2cmem.v=-1
+/gowin_ip\visca_cmd\visca_zoom_dec.v=-1
+/gowin_ip\visca_cmd\visca_zoom_inc.v=-1
+/gowin_ip\visca_cmd\visca_zoom_stop.v=-1
 /gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v=-1
 /gowin_ip\CMDtxmem\CMDtxmem.v=-1
 /gowin_ip\indexDDR_table\indexDDR_table.v=-1
@@ -126,9 +129,9 @@ Selected=
 /vimon10.vhd=-1
 
 [Files.Data]
+.\src\vimon10_lib.vhd=VHDL Source Code
 .\src\lcd_lib.vhd=VHDL Source Code
 .\src\common_lib.vhd=VHDL Source Code
-.\src\vimon10_lib.vhd=VHDL Source Code
 .\src\bme280_lib.vhd=VHDL Source Code
 .\src\i2c_lib.vhd=VHDL Source Code
 .\src\eth_lib.vhd=VHDL Source Code
@@ -147,6 +150,9 @@ Selected=
 .\src\gowin_ip\intram\intram.v=Verilog Source Code
 .\src\gowin_ip\i2c_rom\i2c_rom.v=Verilog Source Code
 .\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v=Verilog Source Code
+.\src\gowin_ip\visca_cmd\visca_zoom_dec.v=Verilog Source Code
+.\src\gowin_ip\visca_cmd\visca_zoom_inc.v=Verilog Source Code
+.\src\gowin_ip\visca_cmd\visca_zoom_stop.v=Verilog Source Code
 .\src\gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v=Verilog Source Code
 .\src\gowin_ip\CMDtxmem\CMDtxmem.v=Verilog Source Code
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v=Verilog Source Code

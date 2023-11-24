@@ -44,10 +44,10 @@ begin
 --				act_pixel<=true;
 --				color_pixel<=pixel_errl;
 --			els
-			if act_errp and dbg(2)='1' then 
+			if act_errp and dbg(0)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_errp;
-			elsif act_txt and dbg(3)='1' then 
+			elsif act_txt and dbg(1)='1' then 
 				act_pixel<=true;
 				color_pixel<=pixel_txt;
 			else

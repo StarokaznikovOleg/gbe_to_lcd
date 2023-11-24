@@ -1,0 +1,13 @@
+[General]
+ipc_version=4
+file=visca_zoom_inc
+module=visca_zoom_inc
+target_device=gw2ar18c-004
+type=ssram_rom16
+version=1.0
+
+[Config]
+DEPTH=8
+LANG=0
+WIDTH=8
+MEM_FILE=visca_zoom_inc.mi

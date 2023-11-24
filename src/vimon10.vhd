@@ -57,17 +57,17 @@ entity vimon10 is
 end vimon10;
 
 architecture main of vimon10 is	 
-	
+	constant int_clk_freq: integer:=18367347;
 	signal reset: std_logic:='0';	  
 	signal all_lock,sdrampll_lock,commonpll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
-	signal ethtx_clock,eth0rx_ref,eth1rx_ref: std_logic:='0';  
-	signal eth0rx_clock,eth0_txclk_int,eth0_txclk_ext,eth0rxpll_lock: std_logic:='0';  
-	signal eth1rx_clock,eth1_txclk_int,eth1_txclk_ext,eth1rxpll_lock: std_logic:='0';  
+	signal ethtx_clock: std_logic:='0';  
+	signal eth0rx_clock,eth0rxpll_lock: std_logic:='0';  
+	signal eth1rx_clock,eth1rxpll_lock: std_logic:='0';  
 	
-	signal eth0tx_en,eth0rx_dv,eth1tx_en,eth1rx_dv: std_logic:='0';
-	signal eth0rx_d,eth0tx_d,eth1rx_d,eth1tx_d: std_logic_vector(7 downto 0):=(others=>'0');  	   
+	signal eth0tx_en,eth0rx_dv,eth1tx_en,eth1rx_dv,ethtx_en: std_logic:='0';
+	signal eth0rx_d,eth0tx_d,eth1rx_d,eth1tx_d,ethtx_d: std_logic_vector(7 downto 0):=(others=>'0');  	   
 	signal rgmii0_rxdin,rgmii0_txdout,rgmii1_rxdin,rgmii1_txdout: std_logic_vector(4 downto 0):=(others=>'0');  	   
 	signal rgmii0_rxdout,rgmii0_txdin,rgmii1_rxdout,rgmii1_txdin: std_logic_vector(9 downto 0):=(others=>'0'); 
 	
@@ -92,7 +92,8 @@ architecture main of vimon10 is
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
 	
 	signal rst_hw,rst_gpu,rst_lcd,rst_eth: std_logic:='0';  
-	signal gpu_clk,sdram_clk,common_clk: std_logic:='0';   
+	signal rst_eth_syncethtx,rst_eth_syncethrx1,rst_gpu_syncgpu: std_logic:='0';  
+	signal gpu_clk,sdram_clk,int_clk: std_logic:='0';   
 	signal lcd_vsync,eth_vsync: std_logic:='0';   	  
 	
 	signal sdrc_rst_n,sdrc_selfrefresh,sdrc_power_down,sdrc_wr_n,sdrc_rd_n,sdrc_init_done,sdrc_busy_n,sdrc_rd_valid,sdrc_wrd_ack : std_logic:='0'; 
@@ -131,7 +132,7 @@ begin
 	power<='0';
 	dbg<=DB(3 downto 0);		
 	
-	all_lock<=PWG and sdrampll_lock and lcd_lock and commonpll_lock;
+	all_lock<=PWG and sdrampll_lock and lcd_lock; -- and commonpll_lock;
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
@@ -150,26 +151,20 @@ begin
 	err_clk(08)<=lcd_pclk;		err_pulse(08)<=lcd_err;				--LCD: video sequence error
 	
 	--------------------------------------------------------	
-	--  common pll	
-	common_rpll1 : entity work.common_rpll 
-	port map( clkin=>CLK25M,
-		lock=>commonpll_lock,
-		clkout=>common_clk );	
-	--------------------------------------------------------	
 	--  sdram pll	
 	sdram_rpll1 : entity work.sdram_rpll 
-	port map( clkin=>CLK25M,
+	port map( clkin=>CLK25M,	--reference 25MHz
 		lock=>sdrampll_lock,
-		clkout=>sdram_clk,
-		clkoutp=>gpu_clk );	
+		clkout=>sdram_clk,		--clock 125MHz
+		clkoutp=>gpu_clk );	  	--clock 125MHz shift 45°
 	ethtx_clock<=gpu_clk;
 	--------------------------------------------------------	
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
-	port map ( clkin=>CLK25M,		--reference 25MHz
+	port map ( clkin=>CLK25M,	--reference 25MHz
 		lock=>lcd_lock,
-		clkout=>ref_sclk,		--clock 225MHz
-		clkoutp=>lcd_sclk ); 		--clock 225MHz shift 45°
+		clkout=>lcd_sclk,		--clock 225MHz
+		clkoutp=>ref_sclk );	--clock 225MHz shift 45°
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
 	port map(
@@ -178,6 +173,12 @@ begin
 		clkout=>lcd_pclk	 --clock 225MHz/3.5=64.286MHz
 		);	
 	
+	intclk_source : entity work.lcd_clkdiv 
+	port map(
+		resetn=>'1',
+		hclkin=>lcd_pclk,	--clock 64.286MHz
+		clkout=>int_clk	 --clock 64.286MHz/3.5=18.367MHz
+		);	
 	--------------------------------------------------------	
 	--  rx_eth0 path	
 	eth0rx_clock<=ETH0_RXCLK;
@@ -215,40 +216,32 @@ begin
 	end process eth1rx_mux_proc;  
 	--------------------------------------------------------	
 	cmd_module1 : entity work.cmd_module
-	generic map( ref_freq => 12500000, hfilter => 4 )
-	port map( reset => rst_eth, clock => common_clk,
+	generic map( ref_freq => int_clk_freq, hfilter => 4 )
+	port map( reset => rst_eth, clock => int_clk,
 		mem_status => CMDtx_status, mem_wr => CMDtx_wr, mem_adr => CMDtx_ad, mem_data => CMDtx_d,
-		key => DB(3 downto 1) );	
+		key => DB(3 downto 2) );	
 	
 	CMDTX_mem : entity work.CMDtxmem
-	port map( reseta=>'0', clka=>common_clk, cea=>CMDtx_wr, ada=>CMDtx_ad, din=>CMDtx_d,
-	resetb=>'0',ceb=>'1',oce=>'1', clkb=>ethtx_clock, adb=>CMDtx_aq, dout=>CMDtx_q);	 
+	port map( reseta=>'0', clka=>int_clk, cea=>CMDtx_wr, ada=>CMDtx_ad, din=>CMDtx_d,
+		resetb=>'0',ceb=>'1',oce=>'1', clkb=>ethtx_clock, adb=>CMDtx_aq, dout=>CMDtx_q);	 
 	
 	ethtx_module1 : entity work.ethtx_module
-	generic map( ref_freq => 125000000	)
-	port map( reset => rst_eth, clock => ethtx_clock,
-		CMD_clock => common_clk,
+	port map( reset => rst_eth_syncethtx, clock => ethtx_clock,
 		CMD_status => CMDtx_status,
 		CMDmem_aq => CMDtx_aq,
 		CMDmem_q => CMDtx_q,
-		ethtx_en => eth0tx_en,
-		ethtx_d => eth0tx_d );	
+		ethtx_en => ethtx_en,
+		ethtx_d => ethtx_d );	
 	--------------------------------------------------------	
-		
-	-- eth0 & eth1 connections 
---	eth0tx_en<='0'; --eth1rx_dv;
---	eth0tx_d<=x"00"; --eth1rx_d;		  
-	eth1tx_en<='0'; --eth0rx_dv;
-	eth1tx_d<=x"00"; --eth0rx_d;	 
-	
-	--------------------------------------------------------
 	--  tx_eth0 path	
+	eth0tx_en<=ethtx_en;
+	eth0tx_d<=ethtx_d;		  
 	rgmii0_txdin(9)<=eth0tx_en;
 	rgmii0_txdin(8 downto 5)<=eth0tx_d(7 downto 4);
 	rgmii0_txdin(4)<=eth0tx_en;
 	rgmii0_txdin(3 downto 0)<=eth0tx_d(3 downto 0);
 	rgmii0_tx1 : entity work.rgmii_tx 
-	port map( clk=>eth1rx_clock,
+	port map( clk=>ethtx_clock,
 		din=>rgmii0_txdin,
 		q=>rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
@@ -256,6 +249,8 @@ begin
 	ETH0_TXCLK<=ethtx_clock;
 	--	--------------------------------------------------------	
 	--	--  tx_eth1 path	 
+	eth1tx_en<=eth0rx_dv;
+	eth1tx_d<=eth0rx_d;	 
 	rgmii1_txdin(9)<=eth1tx_en;
 	rgmii1_txdin(8 downto 5)<=eth1tx_d(7 downto 4);
 	rgmii1_txdin(4)<=eth1tx_en;
@@ -266,7 +261,7 @@ begin
 		q=>rgmii1_txdout );	
 	ETH1_TXD<=rgmii1_txdout(3 downto 0);
 	ETH1_TXCTL<=rgmii1_txdout(4);
-	ETH1_TXCLK<=ethtx_clock;   
+	ETH1_TXCLK<=eth0rx_clock;   
 	
 	--------------------------------------------------------	
 	--  grafics_ctr		  
@@ -284,7 +279,7 @@ begin
 		act_pixel=>grafics_act_pixel,
 		color_pixel=>grafics_color_pixel,
 		
-		txt_mapclk=>common_clk,
+		txt_mapclk=>int_clk,
 		txt_mapadr=>txt_mapadr,
 		txt_mapwr=>txt_mapwr,
 		txt_mapdin=>txt_mapdin );	
@@ -292,9 +287,9 @@ begin
 	detect_voice<='1';
 	
 	stat_module1 : entity work.stat_module 
-	port map( reset=>reset, clock=>common_clk,
+	port map( reset=>reset, clock=>int_clk,
 		bme280=>bme280,
-		eth_link=>eth_link(1), 
+		eth_link=>eth_link, 
 		detect_video=>detect_video, 
 		detect_voice=>detect_voice, 
 		LCD_backlight=>LCD_backlight,
@@ -306,18 +301,26 @@ begin
 	LED_RED<='1';
 	
 	sync_all : entity work.resync 
-	port map( reset=>reset, clock=>common_clk,
+	port map( reset=>reset, clock=>int_clk,
 		rst_hw=>rst_hw,
-		clk_eth=>eth1rx_clock,
 		rst_eth=>rst_eth,
-		clk_gpu=>gpu_clk,
 		rst_gpu=>rst_gpu,
-		clk_lcd=>lcd_pclk,
-		rst_lcd=>rst_lcd );		
+		rst_lcd=>rst_lcd );	
+	
+	rst_eth_sync_ethtx : entity work.Sync 
+	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+	port map( reset=>'0',
+		clk_in=>int_clk, data_in=>rst_eth,
+		clk_out=>gpu_clk, data_out=>rst_eth_syncethtx );
+	rst_gpu_sync_gpu : entity work.Sync 
+	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+	port map( reset=>'0',
+		clk_in=>int_clk, data_in=>rst_gpu,
+		clk_out=>gpu_clk, data_out=>rst_gpu_syncgpu );	
 	
 	ethrx_module1 : entity work.ethrx_module 
 	generic map( hsize=>1920, vsize=>1080)
-	port map( reset=>rst_eth, clock=>eth1rx_clock,
+	port map( reset=>rst_eth_syncethrx1, clock=>eth1rx_clock,
 		err=>ethrx_err,
 		vsync=>eth_vsync,
 		ethrx_en=>eth1rx_dv,
@@ -327,14 +330,14 @@ begin
 		ethv_d=>ethv_d );	
 	
 	rx_video_mem : entity work.video_mem4096x32
-	port map( reseta=>rst_eth, clka=>eth1rx_clock,
+	port map( reseta=>rst_eth_syncethrx1, clka=>eth1rx_clock,
 		cea=>'1',
 		ada=>ethv_a,
 		wrea=>ethv_wr,
 		dina=>ethv_d,
 		ocea=>'1',
 		douta=>ethv_q,
-		resetb=>rst_gpu,
+		resetb=>rst_gpu_syncgpu,
 		clkb=>gpu_clk,
 		ceb=>'1',
 		adb=>gpurx_a,
@@ -344,7 +347,7 @@ begin
 		doutb=>gpurx_q  );
 	
 	gpu1 : entity work.gpu 
-	port map( reset=>rst_gpu, clock=>gpu_clk,
+	port map( reset=>rst_gpu_syncgpu, clock=>gpu_clk,
 		err=>gpu_err,
 		no_signal=>no_signal,
 		
@@ -404,25 +407,24 @@ begin
 	
 	tx_video_mem_Y0 : entity work.video_mem1024x32 
 	port map(
-		reseta=>reset, --rst_gpu,
-		clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
-		resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) ); 
+		reseta=>'0', clka=>gpu_clk, cea=>gputx_sel(0), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'1', douta=>gputx_q,
+		resetb=>'0', clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>lcd_wr, dinb=>lcd_d(31 downto 0), oceb=>'1', doutb=>lcd_q(31 downto 0) );
 	
 	tx_video_mem_Y1 : entity work.video_mem1024x32 
 	port map(
-	reseta=>reset, --rst_gpu,
-	clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) ); 
+	reseta=>'0', clka=>gpu_clk, cea=>gputx_sel(1), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+	resetb=>'0', clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(63 downto 32) );
+	
 	
 	tx_video_mem_C : entity work.video_mem1024x32 
 	port map(
-	reseta=>reset, --rst_gpu,
-	clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
-	resetb=>rst_lcd, clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) ); 
+	reseta=>'0', clka=>gpu_clk, cea=>gputx_sel(2), ada=>gputx_a, wrea=>gputx_wr, dina=>gputx_d, ocea=>'0', douta=>open,
+	resetb=>'0', clkb=>lcd_pclk, ceb=>'1', adb=>lcd_a, wreb=>'0', dinb=>x"00000000", oceb=>'1', doutb=>lcd_q(95 downto 64) );
+	
 	-----------------------------------
 	-- LCD part	
 	set_LCD_EN<='1';
-	LCD_backlight<=100; -- backlight is fixed now :(
+	LCD_backlight<=99; -- backlight is fixed now :(
 	LCD_EN_LED<=int_LCD_EN ;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
@@ -452,14 +454,14 @@ begin
 		grafics_color=>grafics_color_pixel ); 
 	
 	YT8531_module1 : entity work.YT8531_module 
-	generic map(ref_freq => 12500000)
-	port map( reset=>rst_eth, clock=>common_clk,
+	generic map(ref_freq => int_clk_freq)
+	port map( reset=>rst_eth, clock=>int_clk,
 		mdc=>ETH_MDC, mdio=>ETH_MDIO,
 		link=>eth_link );	
 	
 	sensor1_bme280 : entity work.bme280_module
-	generic map( ref_freq=>12500000 )
-	port map( reset=>reset, clock=>common_clk,
+	generic map( ref_freq=>int_clk_freq )
+	port map( reset=>reset, clock=>int_clk,
 		scl=>Sensor_SCL, sda=>Sensor_SDA,
 		bme280=>bme280 );	
 	

@@ -7,14 +7,11 @@
 library IEEE;
 library IEEE;
 use IEEE.std_logic_1164.all;
---use IEEE.std_logic_arith.all;
---use IEEE.std_logic_unsigned.all; 
 use ieee.numeric_std.all; 
 
 library work;
 use work.common_lib.all;
 use work.mdio_lib.all;
---use work.YT8531_lib.all;
 
 entity YT8531_module is
 	generic( ref_freq : integer:=125000000 );
@@ -50,7 +47,7 @@ begin
 			end if;
 			if mdio_adr_mem=adr_chip1 then
 				link(1)<='0'; 
-			elsif mdio_valid and mdio_adr_mem=adr_link0 then	
+			elsif mdio_valid and mdio_adr_mem=adr_link1 then	
 				link(1)<=mdio_q(2); 
 			end if;
 		end if;

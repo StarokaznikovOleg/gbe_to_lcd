@@ -1,9 +1,8 @@
+.\src\vimon10_lib.vhd
 .\src\lcd_lib.vhd
 .\src\common_lib.vhd
-.\src\vimon10_lib.vhd
 .\src\bme280_lib.vhd
 .\src\i2c_lib.vhd
-.\src\eth_lib.vhd
 .\src\mdio_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
@@ -19,6 +18,9 @@
 .\src\gowin_ip\intram\intram.v
 .\src\gowin_ip\i2c_rom\i2c_rom.v
 .\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v
+.\src\gowin_ip\visca_cmd\visca_zoom_dec.v
+.\src\gowin_ip\visca_cmd\visca_zoom_inc.v
+.\src\gowin_ip\visca_cmd\visca_zoom_stop.v
 .\src\gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v
 .\src\gowin_ip\CMDtxmem\CMDtxmem.v
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v

@@ -1,0 +1,11 @@
+#File_format=AddrHex
+#Address_depth=8
+#Data_width=8
+0:06
+1:FF
+2:03
+3:07
+4:04
+5:01
+6:81
+7:00

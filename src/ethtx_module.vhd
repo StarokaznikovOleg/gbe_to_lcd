@@ -13,11 +13,9 @@ use work.common_lib.all;
 use work.eth_lib.all;
 
 entity ethtx_module is
-	generic( ref_freq : integer:=125000000);
 	port(
 		reset : in STD_LOGIC;
 		clock: in std_logic; 
-		CMD_clock: in std_logic; 
 		
 		CMD_status : in STD_LOGIC;
 		CMDmem_aq : out type_cmd_mem_adr;
@@ -30,7 +28,7 @@ entity ethtx_module is
 end ethtx_module;
 
 architecture main of ethtx_module is	
-	type state_type is (idle,send_CMD,ethheader_CRC32,ethheader_PAUSE);
+	type state_type is (idle,start_CMD,send_CMD,ethheader_CRC32,ethheader_PAUSE);
 	signal state : state_type;	
 	signal inttx_en,intcrc_clr,intcrc_en,intcrc_out : std_logic:='0';
 	signal inttx_d : std_logic_vector(7 downto 0):=(others=>'0');
@@ -46,9 +44,8 @@ begin
 	sync_CMD_status : entity work.Sync 
 	generic map( regime => "level", inDelay => 0, outDelay => 0 )
 	port map(reset => '0',
-		clk_in => CMD_clock, data_in => CMD_status,
+		clk_in => clock, data_in => CMD_status,
 		clk_out => clock, data_out => CMD_status_sync);
-	--	CMD_status_sync<=CMD_status;
 	---------------------------------------------------------	
 	crc32_tx : entity work.crc32 
 	generic map( BusWidth=>8 )
@@ -94,19 +91,23 @@ begin
 					intcrc_en<='0';
 					inttx_en<='0';
 					inttx_d<=x"00";
-					count:=eth_min_packet_len+eth_preambule_len;
+					count:=eth_min_packet_len+eth_preambule_len-1;
 					ADRcount<=0;
 					if CMD_act then 
 						intcrc_clr<='1';
 						CMD_status_store<=CMD_status_sync;
-						state<=send_CMD;
+						state<=start_CMD;
 					end if;	
+				
+				when start_CMD => 
+					intcrc_clr<='0';
+					ADRcount<=ADRcount+1;
+					state<=send_CMD;   
 				
 				when send_CMD => 
 					ADRcount<=ADRcount+1;
 					inttx_d<=CMDmem_q(7 downto 0);
 					inttx_en<='1';
-					intcrc_clr<='0';
 					intcrc_en<=boolean_to_data(ADRcount>eth_preambule_len);
 					if CMDmem_q(8)='0' and count=0 then
 						count:=3;

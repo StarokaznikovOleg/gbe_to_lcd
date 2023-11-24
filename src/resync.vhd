@@ -11,7 +11,7 @@ entity resync is
 	--	generic( inDelay : integer:=0; outDelay : integer:=0);
 	port(
 		reset,clock	: in std_logic:='0';
-		clk_gpu,clk_lcd,clk_eth	: in std_logic:='0';
+--		clk_gpu,clk_lcd,clk_eth	: in std_logic:='0';
 		rst_hw,rst_eth,rst_gpu,rst_lcd	: out std_logic	
 		);
 end resync;
@@ -54,19 +54,19 @@ begin
 				rst_hw<='0'; 
 			end if;
 			if count=reset_phase then 
-				int_rst_gpu<='1';
+				rst_gpu<='1';
 			elsif count=gpu_phase then 
-				int_rst_gpu<='0'; 
+				rst_gpu<='0'; 
 			end if;
 			if count=reset_phase then 
-				int_rst_lcd<='1';
+				rst_lcd<='1';
 			elsif count=lcd_phase then 
-				int_rst_lcd<='0'; 
+				rst_lcd<='0'; 
 			end if;
 			if count=reset_phase then 
-				int_rst_eth<='1';
+				rst_eth<='1';
 			elsif count=eth_phase then 
-				int_rst_eth<='0'; 
+				rst_eth<='0'; 
 			end if;
 			if count=work_phase and allerr then
 				count:=0;
@@ -75,22 +75,22 @@ begin
 			end if;
 		end if;
 	end process main_proc; 	 
-	
-		gpu_sync : entity work.Sync 
-		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
-		port map( reset=>'0',
-			clk_in=>clock, data_in=>int_rst_gpu,
-			clk_out=>clk_gpu, data_out=>rst_gpu );	
-		lcd_sync : entity work.Sync 
-		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
-		port map( reset=>'0',
-			clk_in=>clock, data_in=>int_rst_lcd,
-			clk_out=>clk_lcd, data_out=>rst_lcd );	
-		eth_sync : entity work.Sync 
-		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
-		port map( reset=>'0',
-			clk_in=>clock, data_in=>int_rst_eth,
-			clk_out=>clk_eth, data_out=>rst_eth );	
+--	
+--		gpu_sync : entity work.Sync 
+--		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+--		port map( reset=>'0',
+--			clk_in=>clock, data_in=>int_rst_gpu,
+--			clk_out=>clk_gpu, data_out=>rst_gpu );	
+--		lcd_sync : entity work.Sync 
+--		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+--		port map( reset=>'0',
+--			clk_in=>clock, data_in=>int_rst_lcd,
+--			clk_out=>clk_lcd, data_out=>rst_lcd );	
+--		eth_sync : entity work.Sync 
+--		generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+--		port map( reset=>'0',
+--			clk_in=>clock, data_in=>int_rst_eth,
+--			clk_out=>clk_eth, data_out=>rst_eth );	
 	
 	
 end main;

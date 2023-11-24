@@ -1,7 +1,7 @@
 //
 //Written by GowinSynthesis
 //Product Version "V1.9.9 Beta-3"
-//Mon Nov 13 17:01:54 2023
+//Tue Nov 21 18:19:45 2023
 
 //Source file index table:
 //file0 "\D:/Gowin/Gowin_V1.9.9Beta-3/IDE/ipcore/DDR/data/ddr.v"

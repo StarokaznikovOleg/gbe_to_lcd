@@ -27,7 +27,7 @@
 -clkout_bypass false
 -en_clkoutp true
 -clkoutp_bypass false
--psda_sel 2
+-psda_sel 0
 -dutyda_sel 8
 -en_clkoutd false
 -clkoutd_bypass false

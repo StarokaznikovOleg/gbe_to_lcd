@@ -5,7 +5,7 @@
 //Part Number: GW2AR-LV18EQ144C8/I7
 //Device: GW2AR-18
 //Device Version: C
-//Created Time: Sun Nov 12 20:47:37 2023
+//Created Time: Fri Nov 24 11:03:10 2023
 
 module lcd_rpll (clkout, lock, clkoutp, clkin);
 
@@ -47,7 +47,7 @@ defparam rpll_inst.DYN_FBDIV_SEL = "false";
 defparam rpll_inst.FBDIV_SEL = 8;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
 defparam rpll_inst.ODIV_SEL = 4;
-defparam rpll_inst.PSDA_SEL = "0010";
+defparam rpll_inst.PSDA_SEL = "0000";
 defparam rpll_inst.DYN_DA_EN = "false";
 defparam rpll_inst.DUTYDA_SEL = "1000";
 defparam rpll_inst.CLKOUT_FT_DIR = 1'b1;

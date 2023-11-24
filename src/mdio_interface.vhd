@@ -157,7 +157,7 @@ begin
 					mdio_access<='1';
 					mdio_wr<='1';
 					if mdio_done='0' then
-					adr_count<=adr_count+1;
+						adr_count<=adr_count+1;
 						state<=st_wr5;
 					end if;
 				
@@ -193,10 +193,11 @@ begin
 					state<=st_ch5; 
 				
 				when st_ch5 => 
-					adr_count<=adr_count+1;
 					if check and int_mdio_q(7 downto 0)=data(7 downto 0) then
+						adr_count<=adr_count+1;
 						state<=st_goto; 
 					else
+						adr_count<=adr_count+2;
 						state<=st_wait; 
 					end if;
 				

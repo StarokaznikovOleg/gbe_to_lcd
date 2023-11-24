@@ -5,7 +5,7 @@
 //Part Number: GW2AR-LV18EQ144C8/I7
 //Device: GW2AR-18
 //Device Version: C
-//Created Time: Sun Nov 19 23:12:36 2023
+//Created Time: Tue Nov 21 18:16:21 2023
 
 module YT8531_mdiomem (dout, clk, oce, ce, reset, ad);
 

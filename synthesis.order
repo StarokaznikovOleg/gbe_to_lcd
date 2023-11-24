@@ -56,3 +56,6 @@ i<>.\src\cmd_module.vhd
 i<>.\src\ethtx_module.vhd
 i<>.\src\eth_lib.vhd
 i<>.\src\gowin_ip\CMDtxmem\CMDtxmem.v
+i<>.\src\gowin_ip\visca_cmd\visca_zoom_dec.v
+i<>.\src\gowin_ip\visca_cmd\visca_zoom_inc.v
+i<>.\src\gowin_ip\visca_cmd\visca_zoom_stop.v
