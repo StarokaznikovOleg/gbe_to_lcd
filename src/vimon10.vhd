@@ -92,7 +92,7 @@ architecture main of vimon10 is
 	signal err_clk,err_pulse: type_pulse_err:=(others=>'0'); 
 	
 	signal rst_hw,rst_gpu,rst_lcd,rst_eth: std_logic:='0';  
-	signal rst_eth_syncethtx,rst_eth_syncethrx1,rst_gpu_syncgpu: std_logic:='0';  
+	signal rst_eth_syncethtx,rst_eth_syncethrx0,rst_gpu_syncgpu: std_logic:='0';  
 	signal gpu_clk,sdram_clk,int_clk: std_logic:='0';   
 	signal lcd_vsync,eth_vsync: std_logic:='0';   	  
 	
@@ -197,8 +197,8 @@ begin
 		end if;
 	end process eth0rx_mux_proc;
 	
-	--	--------------------------------------------------------	
-	--	--  rx_eth1 path	
+		--------------------------------------------------------	
+		--  rx_eth1 path	
 	eth1rx_clock<=ETH1_RXCLK;
 	rgmii1_rxdin(4)<=ETH1_RXCTL;
 	rgmii1_rxdin(3 downto 0)<=ETH1_RXD;
@@ -312,6 +312,11 @@ begin
 	port map( reset=>'0',
 		clk_in=>int_clk, data_in=>rst_eth,
 		clk_out=>gpu_clk, data_out=>rst_eth_syncethtx );
+	rst_eth_sync_ethrx : entity work.Sync 
+	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
+	port map( reset=>'0',
+		clk_in=>int_clk, data_in=>rst_eth,
+		clk_out=>eth0rx_clock, data_out=>rst_eth_syncethrx0 );
 	rst_gpu_sync_gpu : entity work.Sync 
 	generic map( regime=>"level", inDelay=>1, outDelay=>1 )
 	port map( reset=>'0',
@@ -320,17 +325,17 @@ begin
 	
 	ethrx_module1 : entity work.ethrx_module 
 	generic map( hsize=>1920, vsize=>1080)
-	port map( reset=>rst_eth_syncethrx1, clock=>eth1rx_clock,
+	port map( reset=>rst_eth_syncethrx0, clock=>eth0rx_clock,
 		err=>ethrx_err,
 		vsync=>eth_vsync,
-		ethrx_en=>eth1rx_dv,
-		ethrx_d=>eth1rx_d,
+		ethrx_en=>eth0rx_dv,
+		ethrx_d=>eth0rx_d,
 		ethv_a=>ethv_a,
 		ethv_wr=>ethv_wr,
 		ethv_d=>ethv_d );	
 	
 	rx_video_mem : entity work.video_mem4096x32
-	port map( reseta=>rst_eth_syncethrx1, clka=>eth1rx_clock,
+	port map( reseta=>rst_eth_syncethrx0, clka=>eth0rx_clock,
 		cea=>'1',
 		ada=>ethv_a,
 		wrea=>ethv_wr,

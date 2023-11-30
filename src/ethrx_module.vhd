@@ -62,7 +62,7 @@ architecture main of ethrx_module is
 	signal Vcount : integer range 0 to vsize :=0;	
 	signal err_len,err_crc,err_frame,err_sequence : std_logic:='0';
 	signal Fcount : integer range 0 to 255;
-	signal errcnt_crc : integer :=vsize-1;
+	signal errcnt_crc : integer :=0;
 	signal vsync_int,vsync_delay0,vsync_delay1 : std_logic:='0';
 	
 begin 
