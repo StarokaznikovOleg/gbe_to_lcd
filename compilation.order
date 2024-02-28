@@ -37,6 +37,7 @@
 .\src\crc32.vhd
 .\src\sync.vhd
 .\src\resync.vhd
+.\src\filter.vhd
 .\src\freq_read.vhd
 .\src\sysled.vhd
 .\src\ser7to1.vhd

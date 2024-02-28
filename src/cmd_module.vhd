@@ -17,7 +17,8 @@ entity cmd_module is
 	generic( ref_freq:integer:=125000000; hfilter:integer:=4 );	 
 	port(
 		reset,clock: in std_logic; 
-		key: in std_logic_vector(1 downto 0); 
+		key: in std_logic_vector(5 downto 0); 
+		LCD_backlight : out integer range 0 to 99;
 		--memory
 		mem_adr: out type_cmd_mem_adr;		
 		mem_data: out type_cmd_mem_data;
@@ -51,19 +52,24 @@ architecture main of cmd_module is
 	signal buf_number : std_logic;
 	constant ADRcount_max :integer := eth_cmd_header_len+512; 
 	signal ADRcount : integer range 0 to ADRcount_max;
-	signal key_sync,key_done : std_logic_vector(2 downto 0);
+	signal key_sync,key_done : std_logic_vector(5 downto 0);
 	
 	type type_key_state is (key_off,key_wait_on,key_on,key_wait_off);
-	type type_array_key_state is array (1 downto 0) of type_key_state;
+	type type_array_key_state is array (5 downto 0) of type_key_state;
 	signal key_state : type_array_key_state;
 	
 begin
-	sync_key: for i in 0 to 1 generate
-		sync_key_i : entity work.Sync 
-		generic map( regime => "level", inDelay => 0, outDelay => 0 )
-		port map(reset => '0',
+	sync_key: for i in 0 to 5 generate
+		--		sync_key_i : entity work.Sync 
+		--		generic map( regime => "level", inDelay => 0, outDelay => 0 )
+		--		port map(reset => '0',
+		--			clk_in => clock, data_in => key(i),
+		--			clk_out => clock, data_out => key_sync(i));   
+		filter_key_i : entity work.filter 
+		generic map( regime => "level", filter => 1023)
+		port map( reset => '0',
 			clk_in => clock, data_in => key(i),
-			clk_out => clock, data_out => key_sync(i)); 
+			clk_out => clock, data_out => key_sync(i));   
 		--------------------------------------------	
 		rxdata_proc: process (reset,clock)   
 			variable key_hf : std_logic;
@@ -76,8 +82,8 @@ begin
 			elsif rising_edge(clock) then 
 				if key_state(i)=key_wait_on and key_hf='1' then key_state(i)<=key_on;
 				elsif key_state(i)=key_wait_off and key_hf='0' then key_state(i)<=key_off;
-				elsif key_done(i)='1'  and key_hf='1' then key_state(i)<=key_wait_off;
-				elsif key_done(i)='1'  and key_hf='0' then key_state(i)<=key_wait_on;
+				elsif key_state(i)=key_on and key_done(i)='1' then key_state(i)<=key_wait_off;
+				elsif key_state(i)=key_off and key_done(i)='1' then key_state(i)<=key_wait_on;
 				end if;	
 				if shift_data=sxt("1",hfilter) then 	--high pass filter
 					key_hf:='1'; 
@@ -121,7 +127,7 @@ begin
 			mem_wr<='0'; 
 			buf_number<='0';
 			ADRcount<=0;
-			key_done<=(others=>'0');
+			key_done(3 downto 0)<=(others=>'0');
 			ip_checksum:=(others=>'0');
 			ip_lenght:=(others=>'0');
 			ip_id:=(others=>'0');
@@ -148,34 +154,33 @@ begin
 					udp_checksum:=udp_checksum_start;
 					udp_lenght:=udp_lenght_start;
 					udp_csh:=false;
-					if key_state(0)=key_on then
+					if key_state(2)=key_on then
 						cmd:=zoom_inc;
-						key_done(0)<='1';
+						key_done(2)<='1';
 						count:=conv_integer(cmd_zoom_inc);
 						state:=cmd_send;
-					elsif key_state(1)=key_on then
-						key_done(1)<='1';
+					elsif key_state(3)=key_on then
+						key_done(3)<='1';
 						cmd:=zoom_dec;
 						count:=conv_integer(cmd_zoom_dec);
 						state:=cmd_send; 
-					elsif key_state(0)=key_off  then
-						key_done(0)<='1';
+					elsif key_state(2)=key_off  then
+						key_done(2)<='1';
 						cmd:=zoom_stop;
 						count:=conv_integer(cmd_zoom_stop);
 						state:=cmd_send; 
-					elsif key_state(1)=key_off then
-						key_done(1)<='1';
+					elsif key_state(3)=key_off then
+						key_done(3)<='1';
 						cmd:=zoom_stop;
 						count:=conv_integer(cmd_zoom_stop);
 						state:=cmd_send; 
 					end if;
 				
 				when cmd_start =>  
-					key_done<=(others=>'0');
+					key_done(3 downto 0)<=(others=>'0');
 					state:=cmd_send; 
 				
 				when cmd_send =>  
-					key_done<=(others=>'0');
 					ADRcount<=ADRcount+1; 
 					mem_wr<='1'; 
 					if count=0 then 
@@ -261,8 +266,34 @@ begin
 				when others => null;
 			end case;
 		end if;
-	end process main_proc; 	  
+	end process main_proc; 
 	
+	backlight_proc: process (reset,clock)   
+		variable count : integer range 0 to 99;
+	begin
+		LCD_backlight<=count;	
+		if reset='1' then 	
+			key_done(5 downto 4)<=(others=>'0');
+			count:=99;
+		elsif rising_edge(clock) then 
+			if key_state(5)=key_on then
+				if count/=99 then count:=count+1; end if;
+				key_done(5)<='1';
+			elsif key_state(5)=key_off then
+				key_done(5)<='1';
+			else 
+				key_done(5)<='0';
+			end if;
+			if key_state(4)=key_on then
+				if count/=0 then count:=count-1; end if;
+				key_done(4)<='1';
+			elsif key_state(4)=key_off then
+				key_done(4)<='1';
+			else 
+				key_done(4)<='0';
+			end if;
+		end if;
+	end process backlight_proc; 	  
 	
 	---------------------------------------------------------	
 end main; 

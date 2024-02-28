@@ -155,8 +155,8 @@ begin
 						state<=ethpause;
 					elsif count=count_macd and not ok_MACD then
 						state<=ethpause;
-					elsif count=count_macs and not ok_MACS then
-						state<=ethpause;
+--					elsif count=count_macs and not ok_MACS then
+--						state<=ethpause;
 					elsif count=count_vline then
 						state<=ethdata;
 					end if;

@@ -43,7 +43,7 @@ architecture main of lcd_module is
 	
 	constant fps: integer :=60;
 	constant PWMfreq: integer :=18517;
-	constant PWMsize: integer :=256;
+	constant PWMsize: integer :=99;
 	constant max_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) /(PWMfreq/fps*PWMsize);
 	constant corr_PWMcount: integer :=((hsize+hblank)*(vsize+vblank)) mod(PWMfreq/fps*PWMsize);
 	signal PWM_ena : std_logic;

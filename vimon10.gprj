@@ -30,6 +30,10 @@
         <File path="src/gowin_ip/table_TEXT/table_TEXT.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/video_mem/video_mem1024x32.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/video_mem/video_mem4096x32.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/visca_cmd/visca_focus_auto.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/visca_cmd/visca_focus_dec.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/visca_cmd/visca_focus_inc.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/visca_cmd/visca_focus_stop.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_dec.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_inc.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_stop.v" type="file.verilog" enable="1"/>
@@ -46,6 +50,7 @@
         <File path="src/eth_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/ethrx_module.vhd" type="file.vhdl" enable="1"/>
         <File path="src/ethtx_module.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/filter.vhd" type="file.vhdl" enable="1"/>
         <File path="src/freq_read.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gen_txt.vhd" type="file.vhdl" enable="1"/>
         <File path="src/gpu.vhd" type="file.vhdl" enable="1"/>
@@ -86,6 +91,7 @@
         <File path="src/stp_text_mesage.rao" type="file.gao" enable="0"/>
         <File path="src/stp_txcmd.rao" type="file.gao" enable="0"/>
         <File path="src/stp_video.rao" type="file.gao" enable="0"/>
+        <File path="src/vimon10_stp_eth0.rao" type="file.gao" enable="0"/>
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="0"/>
         <File path="src/gowin_ip/CMDtxmem/CMDtx_map.mi" type="file.other" enable="1"/>
         <File path="src/gowin_ip/YT8531_mdiomem/YT8531_map.mi" type="file.other" enable="1"/>

@@ -16,29 +16,22 @@ entity vimon10 is
 		CLK25M	: in STD_LOGIC;
 		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
 		DB : in STD_LOGIC_VECTOR(3 downto 0); 
+		KEY : in STD_LOGIC_VECTOR(5 downto 0); 
 		
 		--LCD port
-		LCD_EN_VDD,LCD_PWM : out STD_LOGIC; 
-		LCD_EN_LED,LCD_RST : out STD_LOGIC; 
+		LCD_EN_VDD,LCD_PWM,LCD_EN_LED,LCD_RST : out STD_LOGIC; 
 		LCD_DIM : in STD_LOGIC; 
 		LVDS_A_OUT_CLK : out STD_LOGIC; 
 		LVDS_A_OUTP : out STD_LOGIC_VECTOR(3 downto 0); 
 		
 		--ETH0 port
 		ETH0_RSTN : out STD_LOGIC;
-		ETH0_CLKOUT : in STD_LOGIC; 
+		ETH0_CLKOUT : in STD_LOGIC;
 		ETH0_RXCLK,ETH0_RXCTL : in STD_LOGIC; 
 		ETH0_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
 		ETH0_TXCLK,ETH0_TXCTL : out STD_LOGIC; 
 		ETH0_TXD : out STD_LOGIC_VECTOR(3 downto 0); 
 		
-		--ETH1 port
-		ETH1_RSTN : out STD_LOGIC;
-		ETH1_CLKOUT : in STD_LOGIC; 
-		ETH1_RXCLK,ETH1_RXCTL : in STD_LOGIC; 
-		ETH1_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
-		ETH1_TXCLK,ETH1_TXCTL : out STD_LOGIC; 
-		ETH1_TXD : out STD_LOGIC_VECTOR(3 downto 0);  
 		
 		--MDI port
 		ETH_MDC,ETH_MDIO : inout STD_LOGIC;	  
@@ -114,7 +107,7 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
-	signal power,detect_video,detect_voice : std_logic;
+	signal detect_video,detect_voice : std_logic;
 	signal eth_link : std_logic_vector(1 downto 0);
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
@@ -129,15 +122,12 @@ architecture main of vimon10 is
 	
 begin  
 	
-	power<='0';
 	dbg<=DB(3 downto 0);		
 	
 	all_lock<=PWG and sdrampll_lock and lcd_lock; -- and commonpll_lock;
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
-	ETH0_RSTN<=not rst_eth;
-	ETH1_RSTN<=not rst_eth;
 	
 	--------------------------------------------------------	
 	err_clk(00)<=eth0rx_clock;	err_pulse(00)<=ethrx_err(0);		--RXETH: video packet crc32 error
@@ -197,29 +187,12 @@ begin
 		end if;
 	end process eth0rx_mux_proc;
 	
-		--------------------------------------------------------	
-		--  rx_eth1 path	
-	eth1rx_clock<=ETH1_RXCLK;
-	rgmii1_rxdin(4)<=ETH1_RXCTL;
-	rgmii1_rxdin(3 downto 0)<=ETH1_RXD;
-	rgmii1_rx2 : entity work.rgmii_rx 
-	port map( clk=>eth1rx_clock,
-		din=>rgmii1_rxdin,
-		q=>rgmii1_rxdout );	
-	
-	eth1rx_mux_proc: process (eth1rx_clock)
-	begin
-		if rising_edge(eth1rx_clock) then 	
-			eth1rx_dv<=rgmii1_rxdout(4);
-			eth1rx_d<=rgmii1_rxdout(8 downto 5) & rgmii1_rxdout(3 downto 0); 
-		end if;
-	end process eth1rx_mux_proc;  
 	--------------------------------------------------------	
 	cmd_module1 : entity work.cmd_module
 	generic map( ref_freq => int_clk_freq, hfilter => 4 )
 	port map( reset => rst_eth, clock => int_clk,
 		mem_status => CMDtx_status, mem_wr => CMDtx_wr, mem_adr => CMDtx_ad, mem_data => CMDtx_d,
-		key => DB(3 downto 2) );	
+		key => KEY(5 downto 0),LCD_backlight=>LCD_backlight );	
 	
 	CMDTX_mem : entity work.CMDtxmem
 	port map( reseta=>'0', clka=>int_clk, cea=>CMDtx_wr, ada=>CMDtx_ad, din=>CMDtx_d,
@@ -248,22 +221,6 @@ begin
 	ETH0_TXCTL<=rgmii0_txdout(4);
 	ETH0_TXCLK<=ethtx_clock;
 	--	--------------------------------------------------------	
-	--	--  tx_eth1 path	 
-	eth1tx_en<=eth0rx_dv;
-	eth1tx_d<=eth0rx_d;	 
-	rgmii1_txdin(9)<=eth1tx_en;
-	rgmii1_txdin(8 downto 5)<=eth1tx_d(7 downto 4);
-	rgmii1_txdin(4)<=eth1tx_en;
-	rgmii1_txdin(3 downto 0)<=eth1tx_d(3 downto 0);
-	rgmii1_tx1 : entity work.rgmii_tx 
-	port map( clk=>eth0rx_clock,
-		din=>rgmii1_txdin,
-		q=>rgmii1_txdout );	
-	ETH1_TXD<=rgmii1_txdout(3 downto 0);
-	ETH1_TXCTL<=rgmii1_txdout(4);
-	ETH1_TXCLK<=eth0rx_clock;   
-	
-	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr
 	generic map(hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank)
@@ -284,7 +241,7 @@ begin
 		txt_mapwr=>txt_mapwr,
 		txt_mapdin=>txt_mapdin );	
 	detect_video<=not no_signal;
-	detect_voice<='1';
+	detect_voice<='0';
 	
 	stat_module1 : entity work.stat_module 
 	port map( reset=>reset, clock=>int_clk,
@@ -429,7 +386,7 @@ begin
 	-----------------------------------
 	-- LCD part	
 	set_LCD_EN<='1';
-	LCD_backlight<=99; -- backlight is fixed now :(
+	--	LCD_backlight<=99; -- backlight is fixed now :(
 	LCD_EN_LED<=int_LCD_EN ;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
@@ -458,11 +415,16 @@ begin
 		grafics_act=>grafics_act_pixel,
 		grafics_color=>grafics_color_pixel ); 
 	
+	ETH0_RSTN<=not rst_eth;
 	YT8531_module1 : entity work.YT8531_module 
 	generic map(ref_freq => int_clk_freq)
 	port map( reset=>rst_eth, clock=>int_clk,
 		mdc=>ETH_MDC, mdio=>ETH_MDIO,
 		link=>eth_link );	
+--		ETH0_RSTN<='1';
+--		ETH_MDC<='1';
+--		ETH_MDIO<='1';	
+--		eth_link<="11";
 	
 	sensor1_bme280 : entity work.bme280_module
 	generic map( ref_freq=>int_clk_freq )

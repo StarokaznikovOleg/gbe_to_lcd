@@ -59,3 +59,4 @@ i<>.\src\gowin_ip\CMDtxmem\CMDtxmem.v
 i<>.\src\gowin_ip\visca_cmd\visca_zoom_dec.v
 i<>.\src\gowin_ip\visca_cmd\visca_zoom_inc.v
 i<>.\src\gowin_ip\visca_cmd\visca_zoom_stop.v
+i<>.\src\filter.vhd

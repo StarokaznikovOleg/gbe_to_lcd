@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\vimon\src\gowin_ip\visca_cmd
+fileopenfolder=D:\Projects\vimon\src
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -103,6 +103,7 @@ Selected=
 /crc32.vhd=-1
 /sync.vhd=-1
 /resync.vhd=-1
+/filter.vhd=-1
 /freq_read.vhd=-1
 /sysled.vhd=-1
 /ser7to1.vhd=-1
@@ -169,6 +170,7 @@ Selected=
 .\src\crc32.vhd=VHDL Source Code
 .\src\sync.vhd=VHDL Source Code
 .\src\resync.vhd=VHDL Source Code
+.\src\filter.vhd=VHDL Source Code
 .\src\freq_read.vhd=VHDL Source Code
 .\src\sysled.vhd=VHDL Source Code
 .\src\ser7to1.vhd=VHDL Source Code
@@ -193,4 +195,3 @@ Selected=
 .\src\bme280_module.vhd=VHDL Source Code
 .\src\YT8531_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
-
