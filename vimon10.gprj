@@ -78,7 +78,7 @@
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_ethrx.rao" type="file.gao" enable="1"/>
         <File path="src/stp_ethtx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
