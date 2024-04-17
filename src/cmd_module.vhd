@@ -17,7 +17,7 @@ entity cmd_module is
 	generic( ref_freq:integer:=125000000; hfilter:integer:=4 );	 
 	port(
 		reset,clock: in std_logic; 
-		key: in std_logic_vector(5 downto 0); 
+		key: in std_logic_vector(3 downto 0); 
 		LCD_backlight : out integer range 0 to 99;
 		--memory
 		mem_adr: out type_cmd_mem_adr;		
@@ -52,14 +52,14 @@ architecture main of cmd_module is
 	signal buf_number : std_logic;
 	constant ADRcount_max :integer := eth_cmd_header_len+512; 
 	signal ADRcount : integer range 0 to ADRcount_max;
-	signal key_sync,key_done : std_logic_vector(5 downto 0);
+	signal key_sync,key_done : std_logic_vector(3 downto 0);
 	
 	type type_key_state is (key_off,key_wait_on,key_on,key_wait_off);
-	type type_array_key_state is array (5 downto 0) of type_key_state;
+	type type_array_key_state is array (3 downto 0) of type_key_state;
 	signal key_state : type_array_key_state;
 	
 begin
-	sync_key: for i in 0 to 5 generate
+	sync_key: for i in 0 to 3 generate
 		--		sync_key_i : entity work.Sync 
 		--		generic map( regime => "level", inDelay => 0, outDelay => 0 )
 		--		port map(reset => '0',
@@ -127,7 +127,7 @@ begin
 			mem_wr<='0'; 
 			buf_number<='0';
 			ADRcount<=0;
-			key_done(3 downto 0)<=(others=>'0');
+			key_done(3 downto 2)<=(others=>'0');
 			ip_checksum:=(others=>'0');
 			ip_lenght:=(others=>'0');
 			ip_id:=(others=>'0');
@@ -177,7 +177,7 @@ begin
 					end if;
 				
 				when cmd_start =>  
-					key_done(3 downto 0)<=(others=>'0');
+					key_done(3 downto 2)<=(others=>'0');
 					state:=cmd_send; 
 				
 				when cmd_send =>  
@@ -273,24 +273,24 @@ begin
 	begin
 		LCD_backlight<=count;	
 		if reset='1' then 	
-			key_done(5 downto 4)<=(others=>'0');
+			key_done(1 downto 0)<=(others=>'0');
 			count:=99;
 		elsif rising_edge(clock) then 
-			if key_state(5)=key_on then
+			if key_state(1)=key_on then
 				if count/=99 then count:=count+1; end if;
-				key_done(5)<='1';
-			elsif key_state(5)=key_off then
-				key_done(5)<='1';
+				key_done(1)<='1';
+			elsif key_state(1)=key_off then
+				key_done(1)<='1';
 			else 
-				key_done(5)<='0';
+				key_done(1)<='0';
 			end if;
-			if key_state(4)=key_on then
+			if key_state(0)=key_on then
 				if count/=0 then count:=count-1; end if;
-				key_done(4)<='1';
-			elsif key_state(4)=key_off then
-				key_done(4)<='1';
+				key_done(0)<='1';
+			elsif key_state(0)=key_off then
+				key_done(0)<='1';
 			else 
-				key_done(4)<='0';
+				key_done(0)<='0';
 			end if;
 		end if;
 	end process backlight_proc; 	  

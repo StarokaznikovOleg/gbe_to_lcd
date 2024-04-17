@@ -60,3 +60,7 @@ i<>.\src\gowin_ip\visca_cmd\visca_zoom_dec.v
 i<>.\src\gowin_ip\visca_cmd\visca_zoom_inc.v
 i<>.\src\gowin_ip\visca_cmd\visca_zoom_stop.v
 i<>.\src\filter.vhd
+i<>.\src\gowin_ip\lcd_rpll\lcd_rpll.v
+i<>.\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.v
+i<>.\src\gowin_ip\sdram_int\sdram_int.vo
+i<>.\src\gowin_ip\ethtx_rpll\ethtx_rpll.v

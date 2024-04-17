@@ -26,7 +26,7 @@ REFRESH_FLOW=1
 FAMILY=
 IMPL_TOOL=
 SYNTH_TOOL=
-fileopenfolder=D:\Projects\vimon\src
+fileopenfolder=D:\Projects\vimon\src\gowin_ip\ethtx_rpll
 
 [LocalVerilogSets]
 EnableSLP=1
@@ -58,13 +58,13 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=
+HierarchyInformation=video_mem|Behavioral|0 
 ShowHide=ShowTopLevel
 Selected=
 
 [Files]
-/vimon10_lib.vhd=-1
 /lcd_lib.vhd=-1
+/vimon10_lib.vhd=-1
 /common_lib.vhd=-1
 /bme280_lib.vhd=-1
 /i2c_lib.vhd=-1
@@ -78,10 +78,13 @@ Selected=
 /gowin_ip\main_osc\main_osc.vhd=-1
 /gowin_ip\rgmii_rx\rgmii_rx.v=-1
 /gowin_ip\rgmii_tx\rgmii_tx.v=-1
-/gowin_ip\sdram_int\sdram_int.v=-1
+/gowin_ip\ethtx_rpll\ethtx_rpll.v=-1
 /gowin_ip\sdram_rpll\sdram_rpll.v=-1
+/gowin_ip\lcd_rpll\lcd_rpll.v=-1
+/gowin_ip\lcd_clkdiv\lcd_clkdiv.v=-1
 /gowin_ip\cos_table\cos_table.v=-1
 /gowin_ip\intram\intram.v=-1
+/gowin_ip\sdram_int\sdram_int.vo=-1
 /gowin_ip\i2c_rom\i2c_rom.v=-1
 /gowin_ip\bme240_i2cmem\bme240_i2cmem.v=-1
 /gowin_ip\visca_cmd\visca_zoom_dec.v=-1
@@ -130,8 +133,8 @@ Selected=
 /vimon10.vhd=-1
 
 [Files.Data]
-.\src\vimon10_lib.vhd=VHDL Source Code
 .\src\lcd_lib.vhd=VHDL Source Code
+.\src\vimon10_lib.vhd=VHDL Source Code
 .\src\common_lib.vhd=VHDL Source Code
 .\src\bme280_lib.vhd=VHDL Source Code
 .\src\i2c_lib.vhd=VHDL Source Code
@@ -145,10 +148,13 @@ Selected=
 .\src\gowin_ip\main_osc\main_osc.vhd=VHDL Source Code
 .\src\gowin_ip\rgmii_rx\rgmii_rx.v=Verilog Source Code
 .\src\gowin_ip\rgmii_tx\rgmii_tx.v=Verilog Source Code
-.\src\gowin_ip\sdram_int\sdram_int.v=Verilog Source Code
+.\src\gowin_ip\ethtx_rpll\ethtx_rpll.v=Verilog Source Code
 .\src\gowin_ip\sdram_rpll\sdram_rpll.v=Verilog Source Code
+.\src\gowin_ip\lcd_rpll\lcd_rpll.v=Verilog Source Code
+.\src\gowin_ip\lcd_clkdiv\lcd_clkdiv.v=Verilog Source Code
 .\src\gowin_ip\cos_table\cos_table.v=Verilog Source Code
 .\src\gowin_ip\intram\intram.v=Verilog Source Code
+.\src\gowin_ip\sdram_int\sdram_int.vo=Verilog Source Code
 .\src\gowin_ip\i2c_rom\i2c_rom.v=Verilog Source Code
 .\src\gowin_ip\bme240_i2cmem\bme240_i2cmem.v=Verilog Source Code
 .\src\gowin_ip\visca_cmd\visca_zoom_dec.v=Verilog Source Code
@@ -195,3 +201,4 @@ Selected=
 .\src\bme280_module.vhd=VHDL Source Code
 .\src\YT8531_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
+

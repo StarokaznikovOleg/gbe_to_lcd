@@ -1,0 +1,23 @@
+-series GW2AR
+-device GW2AR-18C
+-package LQFP144
+-part_number GW2AR-LV18LQ144C7/I6
+
+
+-mod_name video_mem2048x32
+-file_name video_mem2048x32
+-path D:/Projects/VIMON/src/gowin_ip/video_mem/
+-type RAM_DP
+-file_type vhdl
+-bram_b true
+-dev_type GW2AR-18C
+-depth_0 2048
+-depth_1 2048
+-width_0 32
+-width_1 32
+-read_mode_0 bypass
+-read_mode_1 bypass
+-write_mode_0 normal
+-write_mode_1 normal
+-speed true
+-reset_mode sync

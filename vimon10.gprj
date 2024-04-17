@@ -10,6 +10,7 @@
         <File path="src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/common_rpll/common_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/ddrout/ddrout.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ip/ethtx_rpll/ethtx_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/indexDDR_table/indexDDR_table.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/intram/intram.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/lcd_clkdiv/lcd_clkdiv.v" type="file.verilog" enable="1"/>
@@ -17,10 +18,7 @@
         <File path="src/gowin_ip/logo_rom/logo_rom.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/lpm_divide_s64/lpm_divide_s64.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/mult16x16/mult16x16.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/mult32x16/mult24x24.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/mult32x16/mult32x16.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/mult32x16/mult32x32.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/mult32x16/mult36x16.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/rgmii_rx/rgmii_rx.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/rgmii_tx/rgmii_tx.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/sdram_int/sdram_int.v" type="file.verilog" enable="1"/>
@@ -30,10 +28,6 @@
         <File path="src/gowin_ip/table_TEXT/table_TEXT.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/video_mem/video_mem1024x32.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/video_mem/video_mem4096x32.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/visca_cmd/visca_focus_auto.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/visca_cmd/visca_focus_dec.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/visca_cmd/visca_focus_inc.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_ip/visca_cmd/visca_focus_stop.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_dec.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_inc.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_stop.v" type="file.verilog" enable="1"/>
@@ -78,7 +72,7 @@
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
-        <File path="src/stp_ethrx.rao" type="file.gao" enable="1"/>
+        <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethtx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>

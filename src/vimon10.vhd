@@ -1,3 +1,9 @@
+-------------------------------------------------------------------------------
+-- Title       : VIMON10
+-- Design      : view for MVK3
+-- Author      : Starokaznikov OV.
+-- Company     : Protei
+-------------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
@@ -16,7 +22,7 @@ entity vimon10 is
 		CLK25M	: in STD_LOGIC;
 		LED_GREEN,LED_BLUE,LED_RED : out STD_LOGIC; 	
 		DB : in STD_LOGIC_VECTOR(3 downto 0); 
-		KEY : in STD_LOGIC_VECTOR(5 downto 0); 
+		KEY : in STD_LOGIC_VECTOR(3 downto 0); 
 		
 		--LCD port
 		LCD_EN_VDD,LCD_PWM,LCD_EN_LED,LCD_RST : out STD_LOGIC; 
@@ -52,12 +58,12 @@ end vimon10;
 architecture main of vimon10 is	 
 	constant int_clk_freq: integer:=18367347;
 	signal reset: std_logic:='0';	  
-	signal all_lock,sdrampll_lock,commonpll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
+	signal all_lock,sdrampll_lock,ethtx_lock,commonpll_lock,ethtxpll_lock,lcd_lock: std_logic:='0';	
 	signal ref_sclk,lcd_sclk,lcd_pclk: std_logic:='0';	
 	
-	signal ethtx_clock: std_logic:='0';  
+	signal ethtx_clock,ext_ethtx_clock: std_logic:='0';  
 	signal eth0rx_clock,eth0rxpll_lock: std_logic:='0';  
-	signal eth1rx_clock,eth1rxpll_lock: std_logic:='0';  
+--	signal eth1rx_clock,eth1rxpll_lock: std_logic:='0';  
 	
 	signal eth0tx_en,eth0rx_dv,eth1tx_en,eth1rx_dv,ethtx_en: std_logic:='0';
 	signal eth0rx_d,eth0tx_d,eth1rx_d,eth1tx_d,ethtx_d: std_logic_vector(7 downto 0):=(others=>'0');  	   
@@ -124,7 +130,7 @@ begin
 	
 	dbg<=DB(3 downto 0);		
 	
-	all_lock<=PWG and sdrampll_lock and lcd_lock; -- and commonpll_lock;
+	all_lock<=PWG and sdrampll_lock and lcd_lock and ethtx_lock; -- and commonpll_lock;
 	reset<=not(all_lock);
 	--------------------------------------------------------	
 	
@@ -142,12 +148,18 @@ begin
 	
 	--------------------------------------------------------	
 	--  sdram pll	
+	ethtx_rpll1 : entity work.ethtx_rpll
+	port map( clkin=>CLK25M,	--reference 25MHz
+		lock=>ethtx_lock,
+		clkout=>ethtx_clock,		--clock 125MHz
+		clkoutp=>ext_ethtx_clock );	  	--clock 125MHz shift 112°
+	--------------------------------------------------------	
+	--  sdram pll	
 	sdram_rpll1 : entity work.sdram_rpll 
 	port map( clkin=>CLK25M,	--reference 25MHz
 		lock=>sdrampll_lock,
 		clkout=>sdram_clk,		--clock 125MHz
 		clkoutp=>gpu_clk );	  	--clock 125MHz shift 45°
-	ethtx_clock<=gpu_clk;
 	--------------------------------------------------------	
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
@@ -155,6 +167,7 @@ begin
 		lock=>lcd_lock,
 		clkout=>lcd_sclk,		--clock 225MHz
 		clkoutp=>ref_sclk );	--clock 225MHz shift 45°
+	--------------------------------------------------------	
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
 	port map(
@@ -162,6 +175,7 @@ begin
 		hclkin=>ref_sclk,	--clock 225MHz
 		clkout=>lcd_pclk	 --clock 225MHz/3.5=64.286MHz
 		);	
+	--------------------------------------------------------	
 	
 	intclk_source : entity work.lcd_clkdiv 
 	port map(
@@ -192,7 +206,7 @@ begin
 	generic map( ref_freq => int_clk_freq, hfilter => 4 )
 	port map( reset => rst_eth, clock => int_clk,
 		mem_status => CMDtx_status, mem_wr => CMDtx_wr, mem_adr => CMDtx_ad, mem_data => CMDtx_d,
-		key => KEY(5 downto 0),LCD_backlight=>LCD_backlight );	
+		key => KEY(3 downto 0),LCD_backlight=>LCD_backlight );	
 	
 	CMDTX_mem : entity work.CMDtxmem
 	port map( reseta=>'0', clka=>int_clk, cea=>CMDtx_wr, ada=>CMDtx_ad, din=>CMDtx_d,
@@ -219,7 +233,7 @@ begin
 		q=>rgmii0_txdout );	
 	ETH0_TXD<=rgmii0_txdout(3 downto 0);
 	ETH0_TXCTL<=rgmii0_txdout(4);
-	ETH0_TXCLK<=ethtx_clock;
+	ETH0_TXCLK<=ext_ethtx_clock;
 	--	--------------------------------------------------------	
 	--  grafics_ctr		  
 	grafics_ctr1 : entity work.grafics_ctr
@@ -421,10 +435,10 @@ begin
 	port map( reset=>rst_eth, clock=>int_clk,
 		mdc=>ETH_MDC, mdio=>ETH_MDIO,
 		link=>eth_link );	
---		ETH0_RSTN<='1';
---		ETH_MDC<='1';
---		ETH_MDIO<='1';	
---		eth_link<="11";
+	--		ETH0_RSTN<='1';
+	--		ETH_MDC<='1';
+	--		ETH_MDIO<='1';	
+	--		eth_link<="11";
 	
 	sensor1_bme280 : entity work.bme280_module
 	generic map( ref_freq=>int_clk_freq )
