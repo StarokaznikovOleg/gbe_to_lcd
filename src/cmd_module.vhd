@@ -36,9 +36,9 @@ architecture main of cmd_module is
 	constant eth_CMD_header_ADRudplenght: integer:=46; -- address for the fild of ip udp lenght.
 	constant eth_CMD_header_ADRudpchecksum: integer:=48; -- address for the fild of ip udp checksum.
 	
-	constant ip_checksum_start : std_logic_vector(15 downto 0):=x"77ab"; 
+	constant ip_checksum_start : std_logic_vector(15 downto 0):=x"b4fd"; 
 	constant ip_lenght_start : std_logic_vector(15 downto 0):=conv_std_logic_vector(28,16); 
-	constant udp_checksum_start : std_logic_vector(15 downto 0):=x"6d9b"; 
+	constant udp_checksum_start : std_logic_vector(15 downto 0):=x"f696"; 
 	constant udp_lenght_start : std_logic_vector(15 downto 0):=conv_std_logic_vector(8,16); 
 	
 	--	constant visca_zoom : integer:=6;
@@ -46,6 +46,7 @@ architecture main of cmd_module is
 	--	constant visca_cmd_zoom_dec :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"03",x"ff"); 
 	--	constant visca_cmd_zoom_inc :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"02",x"ff"); 
 	--	constant visca_cmd_zoom_stop :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"00",x"ff"); 
+	signal t_ena : boolean;
 	signal ad_cmd : std_logic_vector(2 downto 0);
 	signal cmd_zoom_inc,cmd_zoom_dec,cmd_zoom_stop : std_logic_vector(7 downto 0);
 	
@@ -55,16 +56,18 @@ architecture main of cmd_module is
 	signal key_sync,key_done : std_logic_vector(3 downto 0);
 	
 	type type_key_state is (key_off,key_wait_on,key_on,key_wait_off);
-	type type_array_key_state is array (3 downto 0) of type_key_state;
+	type type_array_key_state is array (3 downto 2) of type_key_state;
 	signal key_state : type_array_key_state;
 	
 begin
-	sync_key: for i in 0 to 3 generate
-		--		sync_key_i : entity work.Sync 
-		--		generic map( regime => "level", inDelay => 0, outDelay => 0 )
-		--		port map(reset => '0',
-		--			clk_in => clock, data_in => key(i),
-		--			clk_out => clock, data_out => key_sync(i));   
+	sync1_key: for i in 0 to 1 generate
+				sync_key_i : entity work.Sync 
+				generic map( regime => "level", inDelay => 0, outDelay => 0 )
+				port map(reset => '0',
+					clk_in => clock, data_in => key(i),
+					clk_out => clock, data_out => key_sync(i));   
+	end generate;
+	sync2_key: for i in 2 to 3 generate
 		filter_key_i : entity work.filter 
 		generic map( regime => "level", filter => 1023)
 		port map( reset => '0',
@@ -273,27 +276,34 @@ begin
 	begin
 		LCD_backlight<=count;	
 		if reset='1' then 	
-			key_done(1 downto 0)<=(others=>'0');
-			count:=99;
-		elsif rising_edge(clock) then 
-			if key_state(1)=key_on then
+			count:=50;
+		elsif rising_edge(clock) and t_ena then 
+			if key_sync(1 downto 0)="10" then
 				if count/=99 then count:=count+1; end if;
-				key_done(1)<='1';
-			elsif key_state(1)=key_off then
-				key_done(1)<='1';
-			else 
-				key_done(1)<='0';
-			end if;
-			if key_state(0)=key_on then
-				if count/=0 then count:=count-1; end if;
-				key_done(0)<='1';
-			elsif key_state(0)=key_off then
-				key_done(0)<='1';
-			else 
-				key_done(0)<='0';
+			elsif key_sync(1 downto 0)="01" then
+				if count/=1 then count:=count-1; end if;
+			elsif key_sync(1 downto 0)="00" then
+				 count:=50; 
 			end if;
 		end if;
-	end process backlight_proc; 	  
+	end process backlight_proc; 
+	
+	timer_proc: process (reset,clock)  
+	constant max_count : integer :=ref_freq/10;
+		variable count : integer range 0 to max_count;
+	begin
+		if reset='1' then 	
+			count:=0;
+			t_ena<=false;
+		elsif rising_edge(clock) then 
+			t_ena<=count=0;
+			if count=max_count then
+				count:=0;
+			else 
+				count:=count+1;
+			end if;
+		end if;
+	end process timer_proc; 	  
 	
 	---------------------------------------------------------	
 end main; 

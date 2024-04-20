@@ -15,6 +15,7 @@ entity ethrx_module is
 		clock: in std_logic; 
 		err: out std_logic_vector(3 downto 0); 
 		vsync: out std_logic; 
+		detect_voice: out std_logic; 
 		
 		ethrx_en: in std_logic;
 		ethrx_d : in std_logic_vector(7 downto 0);  
@@ -34,36 +35,38 @@ architecture main of ethrx_module is
 	constant ethPREA : std_logic_vector(39 downto 0):=x"55555555d5";
 	constant ethMACD : std_logic_vector(47 downto 0):=x"ffffffffffff";
 	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
+	constant ethVType : std_logic_vector(31 downto 0):=x"00000000";	
+	constant ethSType : std_logic_vector(31 downto 0):=x"00000001";	
 	
 	constant len_Vformat : integer:=8;
 	constant len_Vframe_seq : integer:=4;
 	constant len_VLine_seq : integer:=4;   
 	
-	constant count_max : integer:=31+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_prea : integer:=19+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_start : integer:=17+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_macd : integer:=10+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_macs : integer:=4+len_Vformat+len_Vframe_seq+len_VLine_seq;   
-	constant count_vtype : integer:=4+len_Vframe_seq+len_VLine_seq;   
-	constant count_vframe : integer:=4+len_VLine_seq;   
-	constant count_sequency : integer:=5;   
+	constant count_max : integer:=47;   
+	constant count_prea : integer:=35;   
+	constant count_start : integer:=33;   
+	constant count_macd : integer:=26;   
+	constant count_macs : integer:=20;   
+	constant count_Etype : integer:=17;   
+	constant count_TStamp : integer:=13;   
+	constant count_FSeq : integer:=9;   
+	constant count_SSeq : integer:=5;   
 	constant count_vline : integer:=1;   
 	
-	type state_type is (ethpause,idle,ethheader,ethdata,ethexit);
+	type state_type is (ethpause,idle,ethheader,ethVdata,ethSdata,ethexit);
 	signal state : state_type:=ethpause;	
 	signal shift_txd : std_logic_vector(63 downto 0):=(others=>'0');
 	signal intcrc_clr,intcrc_en : std_logic:='0';
 	signal crc_check : std_logic_vector(31 downto 0):=(others=>'0');
-	signal ok_PREA,ok_MACD,ok_MACS:boolean;
+	signal ok_PREA,ok_MACD,ok_MACS,ok_VType,ok_SType :boolean;
 	signal adrBuffHi,numBuff : std_logic:='0';
 	signal adrBuff:integer range 0 to 2**11-1;
 	constant max_plen_count : integer :=hsize*3-1;
 	signal plen_count : integer range 0 to max_plen_count :=0;
 	signal Vcount : integer range 0 to vsize :=0;	
 	signal err_len,err_crc,err_frame,err_sequence : std_logic:='0';
-	signal Fcount : integer range 0 to 255;
-	signal errcnt_crc : integer :=0;
-	signal vsync_int,vsync_delay0,vsync_delay1 : std_logic:='0';
+--	signal Fcount : integer range 0 to 255;
+	signal vsync_int,vsync_delay0,vsync_delay1,int_detect_voice : std_logic:='0';
 	
 begin 
 	err(0)<=err_crc;
@@ -103,12 +106,14 @@ begin
 			ok_PREA<=false;
 			ok_MACD<=false;
 			ok_MACS<=false;
-			errcnt_crc<=0;
+			ok_VType<=false;
+			ok_SType<=false;
 			Vcount<=0;
 			plen_count<=0;
 			vsync_delay0<='0';
 			vsync_delay1<='0';
 			vsync_int<='0';
+			int_detect_voice<='0';
 			count:=0;
 			state<=ethpause;
 		elsif rising_edge(clock) then 	
@@ -120,10 +125,11 @@ begin
 			vsync_delay0<=boolean_to_data(Vcount=0);
 			vsync_delay1<=vsync_delay0;
 			vsync_int<=boolean_to_data(vsync_delay0='1' and vsync_delay1='0');
-			if vsync_int='1' and Fcount=0 then
-				errcnt_crc<=0;
-			elsif  err_crc='1' and state=ethpause then
-				errcnt_crc<=errcnt_crc+1;
+			if vsync_int='1' then 	
+				detect_voice<=int_detect_voice;	 
+				int_detect_voice<='0';
+			elsif state=ethSdata then	 
+				int_detect_voice<='1';
 			end if;
 			case state is
 				when idle =>  
@@ -140,9 +146,6 @@ begin
 					end if;	 
 				
 				when ethheader => 
-					if count=count_vframe+1 then	-- write caption to buffer	 
-						Fcount<=conv_integer(shift_txd(7 downto 0));
-					end if;	 
 					ethv_d<=shift_txd(31 downto 0); 
 					plen_count<=max_plen_count;
 					adrBuffHi<=numBuff;
@@ -158,18 +161,26 @@ begin
 --					elsif count=count_macs and not ok_MACS then
 --						state<=ethpause;
 					elsif count=count_vline then
-						state<=ethdata;
-					end if;
-					if count=count_sequency then	-- write caption to buffer	 
+						if ok_VType then
+							state<=ethVdata;
+						ethv_wr<='1';
+						elsif ok_SType then
+							state<=ethSdata;
+						else 
+							state<=ethpause;
+						end if;		
+					end if;		
+					if count=count_Etype then
+						ok_VType<=shift_txd(31 downto 0)=ethVType;
+						ok_SType<=shift_txd(31 downto 0)=ethSType;
+					end if;	 
+--					if count=count_FSeq then	 
+--						Fcount<=conv_integer(shift_txd(7 downto 0));
+--					end if;	 
+					if ok_VType and count=count_SSeq then	 
 						Vcount<=conv_integer(shift_txd(16 downto 1));
 						err_sequence<=boolean_to_data(conv_integer(shift_txd(16 downto 1))/=Vcount and conv_integer(shift_txd(16 downto 1))/=0) ;
 					end if;	 
-					if count=count_vline then	-- write caption to buffer	 
-						ethv_wr<='1';
-					else
-						ethv_wr<='0';
-					end if;	 
-					
 					if count>count_prea and (shift_txd(31 downto 0) & ethrx_d)=ethPREA then
 						intcrc_en<='1';
 						count:=count_start;
@@ -177,7 +188,7 @@ begin
 						count:=count-1;
 					end if;	 
 				
-				when ethdata => 
+				when ethVdata => 
 					if ethrx_en='1' then 
 						ethv_d<=shift_txd(31 downto 0); 
 					else
@@ -222,29 +233,17 @@ begin
 					Vcount<=Vcount+1;
 					state<=idle;
 				
-				when ethpause => 
+				when ethSdata => 
 					ethv_wr<='0';
 					if ethrx_en='0' then 
---						Vcount<=Vcount+1;
 						state<=idle;
 					end if;	
 				
---				when others =>	--err_cycle
---					err_len<='0';
---					err_crc<='0';
---					err_sequence<='0';
---					adrBuffHi<='0';
---					adrBuff<=0; 
---					ethv_wr<='0';
---					ethv_d<=(others=>'0'); 
---					intcrc_clr<='0';
---					intcrc_en<='0';
---					ok_PREA<=false;
---					ok_MACD<=false;
---					ok_MACS<=false;
---					plen_count<=0;
---					count:=0;
---					state<=ethpause;
+				when ethpause => 
+					ethv_wr<='0';
+					if ethrx_en='0' then 
+						state<=idle;
+					end if;	
 				
 			end case;		
 		end if;

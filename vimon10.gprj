@@ -70,9 +70,11 @@
         <File path="src/vimon10.sdc" type="file.sdc" enable="1"/>
         <File path="src/eth_test.rao" type="file.gao" enable="0"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_BME280_i2c.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_ethrx_module.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethtx.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gentxt.rao" type="file.gao" enable="0"/>
         <File path="src/stp_gpu.rao" type="file.gao" enable="0"/>
@@ -89,7 +91,8 @@
         <File path="src/vimion_pwr.gpa" type="file.gpa" enable="0"/>
         <File path="src/gowin_ip/CMDtxmem/CMDtx_map.mi" type="file.other" enable="1"/>
         <File path="src/gowin_ip/YT8531_mdiomem/YT8531_map.mi" type="file.other" enable="1"/>
-        <File path="src/gowin_ip/bme240_i2cmem/bme280_map.mi" type="file.other" enable="1"/>
+        <File path="src/gowin_ip/bme240_i2cmem/bme280_map_adr0.mi" type="file.other" enable="1"/>
+        <File path="src/gowin_ip/bme240_i2cmem/bme280_map_adr1.mi" type="file.other" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_dec.mi" type="file.other" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_inc.mi" type="file.other" enable="1"/>
         <File path="src/gowin_ip/visca_cmd/visca_zoom_stop.mi" type="file.other" enable="1"/>

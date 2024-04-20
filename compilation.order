@@ -3,7 +3,6 @@
 .\src\common_lib.vhd
 .\src\bme280_lib.vhd
 .\src\i2c_lib.vhd
-.\src\eth_lib.vhd
 .\src\mdio_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v

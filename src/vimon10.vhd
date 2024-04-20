@@ -63,7 +63,7 @@ architecture main of vimon10 is
 	
 	signal ethtx_clock,ext_ethtx_clock: std_logic:='0';  
 	signal eth0rx_clock,eth0rxpll_lock: std_logic:='0';  
---	signal eth1rx_clock,eth1rxpll_lock: std_logic:='0';  
+	--	signal eth1rx_clock,eth1rxpll_lock: std_logic:='0';  
 	
 	signal eth0tx_en,eth0rx_dv,eth1tx_en,eth1rx_dv,ethtx_en: std_logic:='0';
 	signal eth0rx_d,eth0tx_d,eth1rx_d,eth1tx_d,ethtx_d: std_logic_vector(7 downto 0):=(others=>'0');  	   
@@ -255,7 +255,6 @@ begin
 		txt_mapwr=>txt_mapwr,
 		txt_mapdin=>txt_mapdin );	
 	detect_video<=not no_signal;
-	detect_voice<='0';
 	
 	stat_module1 : entity work.stat_module 
 	port map( reset=>reset, clock=>int_clk,
@@ -298,7 +297,8 @@ begin
 	generic map( hsize=>1920, vsize=>1080)
 	port map( reset=>rst_eth_syncethrx0, clock=>eth0rx_clock,
 		err=>ethrx_err,
-		vsync=>eth_vsync,
+		vsync=>eth_vsync, 
+		detect_voice=>detect_voice,
 		ethrx_en=>eth0rx_dv,
 		ethrx_d=>eth0rx_d,
 		ethv_a=>ethv_a,

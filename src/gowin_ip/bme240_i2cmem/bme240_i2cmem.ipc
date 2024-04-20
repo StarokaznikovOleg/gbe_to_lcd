@@ -9,7 +9,7 @@ version=1.0
 [Config]
 DEPTH=2048
 LANG=0
-MEM_FILE=bme280_map.mi
+MEM_FILE=bme280_map_adr0.mi
 READ=0
 RESET_MODE=true
 WIDTH=9

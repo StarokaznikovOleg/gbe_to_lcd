@@ -15,4 +15,4 @@
 -width 9
 -read_mode bypass
 -reset_mode sync
--init_file D:\Projects\vimon\src\gowin_ip\bme240_i2cmem\bme280_map.mi
+-init_file D:\Projects\vimon\src\gowin_ip\bme240_i2cmem\bme280_map_adr0.mi
