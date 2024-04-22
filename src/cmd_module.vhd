@@ -81,16 +81,16 @@ begin
 			if reset='1' then 
 				key_state(i)<=key_off;
 				key_hf:='0';
-				shift_data:=(others=>'0');	
+				shift_data:=(others=>'1');	
 			elsif rising_edge(clock) then 
 				if key_state(i)=key_wait_on and key_hf='1' then key_state(i)<=key_on;
 				elsif key_state(i)=key_wait_off and key_hf='0' then key_state(i)<=key_off;
 				elsif key_state(i)=key_on and key_done(i)='1' then key_state(i)<=key_wait_off;
 				elsif key_state(i)=key_off and key_done(i)='1' then key_state(i)<=key_wait_on;
 				end if;	
-				if shift_data=sxt("1",hfilter) then 	--high pass filter
+				if shift_data=sxt("0",hfilter) then 	--high pass filter
 					key_hf:='1'; 
-				elsif shift_data=ext("0",hfilter) then 
+				elsif shift_data=ext("1",hfilter) then 
 					key_hf:='0'; 
 				end if;
 				
@@ -271,7 +271,7 @@ begin
 		end if;
 	end process main_proc; 
 	
-	backlight_proc: process (reset,clock)   
+	backlight_proc: process (reset,clock,t_ena)   
 		variable count : integer range 0 to 99;
 	begin
 		LCD_backlight<=count;	
@@ -281,7 +281,7 @@ begin
 			if key_sync(1 downto 0)="10" then
 				if count/=99 then count:=count+1; end if;
 			elsif key_sync(1 downto 0)="01" then
-				if count/=1 then count:=count-1; end if;
+				if count/=6 then count:=count-1; end if;
 			elsif key_sync(1 downto 0)="00" then
 				 count:=50; 
 			end if;

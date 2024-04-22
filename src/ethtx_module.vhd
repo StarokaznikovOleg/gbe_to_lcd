@@ -67,6 +67,7 @@ begin
 			intcrc_en<='0';
 			ethtx_en<='0';	
 			inttx_en<='0';
+			CMD_status_store<='0';
 			inttx_d<=(others=>'0');
 			ethtx_d<=(others=>'0');
 			ADRcount<=0;

@@ -435,10 +435,6 @@ begin
 	port map( reset=>rst_eth, clock=>int_clk,
 		mdc=>ETH_MDC, mdio=>ETH_MDIO,
 		link=>eth_link );	
-	--		ETH0_RSTN<='1';
-	--		ETH_MDC<='1';
-	--		ETH_MDIO<='1';	
-	--		eth_link<="11";
 	
 	sensor1_bme280 : entity work.bme280_module
 	generic map( ref_freq=>int_clk_freq )

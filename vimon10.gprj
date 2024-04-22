@@ -71,6 +71,7 @@
         <File path="src/eth_test.rao" type="file.gao" enable="0"/>
         <File path="src/std_gpu_stat.rao" type="file.gao" enable="0"/>
         <File path="src/stp_BME280_i2c.rao" type="file.gao" enable="0"/>
+        <File path="src/stp_backlight.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280.rao" type="file.gao" enable="0"/>
         <File path="src/stp_bme280_calc.rao" type="file.gao" enable="0"/>
         <File path="src/stp_ethrx.rao" type="file.gao" enable="0"/>

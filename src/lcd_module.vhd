@@ -84,26 +84,26 @@ begin
 			LCD_EN<='0'; 
 			PWM_ena<='0'; 
 		elsif rising_edge(pclk) and Frame then 	 
-case count is
-when 00 => LCD_EN_VDD<='0'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
-when 01 => LCD_EN_VDD<='1'; LCD_RST<='1'; LCD_EN<='0'; PWM_ena<='0';
-when 10 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
-when 15 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='0';
-when 30 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='1';
-when others => null;
-end case;
+			case count is
+				when 00 => LCD_EN_VDD<='0'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
+				when 01 => LCD_EN_VDD<='1'; LCD_RST<='1'; LCD_EN<='0'; PWM_ena<='0';
+				when 10 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='0'; PWM_ena<='0';
+				when 15 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='0';
+				when 30 => LCD_EN_VDD<='1'; LCD_RST<='0'; LCD_EN<='1'; PWM_ena<='1';
+				when others => null;
+			end case;
 			if EN='1' then
-                if count/=max_count-1 then
-                    count:=count+1;
-                end if;
-            else 
-                count:=0;  
+				if count/=max_count-1 then
+					count:=count+1;
+				end if;
+			else 
+				count:=0;  
 			end if;
-        end if;	   
+		end if;	   
 	end process EN_proc; 
 	
 	PWM_proc: process (pclk)
-		constant max_count_pwm : integer:=99;
+		constant max_count_pwm : integer:=98;
 		variable count_pwm : integer range 0 to max_count_pwm;
 		variable count : integer range 0 to corr_PWMcount+max_PWMcount-1;
 		variable count_pwm_inc : boolean:= false;
@@ -114,7 +114,9 @@ end case;
 			elsif count_pwm=backlight then
 				LCD_PWM<='0';	
 			end if;
-			if count_pwm_inc then
+			if Frame then
+					count_pwm:=0;
+			elsif count_pwm_inc then
 				if count_pwm=max_count_pwm then
 					count_pwm:=0;
 				else 
@@ -123,7 +125,8 @@ end case;
 			end if;
 			count_pwm_inc:=count=0;
 			if Frame then
-				count:=corr_PWMcount+max_PWMcount-1;
+				count:=max_PWMcount-1;
+--				count:=corr_PWMcount+max_PWMcount-1;
 			elsif count=0 then
 				count:=max_PWMcount-1;
 			else
