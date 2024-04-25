@@ -46,7 +46,7 @@ architecture main of cmd_module is
 	--	constant visca_cmd_zoom_dec :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"03",x"ff"); 
 	--	constant visca_cmd_zoom_inc :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"02",x"ff"); 
 	--	constant visca_cmd_zoom_stop :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"00",x"ff"); 
-	signal t_ena : boolean;
+	signal t1_ena,t10_ena : boolean;
 	signal ad_cmd : std_logic_vector(2 downto 0);
 	signal cmd_zoom_inc,cmd_zoom_dec,cmd_zoom_stop : std_logic_vector(7 downto 0);
 	
@@ -60,19 +60,19 @@ architecture main of cmd_module is
 	signal key_state : type_array_key_state;
 	
 begin
-	sync1_key: for i in 0 to 1 generate
-				sync_key_i : entity work.Sync 
-				generic map( regime => "level", inDelay => 0, outDelay => 0 )
-				port map(reset => '0',
-					clk_in => clock, data_in => key(i),
-					clk_out => clock, data_out => key_sync(i));   
-	end generate;
-	sync2_key: for i in 2 to 3 generate
-		filter_key_i : entity work.filter 
-		generic map( regime => "level", filter => 1023)
-		port map( reset => '0',
+	sync4_key: for i in 0 to 3 generate
+		sync_key_i : entity work.Sync 
+		generic map( regime => "level", inDelay => 0, outDelay => 0 )
+		port map(reset => '0',
 			clk_in => clock, data_in => key(i),
 			clk_out => clock, data_out => key_sync(i));   
+	end generate;
+	sync2_key: for i in 2 to 3 generate
+		--		filter_key_i : entity work.filter 
+		--		generic map( regime => "level", filter => 1023)
+		--		port map( reset => '0',
+		--			clk_in => clock, data_in => key(i),
+		--			clk_out => clock, data_out => key_sync(i));   
 		--------------------------------------------	
 		rxdata_proc: process (reset,clock)   
 			variable key_hf : std_logic;
@@ -88,13 +88,14 @@ begin
 				elsif key_state(i)=key_on and key_done(i)='1' then key_state(i)<=key_wait_off;
 				elsif key_state(i)=key_off and key_done(i)='1' then key_state(i)<=key_wait_on;
 				end if;	
-				if shift_data=sxt("0",hfilter) then 	--high pass filter
+				if shift_data=conv_std_logic_vector(0,hfilter) then 	--high pass filter
 					key_hf:='1'; 
-				elsif shift_data=ext("1",hfilter) then 
+				elsif (not shift_data)=conv_std_logic_vector(0,hfilter) then 
 					key_hf:='0'; 
 				end if;
-				
-				shift_data:=shift_data(hfilter-2 downto 0) & key_sync(i);	   
+				if t1_ena then 
+					shift_data:=shift_data(hfilter-2 downto 0) & key_sync(i);	
+				end if;   
 			end if;
 		end process rxdata_proc; 	  
 	end generate;
@@ -271,36 +272,48 @@ begin
 		end if;
 	end process main_proc; 
 	
-	backlight_proc: process (reset,clock,t_ena)   
+	backlight_proc: process (reset,clock,t10_ena)   
 		variable count : integer range 0 to 99;
 	begin
 		LCD_backlight<=count;	
 		if reset='1' then 	
 			count:=50;
-		elsif rising_edge(clock) and t_ena then 
+		elsif rising_edge(clock) and t10_ena then 
 			if key_sync(1 downto 0)="10" then
 				if count/=99 then count:=count+1; end if;
 			elsif key_sync(1 downto 0)="01" then
 				if count/=6 then count:=count-1; end if;
 			elsif key_sync(1 downto 0)="00" then
-				 count:=50; 
+				count:=50; 
 			end if;
 		end if;
 	end process backlight_proc; 
 	
 	timer_proc: process (reset,clock)  
-	constant max_count : integer :=ref_freq/10;
-		variable count : integer range 0 to max_count;
+		constant max_countA : integer :=ref_freq/100;
+		constant max_countB : integer :=10;
+		variable countA : integer range 0 to max_countA-1;
+		variable countB : integer range 0 to max_countB-1;
 	begin
 		if reset='1' then 	
-			count:=0;
-			t_ena<=false;
+			countA:=0;
+			countB:=0;
+			t1_ena<=false;
+			t10_ena<=false;
 		elsif rising_edge(clock) then 
-			t_ena<=count=0;
-			if count=max_count then
-				count:=0;
+			t1_ena<=countA=0;
+			t10_ena<=t1_ena and countB=0;
+			if countA=max_countA-1 then
+				countA:=0;
 			else 
-				count:=count+1;
+				countA:=countA+1;
+			end if;
+			if t1_ena then
+				if countB=max_countB-1 then
+					countB:=0;
+				else 
+					countB:=countB+1;
+				end if;
 			end if;
 		end if;
 	end process timer_proc; 	  

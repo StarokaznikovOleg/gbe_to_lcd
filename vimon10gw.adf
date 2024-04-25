@@ -58,7 +58,7 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem|Behavioral|0 
+HierarchyInformation=main_osc|Behavioral|0 video_mem|Behavioral|0
 ShowHide=ShowTopLevel
 Selected=
 
@@ -201,3 +201,4 @@ Selected=
 .\src\bme280_module.vhd=VHDL Source Code
 .\src\YT8531_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
+
