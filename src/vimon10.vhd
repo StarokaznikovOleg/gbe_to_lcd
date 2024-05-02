@@ -14,6 +14,8 @@ use work.vimon10_lib.all;
 use work.lcd_lib.all;
 use work.bme280_lib.all;
 use work.eth_lib.all;
+use work.voice_lib.all;
+use work.visca_lib.all;
 
 entity vimon10 is
 	port(	
@@ -113,7 +115,9 @@ architecture main of vimon10 is
 	signal txt_mapadr : std_logic_vector(13 downto 0);
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
-	signal detect_video,detect_voice : std_logic;
+	signal detect_video : std_logic;
+	signal voice : type_voice_level;
+	signal visca : type_visca_param;
 	signal eth_link : std_logic_vector(1 downto 0);
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
@@ -261,11 +265,13 @@ begin
 		bme280=>bme280,
 		eth_link=>eth_link, 
 		detect_video=>detect_video, 
-		detect_voice=>detect_voice, 
+		voice=>voice, 
+		visca=>visca, 
 		LCD_backlight=>LCD_backlight,
 		MAPTXT_a=>txt_mapadr,
 		MAPTXT_d=>txt_mapdin,
 		MAPTXT_wr=>txt_mapwr );	
+		
 	LED_GREEN<='1';
 	LED_BLUE<='1';
 	LED_RED<='1';
@@ -298,7 +304,8 @@ begin
 	port map( reset=>rst_eth_syncethrx0, clock=>eth0rx_clock,
 		err=>ethrx_err,
 		vsync=>eth_vsync, 
-		detect_voice=>detect_voice,
+		voice=>voice,
+		visca=>visca, 
 		ethrx_en=>eth0rx_dv,
 		ethrx_d=>eth0rx_d,
 		ethv_a=>ethv_a,

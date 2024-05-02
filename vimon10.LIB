@@ -1,8 +1,8 @@
-timestamp=1713810968158
+timestamp=1714209694739
 
 [$root]
-A/$root=22|""|0|1*1985665
-BinI32/$root=3*238350
+A/$root=22|""|0|1*3885612
+BinI32/$root=3*471168
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [CMDtxmem]
@@ -27,12 +27,12 @@ R=./src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [bme280_data_comp]
-A/main=21|./src/bme280_data_comp.vhd|20|1*2187887
-BinI32/main=3*298742
+A/main=21|./src/bme280_data_comp.vhd|20|1*3051171
+BinI32/main=3*397830
 I=0*166194
 I/main=0*173726
 M=11|0|v98|1713338547316|./src/bme280_data_comp.vhd|0*165750*0xce593827950f25940674180247c8f18611ea3d66|0*166101*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371205166|./src/bme280_data_comp.vhd|0*166423*0x5289591de0198ebc85cc2957df80b22597370357|0*173625*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047467877|./src/bme280_data_comp.vhd|0*166423*0x5289591de0198ebc85cc2957df80b22597370357|0*173625*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/bme280_data_comp.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -45,58 +45,58 @@ R=./src/bme280_lib.vhd|13
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [bme280_module]
-A/main=21|./src/bme280_module.vhd|24|1*2197609
-BinI32/main=3*308136
+A/main=21|./src/bme280_module.vhd|24|1*3060893
+BinI32/main=3*407224
 I=0*174768
 I/main=0*341455
 M=11|0|v98|1713338547410|./src/bme280_module.vhd|0*174265*0xc2b694b6e8e6259bbb8468dc308e459f05daa7ed|0*174681*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371205257|./src/bme280_module.vhd|0*335423*0x24c874958b348dfdacbc3337909d6b6bc853a96a|0*341360*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047467956|./src/bme280_module.vhd|0*335423*0x24c874958b348dfdacbc3337909d6b6bc853a96a|0*341360*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/bme280_module.vhd|17
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [cmd_module]
-A/main=21|./src/cmd_module.vhd|30|1*2636751
-BinI32/main=3*325180
+A/main=21|./src/cmd_module.vhd|30|1*4269750
+BinI32/main=3*522385
 I=0*358510
-I/main=0*842893
+I/main=0*1596061
 M=11|0|v98|1713339115844|./src/cmd_module.vhd|0*357869*0x80ac5d98f7c628415cad4f5e5c33fd71c974c77d|0*358429*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713810958360|./src/cmd_module.vhd|0*835539*0xa0a32a137825fa75f2660d9e3281034734838807|0*842804*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714209694661|./src/cmd_module.vhd|0*1587065*0xb5da5181116b9a14f12e7a9ec3b550b8f07d6e5a|0*1595972*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/cmd_module.vhd|16
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [common_lib]
-BinI32/common_lib=3*236771
-E=1*1842963
+BinI32/common_lib=3*334673
+E=1*2702850
 I=0*10338
 I/common_lib=0*10997
 M=3|0|v98|1713338541438|./src/common_lib.vhd|0*9929*0x6d8e41fb683ae8a699b82e9829afbb09c1ad8bb0|0*10257*0xab32bc1a2daf049573e14469f634e0e6
-M/common_lib=4|0|v98|1713371198779|./src/common_lib.vhd|0*10576*0x64ebdb45cb1e40cffd16dbbc7d86d57f293db4cd|0*10903*0xb33770ff1c10522f9491560174ac8e6c
+M/common_lib=4|0|v98|1714047461361|./src/common_lib.vhd|0*10576*0x64ebdb45cb1e40cffd16dbbc7d86d57f293db4cd|0*10903*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/common_lib.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [common_rpll]
-A/common_rpll=22|./src/gowin_ip/common_rpll/common_rpll.v|10|1*1989942
-BinI32/common_rpll=3*238777
+A/common_rpll=22|./src/gowin_ip/common_rpll/common_rpll.v|10|1*2849829
+BinI32/common_rpll=3*336679
 P/~emb=263,822,1175,1446
 R=./src/gowin_ip/common_rpll/common_rpll.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [crc32]
-A/main=21|./src/crc32.vhd|37|1*2036876
-BinI32/main=3*239207
+A/main=21|./src/crc32.vhd|37|1*2896763
+BinI32/main=3*337109
 I=0*79336
 I/main=0*81133
 M=11|0|v98|1713338545776|./src/crc32.vhd|0*78751*0xff03a8d2be55df846879b6c96954e741f558787b|0*79265*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203245|./src/crc32.vhd|0*79569*0x08cca791de969c15a730d3c22d7d302dd934bfc6|0*81054*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047465900|./src/crc32.vhd|0*79569*0x08cca791de969c15a730d3c22d7d302dd934bfc6|0*81054*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/crc32.vhd|23
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [ddrout]
-A/ddrout=22|./src/gowin_ip/ddrout/ddrout.v|9|1*1986311
-BinI32/ddrout=3*238489
+A/ddrout=22|./src/gowin_ip/ddrout/ddrout.v|9|1*2846198
+BinI32/ddrout=3*336391
 P/~emb=226,487,712,977
 R=./src/gowin_ip/ddrout/ddrout.v|9
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
@@ -109,23 +109,23 @@ R=./src/eth_lib.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [ethrx_module]
-A/main=21|./src/ethrx_module.vhd|30|1*2436680
-BinI32/main=3*314383
-I=0*671506
-I/main=0*720736
-M=11|0|v98|1713607466607|./src/ethrx_module.vhd|0*670768*0x2e37c71983a0c5e0e47274f1d874db5c5fc8b1bf|0*671421*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713609127525|./src/ethrx_module.vhd|0*715062*0x7dcddf5447285ec2710404987b756f64357630ee|0*720643*0xb33770ff1c10522f9491560174ac8e6c
-R=./src/ethrx_module.vhd|11
+A/main=21|./src/ethrx_module.vhd|33|1*4146110
+BinI32/main=3*493197
+I=0*1446704
+I/main=0*1530735
+M=11|0|v98|1714204309091|./src/ethrx_module.vhd|0*1445888*0xbbdbb8aa965ff00c21cf7a6d66d7452019bb33bb|0*1446619*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714206605342|./src/ethrx_module.vhd|0*1523028*0xbf6a9b575cc0051b8c9fd7fd1ad90fb7c0e914f0|0*1530642*0xb33770ff1c10522f9491560174ac8e6c
+R=./src/ethrx_module.vhd|13
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [ethtx_module]
-A/main=21|./src/ethtx_module.vhd|30|1*2503236
-BinI32/main=3*323462
+A/main=21|./src/ethtx_module.vhd|30|1*3045862
+BinI32/main=3*396112
 I=0*303978
 I/main=0*760711
 M=11|0|v98|1713338779736|./src/ethtx_module.vhd|0*303388*0xe26b61af0be12e95616f2c4c03066cdd5f32a121|0*303893*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713764793157|./src/ethtx_module.vhd|0*758039*0xe4e7a32e08054747e10ac22075b040d7bbd817a9|0*760618*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047467815|./src/ethtx_module.vhd|0*758039*0xe4e7a32e08054747e10ac22075b040d7bbd817a9|0*760618*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/ethtx_module.vhd|15
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -138,78 +138,78 @@ R=./src/gowin_ip/ethtx_rpll/ethtx_rpll.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [filter]
-A/main=21|./src/filter.vhd|20|1*2051513
-BinI32/main=3*245769
+A/main=21|./src/filter.vhd|20|1*2911400
+BinI32/main=3*343671
 I=0*88426
 I/main=0*90209
 M=11|0|v98|1713338545981|./src/filter.vhd|0*87995*0x96ed216f0990e82793182551edeea6a8b85f7599|0*88353*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203437|./src/filter.vhd|0*88592*0x92ca218f7100426ddac67ec2243e3664f16fa03b|0*90128*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466086|./src/filter.vhd|0*88592*0x92ca218f7100426ddac67ec2243e3664f16fa03b|0*90128*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/filter.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [freq_read]
-A/main=21|./src/freq_read.vhd|22|1*2054919
-BinI32/main=3*247430
+A/main=21|./src/freq_read.vhd|22|1*2914806
+BinI32/main=3*345332
 I=0*91074
 I/main=0*93061
 M=11|0|v98|1713338546044|./src/freq_read.vhd|0*90633*0x63b7c7d1b858173ffdcbf244241b127604d36c13|0*90995*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203499|./src/freq_read.vhd|0*91311*0x2204e5edde192e2712bc1cb5fc41db0063699ab0|0*92974*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466180|./src/freq_read.vhd|0*91311*0x2204e5edde192e2712bc1cb5fc41db0063699ab0|0*92974*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/freq_read.vhd|13
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [gen_txt]
-A/main=21|./src/gen_txt.vhd|31|1*2091259
-BinI32/main=3*264265
+A/main=21|./src/gen_txt.vhd|31|1*2951146
+BinI32/main=3*362167
 I=0*123611
 I/main=0*230427
 M=11|0|v98|1713338546609|./src/gen_txt.vhd|0*122921*0x8d675de8298a14c61a6a0bc5dbc7d5b41374d8b6|0*123536*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204082|./src/gen_txt.vhd|0*228554*0x5722d3dcec3db715a8aace2c3e1bad01dad2c74e|0*230344*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466732|./src/gen_txt.vhd|0*228554*0x5722d3dcec3db715a8aace2c3e1bad01dad2c74e|0*230344*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gen_txt.vhd|16
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [gpu]
-A/main=21|./src/gpu.vhd|47|1*2133106
-BinI32/main=3*279264
+A/main=21|./src/gpu.vhd|47|1*2992993
+BinI32/main=3*377173
 I=0*146976
 I/main=0*255373
-M=11|0|v98|1713371204583|./src/gpu.vhd|0*145727*0xc2ab2fefdd87bf1090a9a7f89ce46933148f52d0|0*146909*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204679|./src/gpu.vhd|0*246410*0x276c6d58054f604c0d80cc4ff8e4b7b30613e11e|0*255298*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047467207|./src/gpu.vhd|0*145727*0xc2ab2fefdd87bf1090a9a7f89ce46933148f52d0|0*146909*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047467307|./src/gpu.vhd|0*246410*0x276c6d58054f604c0d80cc4ff8e4b7b30613e11e|0*255298*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gpu.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [grafics_ctr]
-A/main=21|./src/grafics_ctr.vhd|33|1*2147597
-BinI32/main=3*284720
+A/main=21|./src/grafics_ctr.vhd|33|1*3007484
+BinI32/main=3*382629
 I=0*148795
 I/main=0*150516
-M=11|0|v98|1713371204756|./src/grafics_ctr.vhd|0*147979*0xbe97fa2c3f25524aed9f2fb6eadd3284b07e9b5e|0*148712*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204773|./src/grafics_ctr.vhd|0*149146*0x85529b83de2af69df5a797bcbd16dd4852155c02|0*150425*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047467376|./src/grafics_ctr.vhd|0*147979*0xbe97fa2c3f25524aed9f2fb6eadd3284b07e9b5e|0*148712*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047467383|./src/grafics_ctr.vhd|0*149146*0x85529b83de2af69df5a797bcbd16dd4852155c02|0*150425*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/grafics_ctr.vhd|14
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [hex_to_dec]
-A/main=21|./src/hex_to_dec.vhd|28|1*2070106
-BinI32/main=3*253027
+A/main=21|./src/hex_to_dec.vhd|28|1*2929993
+BinI32/main=3*350929
 I=0*101436
 I/main=0*105571
 M=11|0|v98|1713338546238|./src/hex_to_dec.vhd|0*100830*0x8d3a8ab7a6a94e4b3cbf0718e7cbd814ebd07631|0*101355*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203703|./src/hex_to_dec.vhd|0*101731*0x414e193a7bcde9a64e79ae5ac7c5fd03b08a5870|0*105482*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466368|./src/hex_to_dec.vhd|0*101731*0x414e193a7bcde9a64e79ae5ac7c5fd03b08a5870|0*105482*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/hex_to_dec.vhd|15
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [i2c_interface]
-A/main=21|./src/I2C_interface.vhd|27|1*2074169
-BinI32/main=3*256003
+A/main=21|./src/I2C_interface.vhd|27|1*2934056
+BinI32/main=3*353905
 I=0*106903
 I/main=0*111296
 M=11|0|v98|1713338546295|./src/I2C_interface.vhd|0*106296*0xa31887ac47f22371b53e34d836f426f24ae8749e|0*106816*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203766|./src/I2C_interface.vhd|0*107198*0x836b410fda83fe66f07fed50ed7ef8e75a2b9075|0*111201*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466433|./src/I2C_interface.vhd|0*107198*0x836b410fda83fe66f07fed50ed7ef8e75a2b9075|0*111201*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/I2C_interface.vhd|14
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -236,33 +236,33 @@ R=./src/gowin_ip/lcd_clkdiv/lcd_clkdiv.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [lcd_ind]
-A/main=21|./src/lcd_ind.vhd|27|1*2102699
-BinI32/main=3*268346
+A/main=21|./src/lcd_ind.vhd|27|1*2962586
+BinI32/main=3*366248
 I=0*126731
 I/main=0*129258
-M=11|0|v98|1713371204219|./src/lcd_ind.vhd|0*125825*0xd2ca4f8761a6751d1a7f082613d57ae93550c7bb|0*126656*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204223|./src/lcd_ind.vhd|0*127135*0x732c3dfe5b5fe3cfdb9402461206c599e76d0043|0*129175*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047466849|./src/lcd_ind.vhd|0*125825*0xd2ca4f8761a6751d1a7f082613d57ae93550c7bb|0*126656*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047466857|./src/lcd_ind.vhd|0*127135*0x732c3dfe5b5fe3cfdb9402461206c599e76d0043|0*129175*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/lcd_ind.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [lcd_lib]
-BinI32/lcd_lib=3*236220
-E=1*1834299
+BinI32/lcd_lib=3*334122
+E=1*2694186
 I=0*5353
 I/lcd_lib=0*6513
 M=3|0|v98|1713338541371|./src/lcd_lib.vhd|0*2112*0xfafafd4f7d3d8bc2fae29cea8148465c9a603285|0*5278*0xab32bc1a2daf049573e14469f634e0e6
-M/lcd_lib=4|0|v98|1713371198701|./src/lcd_lib.vhd|0*5588*0xbbae31873a7e23c41edb1476be589956123a0195|0*6428*0xb33770ff1c10522f9491560174ac8e6c
+M/lcd_lib=4|0|v98|1714047461280|./src/lcd_lib.vhd|0*5588*0xbbae31873a7e23c41edb1476be589956123a0195|0*6428*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/lcd_lib.vhd|5
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [lcd_module]
-A/main=21|./src/lcd_module.vhd|42|1*2119025
-BinI32/main=3*273916
+A/main=21|./src/lcd_module.vhd|42|1*2978912
+BinI32/main=3*371818
 I=0*137472
-I/main=0*144159
-M=11|0|v98|1713766443698|./src/lcd_module.vhd|0*136400*0x9dcac76c6862813ad85a33385f26dcc4e4ae2f42|0*137391*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204476|./src/lcd_module.vhd|0*137879*0x4a617b3d77b9e1ef5f39ed014bdf95a140b802b1|0*144070*0xb33770ff1c10522f9491560174ac8e6c
+I/main=0*911455
+M=11|0|v98|1714047467075|./src/lcd_module.vhd|0*136400*0x9dcac76c6862813ad85a33385f26dcc4e4ae2f42|0*137391*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047467080|./src/lcd_module.vhd|0*905163*0xeb9a2fb37f79fe4020c312014c34a08bc5b4dec9|0*911366*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/lcd_module.vhd|12
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -275,47 +275,47 @@ R=./src/gowin_ip/lcd_rpll/lcd_rpll.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [lcdserializer]
-A/main=21|./src/LCDserializer.vhd|22|1*2087095
-BinI32/main=3*263033
+A/main=21|./src/LCDserializer.vhd|22|1*2946982
+BinI32/main=3*360935
 I=0*120571
 I/main=0*122014
-M=11|0|v98|1713371204015|./src/LCDserializer.vhd|0*120058*0xdba6301b869a610988cddeb7b5c06fb27e39efc5|0*120484*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204019|./src/LCDserializer.vhd|0*120924*0x24c4067aa53f1e6fbec4e95b52d1080bdd2aa0f7|0*121919*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047466665|./src/LCDserializer.vhd|0*120058*0xdba6301b869a610988cddeb7b5c06fb27e39efc5|0*120484*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047466672|./src/LCDserializer.vhd|0*120924*0x24c4067aa53f1e6fbec4e95b52d1080bdd2aa0f7|0*121919*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/LCDserializer.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [logo_rom]
-A/logo_rom=22|./src/gowin_ip/logo_rom/logo_rom.v|10|1*1993429
-BinI32/logo_rom=3*239065
+A/logo_rom=22|./src/gowin_ip/logo_rom/logo_rom.v|10|1*2853316
+BinI32/logo_rom=3*336967
 P/~emb=578,5173,7762,8850
 R=./src/gowin_ip/logo_rom/logo_rom.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [lpm_divide_s64]
-A/lpm_divide_s64=22|./src/lpm_divide_s64.v|10|1*1988097
-BinI32/lpm_divide_s64=3*238629
+A/lpm_divide_s64=22|./src/lpm_divide_s64.v|10|1*2847984
+BinI32/lpm_divide_s64=3*336531
 P/~emb=368,630,863,1122
 R=./src/lpm_divide_s64.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [main_osc]
-A/behavioral=A/Behavioral 21|./src/gowin_ip/main_osc/main_osc.vhd|19|1*2035158
+A/behavioral=A/Behavioral 21|./src/gowin_ip/main_osc/main_osc.vhd|19|1*2895045
 I=0*77682
 I/behavioral=I/Behavioral 0*78264
 M=11|0|v98|1713338544111|./src/gowin_ip/main_osc/main_osc.vhd|0*77383*0xe0f2fbe987f355ce587bc0e5015c290b8614a3fd|0*77587*0xab32bc1a2daf049573e14469f634e0e6
-M/behavioral=M/Behavioral 21|0|v98|1713371201048|./src/gowin_ip/main_osc/main_osc.vhd|0*77784*0xe0b2774eedd7b1dd097dc684446385559d226508|0*78155*0xb33770ff1c10522f9491560174ac8e6c
+M/behavioral=M/Behavioral 21|0|v98|1714047463840|./src/gowin_ip/main_osc/main_osc.vhd|0*77784*0xe0b2774eedd7b1dd097dc684446385559d226508|0*78155*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gowin_ip/main_osc/main_osc.vhd|13
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/behavioral=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [mdio_interface]
-A/main=21|./src/mdio_interface.vhd|28|1*2079663
-BinI32/main=3*258631
+A/main=21|./src/mdio_interface.vhd|28|1*2939550
+BinI32/main=3*356533
 I=0*112661
 I/main=0*119474
 M=11|0|v98|1713338546373|./src/mdio_interface.vhd|0*112031*0xd3f3de166d3140862421b41b29b68238b9a70632|0*112572*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203937|./src/mdio_interface.vhd|0*112958*0x74cd9a6ff26410aab5290abfc2768729467bec43|0*119377*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466597|./src/mdio_interface.vhd|0*112958*0x74cd9a6ff26410aab5290abfc2768729467bec43|0*119377*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/mdio_interface.vhd|15
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -327,13 +327,20 @@ M=3|0|v98|1713338541513|./src/mdio_lib.vhd|0*15817*0x916cc65786d983814d8ff924357
 R=./src/mdio_lib.vhd|11
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
+[nau88c_lib]
+E=1*3415651
+I=0*1091003
+M=3|0|v98|1714123252110|./src/nau88c_lib.vhd|0*1089994*0x7b835731767a6ab5ce8ff5152030797f08133edd|0*1090922*0xab32bc1a2daf049573e14469f634e0e6
+R=./src/nau88c_lib.vhd|12
+Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
 [resync]
-A/main=21|./src/resync.vhd|19|1*2048471
-BinI32/main=3*245134
+A/main=21|./src/resync.vhd|19|1*2908358
+BinI32/main=3*343036
 I=0*86103
 I/main=0*87494
 M=11|0|v98|1713338545918|./src/resync.vhd|0*85758*0x3d2eb6c888dcf1f40677a858ac627621964cd34f|0*86030*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203374|./src/resync.vhd|0*86269*0x34d56d03c252d51b71da71aa2aa71b9e466a4e13|0*87413*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466025|./src/resync.vhd|0*86269*0x34d56d03c252d51b71da71aa2aa71b9e466a4e13|0*87413*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/resync.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -367,45 +374,45 @@ R=./src/gowin_ip/sdram_rpll/sdram_rpll.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [ser7to1]
-A/main=21|./src/ser7to1.vhd|20|1*2067072
-BinI32/main=3*251939
+A/main=21|./src/ser7to1.vhd|20|1*2926959
+BinI32/main=3*349841
 I=0*98938
 I/main=0*100153
-M=11|0|v98|1713371203636|./src/ser7to1.vhd|0*98494*0xbf71940e2c026dd728275c99f09f8ff9794ca8bd|0*98863*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203640|./src/ser7to1.vhd|0*99231*0xe317ae690831b5f8b5fdc3f4eda9662ef66490e6|0*100070*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047466299|./src/ser7to1.vhd|0*98494*0xbf71940e2c026dd728275c99f09f8ff9794ca8bd|0*98863*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047466306|./src/ser7to1.vhd|0*99231*0xe317ae690831b5f8b5fdc3f4eda9662ef66490e6|0*100070*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/ser7to1.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [stat_module]
-A/main=21|./src/stat_module.vhd|34|1*2173759
-BinI32/main=3*294062
-I=0*159710
-I/main=0*164975
-M=11|0|v98|1713371205007|./src/stat_module.vhd|0*158947*0x87ba1019c4732904e333d8a0dbc624a017ac33b0|0*159627*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371205021|./src/stat_module.vhd|0*160121*0xf3cbacfac9f50a17b052c6844991769ad1e9d330|0*164884*0xb33770ff1c10522f9491560174ac8e6c
-R=./src/stat_module.vhd|17
+A/main=21|./src/stat_module.vhd|36|1*4258760
+BinI32/main=3*518527
+I=0*1499105
+I/main=0*1586429
+M=11|0|v98|1714204625144|./src/stat_module.vhd|0*1498274*0x09ce5b9d5d154a1e7b208d9e239a99218eaa797f|0*1499022*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714209620136|./src/stat_module.vhd|0*1580104*0x9f91106cc0be6272cd3cc712c3400eca336c924a|0*1586338*0xb33770ff1c10522f9491560174ac8e6c
+R=./src/stat_module.vhd|18
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [sync]
-A/main=21|./src/sync.vhd|19|1*2043279
-BinI32/main=3*241760
+A/main=21|./src/sync.vhd|19|1*2903166
+BinI32/main=3*339662
 I=0*82112
 I/main=0*85338
 M=11|0|v98|1713338545855|./src/sync.vhd|0*81668*0x52bebaf7f368282ff22db2fbe3ab5ecd3eae363b|0*82043*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203311|./src/sync.vhd|0*82276*0x1ea6fbe4fa746fdeb061da5fb8822387534f3ca6|0*85261*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047465961|./src/sync.vhd|0*82276*0x1ea6fbe4fa746fdeb061da5fb8822387534f3ca6|0*85261*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/sync.vhd|10
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [sysled]
-A/main=21|./src/sysled.vhd|21|1*2059797
-BinI32/main=3*249142
+A/main=21|./src/sysled.vhd|21|1*2919684
+BinI32/main=3*347044
 I=0*94419
 I/main=0*97984
 M=11|0|v98|1713338546106|./src/sysled.vhd|0*93806*0x883923b413035d5693d4556aa0154f931c00bef4|0*94346*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371203562|./src/sysled.vhd|0*94653*0xddbed838d9aca8ab25d550a2a10238eb8bf1ea77|0*97903*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466241|./src/sysled.vhd|0*94653*0xddbed838d9aca8ab25d550a2a10238eb8bf1ea77|0*97903*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/sysled.vhd|6
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -432,23 +439,23 @@ R=./src/gowin_ip/table_TEXT/table_TEXT.v|9
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [text_ctr]
-A/main=21|./src/text_ctr.vhd|27|1*2097806
-BinI32/main=3*266479
+A/main=21|./src/text_ctr.vhd|27|1*2957693
+BinI32/main=3*364381
 I=0*124785
 I/main=0*237261
-M=11|0|v98|1713371204156|./src/text_ctr.vhd|0*124234*0x03969469c6f97572d9448adf06e55fdafa8c1b98|0*124708*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204160|./src/text_ctr.vhd|0*235161*0xda98e48252424e581492d47c9f443ac9de23ddca|0*237176*0xb33770ff1c10522f9491560174ac8e6c
+M=11|0|v98|1714047466786|./src/text_ctr.vhd|0*124234*0x03969469c6f97572d9448adf06e55fdafa8c1b98|0*124708*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714047466792|./src/text_ctr.vhd|0*235161*0xda98e48252424e581492d47c9f443ac9de23ddca|0*237176*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/text_ctr.vhd|16
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [video_mem]
-A/behavioral=A/Behavioral 21|./src/gowin_ip/video_mem/video_mem.vhd|34|1*1843831
-BinI32/behavioral=3*236999
+A/behavioral=A/Behavioral 21|./src/gowin_ip/video_mem/video_mem.vhd|34|1*2703718
+BinI32/behavioral=3*334901
 I=0*17643
 I/behavioral=I/Behavioral 0*55283
 M=11|0|v98|1713338541531|./src/gowin_ip/video_mem/video_mem.vhd|0*16922*0xa2d7b082c9bbe104092e499fab58cebb366605a8|0*17545*0xab32bc1a2daf049573e14469f634e0e6
-M/behavioral=M/Behavioral 21|0|v98|1713371199207|./src/gowin_ip/video_mem/video_mem.vhd|0*17746*0xe31b527443d352e5b936f655288cf802597a745a|0*55171*0xb33770ff1c10522f9491560174ac8e6c
+M/behavioral=M/Behavioral 21|0|v98|1714047461809|./src/gowin_ip/video_mem/video_mem.vhd|0*17746*0xe31b527443d352e5b936f655288cf802597a745a|0*55171*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/gowin_ip/video_mem/video_mem.vhd|13
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/behavioral=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
@@ -468,22 +475,36 @@ R=./src/gowin_ip/video_mem/video_mem4096x32.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [vimon10]
-A/main=21|./src/vimon10.vhd|58|1*2249334
-BinI32/main=3*311961
-I=0*309925
-I/main=0*636240
-M=11|0|v98|1713776462613|./src/vimon10.vhd|0*308627*0xa637bd6959213920de5f326e08db90f67b8c2b6e|0*309850*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371214554|./src/vimon10.vhd|0*624515*0xd772addcbe82da79b6c4fa272386fd4a81dc9d63|0*636157*0xb33770ff1c10522f9491560174ac8e6c
-R=./src/vimon10.vhd|18
+A/main=21|./src/vimon10.vhd|60|1*4069946
+BinI32/main=3*486948
+I=0*1475443
+I/main=0*1496520
+M=11|0|v98|1714204325865|./src/vimon10.vhd|0*1474097*0x577c5fb75f7e031fbb008ed20f509874b9763899|0*1475368*0xab32bc1a2daf049573e14469f634e0e6
+M/main=21|0|v98|1714204499055|./src/vimon10.vhd|0*1484730*0x4ff2334b8d2e7faa79a8fd4d6c7b9f71589626b3|0*1496437*0xb33770ff1c10522f9491560174ac8e6c
+R=./src/vimon10.vhd|20
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [vimon10_lib]
-E=1*2648118
-I=0*845921
-M=3|0|v98|1713810968155|./src/vimon10_lib.vhd|0*844726*0x1f0399692065fc386a38562b07590e27dac44855|0*845838*0xab32bc1a2daf049573e14469f634e0e6
+E=1*2659426
+I=0*854200
+M=3|0|v98|1714046333676|./src/vimon10_lib.vhd|0*853005*0x22c435aecbbe1e38b75c84aa0b53ce3dcf4f9ea9|0*854117*0xab32bc1a2daf049573e14469f634e0e6
 R=./src/vimon10_lib.vhd|6
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
+[visca_lib]
+E=1*4043698
+I=0*1464390
+M=3|0|v98|1714203955607|./src/visca_lib.vhd|0*1463917*0xf520d3068c562b60be6bce66642b3c5c43b7be98|0*1464311*0xab32bc1a2daf049573e14469f634e0e6
+R=./src/visca_lib.vhd|12
+Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
+[visca_zoom_check]
+A/visca_zoom_check=22|./src/gowin_ip/visca_cmd/visca_zoom_check.v|10|1*3886274
+BinI32/visca_zoom_check=3*471307
+P/~emb=323,636,975,1341
+R=./src/gowin_ip/visca_cmd/visca_zoom_check.v|10
+Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
 [visca_zoom_dec]
 A/visca_zoom_dec=22|./src/gowin_ip/visca_cmd/visca_zoom_dec.v|10|1*1205869
@@ -506,47 +527,54 @@ P/~emb=321,626,958,1325
 R=./src/gowin_ip/visca_cmd/visca_zoom_stop.v|10
 Version=9.1.2353.4205  (Windows)|0000000e789cd3cd5128cbcccdcf333450d0f537020020e80412
 
+[voice_lib]
+E=1*3718037
+I=0*1256215
+M=3|0|v98|1714151936377|./src/voice_lib.vhd|0*1255187*0xe6056eba7f6a6bf04d6a906ce4d18e5e7189f944|0*1256136*0xab32bc1a2daf049573e14469f634e0e6
+R=./src/voice_lib.vhd|12
+Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
+
 [ycc2rgb]
-A/rtl=21|./src/ycc2rgb.vhd|17|1*2109837
-BinI32/rtl=3*270386
+A/rtl=21|./src/ycc2rgb.vhd|17|1*2969724
+BinI32/rtl=3*368288
 I=0*130342
 I/rtl=0*132026
 M=11|0|v98|1713338546703|./src/ycc2rgb.vhd|0*129910*0x04823cc0586c9c5c90a39dacfd81e3e700fff72e|0*130267*0xab32bc1a2daf049573e14469f634e0e6
-M/rtl=21|0|v98|1713371204286|./src/ycc2rgb.vhd|0*130692*0x9c1e177949b4fede1aff808092ab59c73eaa79c9|0*131944*0xb33770ff1c10522f9491560174ac8e6c
+M/rtl=21|0|v98|1714047466920|./src/ycc2rgb.vhd|0*130692*0x9c1e177949b4fede1aff808092ab59c73eaa79c9|0*131944*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/ycc2rgb.vhd|9
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/rtl=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [ycc420_to_ycc444div2]
-A/main=21|./src/YCC420_to_YCC444div2.vhd|21|1*2114503
-BinI32/main=3*272376
+A/main=21|./src/YCC420_to_YCC444div2.vhd|21|1*2974390
+BinI32/main=3*370278
 I=0*133143
 I/main=0*135152
 M=11|0|v98|1713338546782|./src/YCC420_to_YCC444div2.vhd|0*132622*0xf86c4926e4cdd39e23ada9a45cbffb9df82ddb9c|0*133042*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371204365|./src/YCC420_to_YCC444div2.vhd|0*133506*0xfaf39d41efda70d6df8bc7842bd80a619ff89cf5|0*135043*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047466981|./src/YCC420_to_YCC444div2.vhd|0*133506*0xfaf39d41efda70d6df8bc7842bd80a619ff89cf5|0*135043*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/YCC420_to_YCC444div2.vhd|14
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [yt8531_module]
-A/main=21|./src/YT8531_module.vhd|23|1*2209773
-BinI32/main=3*311158
+A/main=21|./src/YT8531_module.vhd|23|1*3073057
+BinI32/main=3*410246
 I=0*175882
 I/main=0*347846
 M=11|0|v98|1713338547442|./src/YT8531_module.vhd|0*175395*0x1f8ab5d3a94dbccd4297afd93087787ceafb1089|0*175795*0xab32bc1a2daf049573e14469f634e0e6
-M/main=21|0|v98|1713371205324|./src/YT8531_module.vhd|0*346313*0x0f6582238674b957b007170a526eb82bfc17d12c|0*347751*0xb33770ff1c10522f9491560174ac8e6c
+M/main=21|0|v98|1714047468020|./src/YT8531_module.vhd|0*346313*0x0f6582238674b957b007170a526eb82bfc17d12c|0*347751*0xb33770ff1c10522f9491560174ac8e6c
 R=./src/YT8531_module.vhd|16
 Version=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 Version/main=9.1.2353.4205  (Windows)|00000003789cd3f5370600015b00b0
 
 [~A]
-LastVerilogToplevel=logo_rom
-ModifyID=1513
+LastVerilogToplevel=visca_zoom_check
+ModifyID=2437
 Version=73
 d:/Projects/vimon/src/gowin_ip/CMDtxmem/CMDtxmem.v=0*376566*377857
 d:/Projects/vimon/src/gowin_ip/YT8531_mdiomem/YT8531_mdiomem.v=0*344467*345818
 d:/Projects/vimon/src/gowin_ip/bme240_i2cmem/bme240_i2cmem.v=0*333517*334930
-d:/Projects/vimon/src/gowin_ip/ddrout/ddrout.v_lpm_divide_s64.v_common_rpll.v_logo_rom.v=0*616137*623930
+d:/Projects/vimon/src/gowin_ip/ddrout/ddrout.v_lpm_divide_s64.v_common_rpll.v_logo_rom.v=0*896785*904578
 d:/Projects/vimon/src/gowin_ip/ethtx_rpll/ethtx_rpll.v=0*600924*601786
 d:/Projects/vimon/src/gowin_ip/indexDDR_table/indexDDR_table.v=0*242404*245915
 d:/Projects/vimon/src/gowin_ip/lcd_clkdiv/lcd_clkdiv.v=0*356431*356957
@@ -560,17 +588,18 @@ d:/Projects/vimon/src/gowin_ip/table_MAP/table_MAP.v=0*190407*196612
 d:/Projects/vimon/src/gowin_ip/table_TEXT/table_TEXT.v=0*233331*234674
 d:/Projects/vimon/src/gowin_ip/video_mem/video_mem1024x32.v=0*412909*413920
 d:/Projects/vimon/src/gowin_ip/video_mem/video_mem4096x32.v=0*402818*409622
+d:/Projects/vimon/src/gowin_ip/visca_cmd/visca_zoom_check.v=0*1353342*1353953
 d:/Projects/vimon/src/gowin_ip/visca_cmd/visca_zoom_dec.v=0*318347*318956
 d:/Projects/vimon/src/gowin_ip/visca_cmd/visca_zoom_inc.v=0*312287*312896
 d:/Projects/vimon/src/gowin_ip/visca_cmd/visca_zoom_stop.v=0*315310*315920
 
 [~MFT]
-0=637|0vimon10.mgf|845921|275262
-1=393|1vimon10.mgf|2648118|1617915
-3=371|3vimon10.mgf|325180|246869
+0=1357|0vimon10.mgf|1596061|996661
+1=677|1vimon10.mgf|4269750|3234282
+3=636|3vimon10.mgf|522385|441080
 
 [~U]
-$root=12|0*602273|
+$root=12|0*1351177|
 CMDtxmem=12|0*374286||0x90
 YT8531_mdiomem=12|0*342374||0x90
 bme240_i2cmem=12|0*331394||0x90
@@ -579,11 +608,11 @@ bme280_lib=3|0*11246|0*11796
 bme280_module=11|0*173960|
 cmd_module=11|0*357444|
 common_lib=3|0*9672|0*9748
-common_rpll=12|0*605331||0x90
+common_rpll=12|0*885979||0x90
 crc32=11|0*78332|
-ddrout=12|0*602887||0x90
+ddrout=12|0*883535||0x90
 eth_lib=ETH_lib 3|0*277726|0*278050
-ethrx_module=11|0*670301|
+ethrx_module=11|0*1445356|
 ethtx_module=11|0*303055|
 ethtx_rpll=12|0*599340||0x90
 filter=11|0*87716|
@@ -601,18 +630,19 @@ lcd_lib=3|0*0|0*462
 lcd_module=11|0*135520|
 lcd_rpll=12|0*352064||0x90
 lcdserializer=LCDserializer 11|0*119776|
-logo_rom=12|0*606949||0x90
-lpm_divide_s64=12|0*604036||0x90
+logo_rom=12|0*887597||0x90
+lpm_divide_s64=12|0*884684||0x90
 main_osc=main_OSC 11|0*77258|
 mdio_interface=11|0*111596|
 mdio_lib=3|0*15224|0*15486
+nau88c_lib=3|0*1089096|0*1089454
 resync=11|0*85507|
 rgmii_rx=12|0*327127||0x90
 rgmii_tx=12|0*180612||0x90
 sdram_int=12|0*415042||0x90
 sdram_rpll=12|0*348663||0x90
 ser7to1=11|0*98274|
-stat_module=11|0*158450|
+stat_module=11|0*1497718|
 sync=Sync 11|0*81371|
 sysled=11|0*93354|
 table_FONT=12|0*197439||0x90
@@ -622,11 +652,14 @@ text_ctr=11|0*123900|
 video_mem=11|0*16399|
 video_mem1024x32=12|0*410680||0x90
 video_mem4096x32=12|0*378874||0x90
-vimon10=11|0*307436|
-vimon10_lib=3|0*843298|0*843791
+vimon10=11|0*1472906|
+vimon10_lib=3|0*851577|0*852070
+visca_lib=3|0*1463500|0*1463688
+visca_zoom_check=12|0*1351823||0x90
 visca_zoom_dec=12|0*316849||0x90
 visca_zoom_inc=12|0*310789||0x90
 visca_zoom_stop=12|0*313808||0x90
+voice_lib=3|0*1254248|0*1254622
 ycc2rgb=11|0*129718|
 ycc420_to_ycc444div2=YCC420_to_YCC444div2 11|0*132380|
 yt8531_module=YT8531_module 11|0*175105|

@@ -1,10 +1,11 @@
-//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//Copyright (C)2014-2023 Gowin Semiconductor Corporation.
 //All rights reserved.
 //File Title: IP file
-//GOWIN Version: V1.9.8.07
+//GOWIN Version: V1.9.9 Beta-3
 //Part Number: GW2AR-LV18EQ144C8/I7
-//Device: GW2AR-18C
-//Created Time: Tue Aug 29 17:49:31 2023
+//Device: GW2AR-18
+//Device Version: C
+//Created Time: Thu Apr 25 14:44:38 2024
 
 module table_TEXT (dout, clk, oce, ce, reset, ad);
 

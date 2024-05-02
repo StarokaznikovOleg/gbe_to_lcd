@@ -5,7 +5,6 @@
 -- Company     : Protei
 -------------------------------------------------------------------------------
 library IEEE;
-library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
@@ -13,6 +12,8 @@ library work;
 use work.vimon10_lib.all;								    
 use work.common_lib.all;
 use work.bme280_lib.all;
+use work.voice_lib.all;
+use work.visca_lib.all;
 
 entity stat_module is
 	generic( H_MAPTXT : integer:=256; V_MAPTXT : integer:=64 );
@@ -21,7 +22,8 @@ entity stat_module is
 		bme280: in type_outBME280; 
 		eth_link: in std_logic_vector(1 downto 0); 
 		detect_video: in std_logic; 
-		detect_voice: in std_logic; 
+		voice: in type_voice_level; 
+		visca: in type_visca_param; 
 		LCD_backlight: in integer; 
 		
 		--STAT memory
@@ -33,10 +35,12 @@ end stat_module;
 
 architecture main of stat_module is	
 	signal eth_link_sync: std_logic_vector(1 downto 0); 
-	signal detect_video_sync,detect_voice_sync: std_logic; 
+	signal detect_video_sync,sample_sync,voice_act: std_logic; 
 	signal LCD_backlight_sync: integer; 
+	signal voice_level: type_level; 
+	signal voice_tmp: std_logic_vector(31 downto 0); 
 	
-	type state_type is (st_ready,st_hex_read,st_boolean_read);
+	type state_type is (st_ready,st_hex_read,st_boolean_read,st_level_read);
 	signal state : state_type:=st_ready;	
 	signal conv_start: boolean;
 	signal hex_data: std_logic_vector(31 downto 0);		
@@ -46,7 +50,7 @@ architecture main of stat_module is
 	signal conv_ready: boolean; 
 	signal sign: boolean; 
 	
-	constant max_st_count: integer:=12;
+	constant max_st_count: integer:=14;
 	signal st_count: integer range 0 to max_st_count-1;	
 	signal char_count: integer range 0 to 15;	
 	
@@ -58,18 +62,20 @@ architecture main of stat_module is
 	end record;
 	type type_array_HV is array (0 to max_st_count-1) of type_HV;
 	constant conf_TXT: type_array_HV:=(
-	(20,54),	-- P(XXXX.XX)
-	(21,54),	-- T(±XXX.XX)
-	(22,55),	-- H(XXX.XXX)
-	(23,49), 	--hw_version(XXX)
-	(23,53),	--fw_version(XXX)
-	(23,57),	--fw_revision(XXX)
-	(23,61), 	--fw_test(XXX)
-	(19,24), 	--link0 (ÕXXX)åñòü\íåò
-	(19,29), 	--link1 (ÕXXX)åñòü\íåò
-	(20,24), 	--video (ÕXXX)åñòü\íåò
-	(21,24), 	--voice (ÕXXX)åñòü\íåò
-	(23,27) 	--backlight (ÕXXX)
+	(20,54),	--00 P(XXXX.XX)
+	(21,54),	--01 T(±XXX.XX)
+	(22,55),	--02 H(XXX.XXX)
+	(23,49), 	--03 hw_version(XXX)
+	(23,53),	--04 fw_version(XXX)
+	(23,57),	--05 fw_revision(XXX)
+	(23,61), 	--06 fw_test(XXX)
+	(19,24), 	--07 link0 (ÕXXX)åñòü\íåò
+	(20,24), 	--08 video (ÕXXX)åñòü\íåò
+	(21,24), 	--09 voice (ÕXXX)åñòü\íåò
+	(23,16), 	--10 backlight (ÕXXX)
+	(21,28), 	--11 level
+	(22,30), 	--12 
+	(23,4) 	--13 
 	);
 	subtype type_char is STD_LOGIC_VECTOR(7 downto 0);		
 	type type_array4_char is array (0 to 3) of type_char;
@@ -92,11 +98,35 @@ begin
 		clk_in => clock, data_in => detect_video,
 		clk_out => clock, data_out => detect_video_sync);	
 	
-	sync_detect_voice : entity work.Sync 
-	generic map( regime => "level", inDelay => 0, outDelay => 0 )
+	sync_sample : entity work.Sync 
+	generic map( regime => "spuls", inDelay => 0, outDelay => 0 )
 	port map(reset => '0',
-		clk_in => clock, data_in => detect_voice,
-		clk_out => clock, data_out => detect_voice_sync);	  
+		clk_in => voice.clock, data_in => voice.ena,
+		clk_out => clock, data_out => sample_sync);	 
+	
+	voice_sync: process (reset,clock)
+		variable voice_act_false_path_sync : std_logic;
+		variable voice_level_false_path_sync : type_level;
+		variable voice_tmp_false_path_sync : std_logic_vector(31 downto 0);
+	begin
+		if reset='1'then
+			voice_act<='0';
+			voice_level<=(others=>'0');
+			voice_tmp<=(others=>'0');
+			voice_act_false_path_sync:='0';
+			voice_level_false_path_sync:=(others=>'0');
+			voice_tmp_false_path_sync:=(others=>'0');
+		elsif rising_edge(clock) then
+			voice_act<=voice_act_false_path_sync;
+			voice_level<=voice_level_false_path_sync;
+			voice_tmp<=voice_tmp_false_path_sync;
+			if sample_sync='1' then
+				voice_act_false_path_sync:=voice.act;
+				voice_level_false_path_sync:=voice.level;
+				voice_tmp_false_path_sync:=voice.tmp;
+			end if;
+		end if;
+	end process voice_sync;	
 	
 	sync_LCD_backlight_process: process (clock)
 		variable LCD_backlight_false_path_sync: integer; 
@@ -194,24 +224,44 @@ begin
 							state<=st_boolean_read;	  
 						
 						when 8=> 
-							sign<=eth_link_sync(1)='1'; 
-							state<=st_boolean_read;	  
-						
-						when 9=> 
 							sign<=detect_video_sync='1'; 
 							state<=st_boolean_read;	  
 						
-						when 10=> 
-							sign<=detect_voice_sync='1'; 
+						when 9=> 
+							sign<=voice_act='1'; 
 							state<=st_boolean_read;	  
 						
-						when 11=> 
+						when 10=> 
 							conv_start<=true;
 							hex_data<=conv_std_logic_vector(LCD_backlight_sync,32);
 							sign<=false; 
 							numb_val<=2; 
 							dot_val<=15;
-							state<=st_hex_read;
+							state<=st_hex_read;	  
+						
+						when 11=> 
+							hex_data<=voice_level;
+							sign<=false; 
+							numb_val<=6; 
+							dot_val<=15;
+							state<=st_level_read;
+							
+						when 12=> 
+							conv_start<=true;
+							hex_data<=ext(voice_tmp(31 downto 9),32);
+							sign<=false; 
+							numb_val<=6; 
+							dot_val<=15;
+							state<=st_hex_read;	
+						
+						when 13=> 
+							conv_start<=true;
+							hex_data<=ext(visca.zoom(15 downto 8),32);
+							sign<=false; 
+							numb_val<=2; 
+							dot_val<=15;
+							state<=st_hex_read;	
+						
 						
 					end case;  
 				
@@ -241,7 +291,25 @@ begin
 						state<=st_ready;	  
 					else	
 						char_count<=char_count+1;
+					end if;	  
+				
+				when st_level_read=>
+					if sign then
+						MAPTXT_d<=x"f0";
+					else
+						MAPTXT_d<=x"e" & hex_data(31 downto 28);
+					end if;
+					if conv_integer(hex_data(31 downto 28))/=0 then 
+						sign<=true; 
+					end if;
+					MAPTXT_wr<='1';
+					if char_count=7 then
+						st_count<=st_count+1;
+						state<=st_ready;	  
+					else	
+						char_count<=char_count+1;
 					end if;	
+					hex_data(31 downto 4)<=hex_data(27 downto 0);
 				
 			end case;
 		end if;

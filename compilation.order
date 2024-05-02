@@ -3,6 +3,9 @@
 .\src\common_lib.vhd
 .\src\bme280_lib.vhd
 .\src\i2c_lib.vhd
+.\src\eth_lib.vhd
+.\src\voice_lib.vhd
+.\src\visca_lib.vhd
 .\src\mdio_lib.vhd
 .\src\gowin_ip\video_mem\video_mem.vhd
 .\src\gowin_ip\ddrout\ddrout.v
@@ -24,6 +27,7 @@
 .\src\gowin_ip\visca_cmd\visca_zoom_dec.v
 .\src\gowin_ip\visca_cmd\visca_zoom_inc.v
 .\src\gowin_ip\visca_cmd\visca_zoom_stop.v
+.\src\gowin_ip\visca_cmd\visca_zoom_check.v
 .\src\gowin_ip\YT8531_mdiomem\YT8531_mdiomem.v
 .\src\gowin_ip\CMDtxmem\CMDtxmem.v
 .\src\gowin_ip\indexDDR_table\indexDDR_table.v
