@@ -5,7 +5,7 @@
 //Part Number: GW2AR-LV18EQ144C8/I7
 //Device: GW2AR-18
 //Device Version: C
-//Created Time: Wed Apr 17 10:01:16 2024
+//Created Time: Wed May 08 17:18:17 2024
 
 module video_mem1024x32 (douta, doutb, clka, ocea, cea, reseta, wrea, clkb, oceb, ceb, resetb, wreb, ada, dina, adb, dinb);
 

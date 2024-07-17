@@ -58,7 +58,7 @@ Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem|Behavioral|0 
+HierarchyInformation=video_mem|Behavioral|0
 ShowHide=ShowTopLevel
 Selected=
 
@@ -69,6 +69,7 @@ Selected=
 /bme280_lib.vhd=-1
 /i2c_lib.vhd=-1
 /eth_lib.vhd=-1
+/tmp100_lib.vhd=-1
 /voice_lib.vhd=-1
 /visca_lib.vhd=-1
 /mdio_lib.vhd=-1
@@ -142,6 +143,7 @@ Selected=
 .\src\bme280_lib.vhd=VHDL Source Code
 .\src\i2c_lib.vhd=VHDL Source Code
 .\src\eth_lib.vhd=VHDL Source Code
+.\src\tmp100_lib.vhd=VHDL Source Code
 .\src\voice_lib.vhd=VHDL Source Code
 .\src\visca_lib.vhd=VHDL Source Code
 .\src\mdio_lib.vhd=VHDL Source Code
@@ -207,4 +209,3 @@ Selected=
 .\src\bme280_module.vhd=VHDL Source Code
 .\src\YT8531_module.vhd=VHDL Source Code
 .\src\vimon10.vhd=VHDL Source Code
-

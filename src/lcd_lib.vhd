@@ -34,6 +34,7 @@ package lcd_lib is
 	constant rgb_magenta: type_rgb_color := (x"ff",x"00",x"ff");	
 	constant rgb_yellow : type_rgb_color := (x"ff",x"ff",x"00");	
 	
+	constant rgb_lgray 	: type_rgb_color := (x"c5",x"c9",x"cd");	
 	constant rgb_gray 	: type_rgb_color := (x"80",x"80",x"80");	
 	constant rgb_maroon : type_rgb_color := (x"80",x"00",x"00");	
 	constant rgb_green  : type_rgb_color := (x"00",x"80",x"00");

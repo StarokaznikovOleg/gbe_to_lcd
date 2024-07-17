@@ -64,6 +64,7 @@
         <File path="src/sync.vhd" type="file.vhdl" enable="1"/>
         <File path="src/sysled.vhd" type="file.vhdl" enable="1"/>
         <File path="src/text_ctr.vhd" type="file.vhdl" enable="1"/>
+        <File path="src/tmp100_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10.vhd" type="file.vhdl" enable="1"/>
         <File path="src/vimon10_lib.vhd" type="file.vhdl" enable="1"/>
         <File path="src/visca_lib.vhd" type="file.vhdl" enable="1"/>

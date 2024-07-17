@@ -12,18 +12,17 @@ library work;
 use work.vimon10_lib.all;								    
 use work.common_lib.all;
 use work.bme280_lib.all;
-use work.voice_lib.all;
+--use work.voice_lib.all;
 use work.visca_lib.all;
 
 entity stat_module is
 	generic( H_MAPTXT : integer:=256; V_MAPTXT : integer:=64 );
 	port( reset,clock: in std_logic; 
+		dbg: in std_logic_vector(3 downto 0); 	
 		
 		bme280: in type_outBME280; 
 		eth_link: in std_logic_vector(1 downto 0); 
-		detect_video: in std_logic; 
-		voice: in type_voice_level; 
-		visca: in type_visca_param; 
+		mvk3: in type_mvk3; 
 		LCD_backlight: in integer; 
 		
 		--STAT memory
@@ -35,10 +34,12 @@ end stat_module;
 
 architecture main of stat_module is	
 	signal eth_link_sync: std_logic_vector(1 downto 0); 
-	signal detect_video_sync,sample_sync,voice_act: std_logic; 
+	signal detect_video_sync,voice_act: std_logic; 
+	signal LCD_backlight_level: type_level; 
 	signal LCD_backlight_sync: integer; 
-	signal voice_level: type_level; 
-	signal voice_tmp: std_logic_vector(31 downto 0); 
+	signal level: integer range 0 to 128; 
+	signal mvk3_data : type_mvk3_data;
+	signal mvk3_ena: std_logic; 
 	
 	type state_type is (st_ready,st_hex_read,st_boolean_read,st_level_read);
 	signal state : state_type:=st_ready;	
@@ -50,7 +51,7 @@ architecture main of stat_module is
 	signal conv_ready: boolean; 
 	signal sign: boolean; 
 	
-	constant max_st_count: integer:=14;
+	constant max_st_count: integer:=22;
 	signal st_count: integer range 0 to max_st_count-1;	
 	signal char_count: integer range 0 to 15;	
 	
@@ -62,71 +63,35 @@ architecture main of stat_module is
 	end record;
 	type type_array_HV is array (0 to max_st_count-1) of type_HV;
 	constant conf_TXT: type_array_HV:=(
-	(20,54),	--00 P(XXXX.XX)
-	(21,54),	--01 T(±XXX.XX)
-	(22,55),	--02 H(XXX.XXX)
-	(23,49), 	--03 hw_version(XXX)
-	(23,53),	--04 fw_version(XXX)
-	(23,57),	--05 fw_revision(XXX)
-	(23,61), 	--06 fw_test(XXX)
-	(19,24), 	--07 link0 (ÕXXX)åñòü\íåò
-	(20,24), 	--08 video (ÕXXX)åñòü\íåò
-	(21,24), 	--09 voice (ÕXXX)åñòü\íåò
-	(23,16), 	--10 backlight (ÕXXX)
-	(21,28), 	--11 level
-	(22,30), 	--12 
-	(23,4) 	--13 
+	(19,25),	--00 P(XXXX.XX)
+	(20,25),	--01 T(±XXX.XX)
+	(21,26),	--02 H(XXX.XXX)
+	(23,48), 	--03 hw_version(XXX)
+	(23,52),	--04 fw_version(XXX)
+	(23,56),	--05 fw_revision(XXX)
+	(23,60), 	--06 fw_test(XXX)
+	(19,18), 	--07 mvk3.HEAD (ÕXXX)åñòü\íåò
+	(20,18), 	--08 mvk3.FRONT_HEAD (ÕXXX)åñòü\íåò
+	(19,59), 	--09 mvk3.link (ÕXXX)åñòü\íåò
+	(20,55), 	--10 mvk3.voice.level(XXXXÕXXX)
+	(21,55), 	--11 mvk3.tmp100.val(±XXX)
+	(22,13), 	--12 LCD_backlight(XXXXÕXXX)
+	(22,01), 	--13 mvk3.visca.zoom(XXXXÕXXX)
+	(21,15), 	--14 LCD_backlight(XXX)
+	(21,03),	--15 mvk3.visca.zoom(XXX)
+	(20,37),	--16 mvk3.voice.level(XXX)
+	(23,29), 	--17 mvk3.hw_version(XXX)
+	(23,33),	--18 mvk3.fw_version(XXX)
+	(23,37),	--19 mvk3.fw_revision(XXX)
+	(23,41), 	--20 mvk3.fw_test(XXX)
+	(20,47)		--21 mvk3.voice.act(XXX)
 	);
 	subtype type_char is STD_LOGIC_VECTOR(7 downto 0);		
 	type type_array4_char is array (0 to 3) of type_char;
-	constant line_on : type_array4_char:= (x"82",x"aa",x"ab",x"00");
+	constant line_on  : type_array4_char:= (x"00",x"82",x"aa",x"ab");
 	constant line_off : type_array4_char:= (x"82",x"bb",x"aa",x"ab");
 begin
-	---------------------------------------------------------	
-	--	i : for i in 0 to 1 generate	
-	--		sync_link_status : entity work.Sync 
-	--		generic map( regime => "level", inDelay => 0, outDelay => 0 )
-	--		port map(reset => '0',
-	--			clk_in => clock, data_in => eth_link(i),
-	--			clk_out => clock, data_out => eth_link_sync(i));
-	--	end generate i;
 	eth_link_sync<=eth_link;  
-	
-	sync_detect_video : entity work.Sync 
-	generic map( regime => "level", inDelay => 0, outDelay => 0 )
-	port map(reset => '0',
-		clk_in => clock, data_in => detect_video,
-		clk_out => clock, data_out => detect_video_sync);	
-	
-	sync_sample : entity work.Sync 
-	generic map( regime => "spuls", inDelay => 0, outDelay => 0 )
-	port map(reset => '0',
-		clk_in => voice.clock, data_in => voice.ena,
-		clk_out => clock, data_out => sample_sync);	 
-	
-	voice_sync: process (reset,clock)
-		variable voice_act_false_path_sync : std_logic;
-		variable voice_level_false_path_sync : type_level;
-		variable voice_tmp_false_path_sync : std_logic_vector(31 downto 0);
-	begin
-		if reset='1'then
-			voice_act<='0';
-			voice_level<=(others=>'0');
-			voice_tmp<=(others=>'0');
-			voice_act_false_path_sync:='0';
-			voice_level_false_path_sync:=(others=>'0');
-			voice_tmp_false_path_sync:=(others=>'0');
-		elsif rising_edge(clock) then
-			voice_act<=voice_act_false_path_sync;
-			voice_level<=voice_level_false_path_sync;
-			voice_tmp<=voice_tmp_false_path_sync;
-			if sample_sync='1' then
-				voice_act_false_path_sync:=voice.act;
-				voice_level_false_path_sync:=voice.level;
-				voice_tmp_false_path_sync:=voice.tmp;
-			end if;
-		end if;
-	end process voice_sync;	
 	
 	sync_LCD_backlight_process: process (clock)
 		variable LCD_backlight_false_path_sync: integer; 
@@ -136,6 +101,26 @@ begin
 			LCD_backlight_false_path_sync:=LCD_backlight;
 		end if;
 	end process sync_LCD_backlight_process; 
+	---------------------------------------------------------	
+	sync_mvk3 : entity work.Sync 
+	generic map( regime => "spuls", inDelay => 0, outDelay => 0 )
+	port map(reset => '0',
+		clk_in => mvk3.clock, data_in => mvk3.ena,
+		clk_out => clock, data_out => mvk3_ena);	 
+	
+	mvk3_sync_proc: process (reset,clock)
+		variable mvk3_data_false_path_sync : type_mvk3_data;
+	begin
+		if reset='1'then
+			mvk3_data<=clear_mvk3_data;
+			mvk3_data_false_path_sync:=clear_mvk3_data;
+		elsif rising_edge(clock) then
+			mvk3_data<=mvk3_data_false_path_sync;
+			if mvk3_ena='1' then
+				mvk3_data_false_path_sync:=mvk3.data;
+			end if;
+		end if;
+	end process mvk3_sync_proc;	
 	
 	--------------------------------------------	
 	main_proc: process (reset,clock)
@@ -160,11 +145,11 @@ begin
 					MAPTXT_wr<='0';
 					case st_count is
 						when 0=>
-							if bme280.act then
-								conv_start<=true;
+							if dbg(3)='0' then
+								conv_start<=bme280.act;
 								state<=st_hex_read;
 							else
-								st_count<=st_count+3;
+								st_count<=7;
 							end if;
 							hex_data<=bme280.P;
 							dot_val<=2;
@@ -220,48 +205,109 @@ begin
 							state<=st_hex_read;
 						
 						when 7=> 
-							sign<=eth_link_sync(0)='1'; 
+							sign<=mvk3_data.HEAD='1'; 
 							state<=st_boolean_read;	  
 						
 						when 8=> 
-							sign<=detect_video_sync='1'; 
+							sign<=mvk3_data.FRONT_HEAD='1'; 
 							state<=st_boolean_read;	  
 						
 						when 9=> 
-							sign<=voice_act='1'; 
+							sign<=mvk3_data.link='1'; 
 							state<=st_boolean_read;	  
 						
 						when 10=> 
-							conv_start<=true;
-							hex_data<=conv_std_logic_vector(LCD_backlight_sync,32);
-							sign<=false; 
-							numb_val<=2; 
-							dot_val<=15;
-							state<=st_hex_read;	  
-						
-						when 11=> 
-							hex_data<=voice_level;
+							level<=mvk3_data.voice_level;
 							sign<=false; 
 							numb_val<=6; 
 							dot_val<=15;
 							state<=st_level_read;
-							
-						when 12=> 
+						
+						when 11=> 
 							conv_start<=true;
-							hex_data<=ext(voice_tmp(31 downto 9),32);
+							hex_data<=SXT(mvk3_data.tmp100.val,32);
+							dot_val<=0;
+							sign<=true; 
+							numb_val<=4; 
+							state<=st_hex_read;	 
+						
+						when 12=> 
+							level<=LCD_backlight_sync;
 							sign<=false; 
 							numb_val<=6; 
 							dot_val<=15;
-							state<=st_hex_read;	
+							state<=st_level_read;
 						
 						when 13=> 
-							conv_start<=true;
-							hex_data<=ext(visca.zoom(15 downto 8),32);
+							level<=conv_integer(mvk3_data.zoom_level);
 							sign<=false; 
-							numb_val<=2; 
+							numb_val<=6; 
+							dot_val<=15;
+							state<=st_level_read;
+						
+						when 14=> 
+							if dbg(3)='0' then
+								conv_start<=true;
+								state<=st_hex_read;
+							else
+								st_count<=7;
+							end if;
+							hex_data<=conv_std_logic_vector(LCD_backlight_sync,32);
+							dot_val<=15;
+							sign<=false; 
+							numb_val<=3; 
+						
+						when 15=> 
+							conv_start<=true;
+							state<=st_hex_read;
+							hex_data<=conv_std_logic_vector(mvk3_data.zoom_level,32);
+							dot_val<=15;
+							sign<=false; 
+							numb_val<=3; 
+						
+						when 16=> 
+							conv_start<=true;
+							state<=st_hex_read;
+							hex_data<=conv_std_logic_vector(mvk3_data.voice_level,32);
+							dot_val<=15;
+							sign<=false; 
+							numb_val<=3; 
+						
+						when 17=> 
+							conv_start<=true;
+							hex_data<=conv_std_logic_vector(mvk3_data.hw_version,32);
+							sign<=false; 
+							numb_val<=3; 
 							dot_val<=15;
 							state<=st_hex_read;	
 						
+						when 18=> 
+							conv_start<=true;
+							hex_data<=conv_std_logic_vector(mvk3_data.fw_version,32);
+							sign<=false; 
+							numb_val<=3; 
+							dot_val<=15;
+							state<=st_hex_read;	  
+						
+						when 19=> 
+							conv_start<=true;
+							hex_data<=conv_std_logic_vector(mvk3_data.fw_revision,32);
+							sign<=false; 
+							numb_val<=3; 
+							dot_val<=15;
+							state<=st_hex_read;	  
+						
+						when 20=> 
+							conv_start<=true;
+							hex_data<=conv_std_logic_vector(mvk3_data.fw_test,32);
+							sign<=false; 
+							numb_val<=3; 
+							dot_val<=15;
+							state<=st_hex_read;
+						
+						when 21=> 
+							sign<=data_to_boolean(mvk3_data.voice_act); 
+							state<=st_boolean_read;	  
 						
 					end case;  
 				
@@ -295,12 +341,13 @@ begin
 				
 				when st_level_read=>
 					if sign then
-						MAPTXT_d<=x"f0";
-					else
-						MAPTXT_d<=x"e" & hex_data(31 downto 28);
-					end if;
-					if conv_integer(hex_data(31 downto 28))/=0 then 
+						MAPTXT_d<=x"d0"; -- clear bar
+					elsif level>15 then
+						MAPTXT_d<=x"e0";  -- full bar  
+						level<=level-16;  
+					else 
 						sign<=true; 
+						MAPTXT_d<=x"d" & conv_std_logic_vector(level,4); -- variable bar
 					end if;
 					MAPTXT_wr<='1';
 					if char_count=7 then
@@ -309,7 +356,6 @@ begin
 					else	
 						char_count<=char_count+1;
 					end if;	
-					hex_data(31 downto 4)<=hex_data(27 downto 0);
 				
 			end case;
 		end if;

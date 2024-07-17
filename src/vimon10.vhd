@@ -16,6 +16,7 @@ use work.bme280_lib.all;
 use work.eth_lib.all;
 use work.voice_lib.all;
 use work.visca_lib.all;
+use work.tmp100_lib.all;
 
 entity vimon10 is
 	port(	
@@ -106,7 +107,7 @@ architecture main of vimon10 is
 	
 	signal set_LCD_PWM: std_logic_vector(7 downto 0); 
 	signal set_LCD_EN,int_LCD_EN,int_LCD_PWM: std_logic; 
-	signal no_signal: std_logic; 	 	   	 
+	signal no_signal,no_signal_sync: std_logic; 	 	   	 
 	
 	signal lcd_Vcount,lcd_Hcount: integer; 	 
 	signal grafics_act_pixel : boolean;
@@ -116,13 +117,13 @@ architecture main of vimon10 is
 	signal txt_mapwr : std_logic;
 	signal txt_mapdin : std_logic_vector(7 downto 0);
 	signal detect_video : std_logic;
-	signal voice : type_voice_level;
-	signal visca : type_visca_param;
+	signal mvk3 : type_mvk3;
 	signal eth_link : std_logic_vector(1 downto 0);
 	signal eth0_clksel, eth1_clksel : std_logic_vector(3 downto 0);
 	signal dbg : std_logic_vector(3 downto 0);	 
 	
 	signal bme280: type_outBME280; 
+	signal tmp100: type_tmp100; 
 	signal LCD_backlight : integer range 0 to 100; 
 	
 	signal CMDTX_status: std_logic :='0';
@@ -262,16 +263,15 @@ begin
 	
 	stat_module1 : entity work.stat_module 
 	port map( reset=>reset, clock=>int_clk,
+		dbg=>dbg,
 		bme280=>bme280,
 		eth_link=>eth_link, 
-		detect_video=>detect_video, 
-		voice=>voice, 
-		visca=>visca, 
+		mvk3=>mvk3, 
 		LCD_backlight=>LCD_backlight,
 		MAPTXT_a=>txt_mapadr,
 		MAPTXT_d=>txt_mapdin,
 		MAPTXT_wr=>txt_mapwr );	
-		
+	
 	LED_GREEN<='1';
 	LED_BLUE<='1';
 	LED_RED<='1';
@@ -304,8 +304,7 @@ begin
 	port map( reset=>rst_eth_syncethrx0, clock=>eth0rx_clock,
 		err=>ethrx_err,
 		vsync=>eth_vsync, 
-		voice=>voice,
-		visca=>visca, 
+		mvk3=>mvk3,
 		ethrx_en=>eth0rx_dv,
 		ethrx_d=>eth0rx_d,
 		ethv_a=>ethv_a,
@@ -406,13 +405,17 @@ begin
 	
 	-----------------------------------
 	-- LCD part	
+	no_signal_sync_lcd_pclk : entity work.Sync 
+	generic map( regime=>"level", inDelay=>0, outDelay=>0 )
+	port map( reset=>'0',
+		clk_in=>gpu_clk, data_in=>no_signal,
+		clk_out=>lcd_pclk, data_out=>no_signal_sync );	
 	set_LCD_EN<='1';
-	--	LCD_backlight<=99; -- backlight is fixed now :(
 	LCD_EN_LED<=int_LCD_EN ;
 	LCD_PWM<= not int_LCD_PWM; 	
 	lcd_module1 : entity work.lcd_module 
 	generic map( hsize=>LCD_hsize, hblank=>LCD_hblank, vsize=>LCD_vsize, vblank=>LCD_vblank,
-		hpicture=>960, vfild=>32 )
+		hpicture=>960, vfild=>32, rgb_ground=>rgb_black )
 	port map( reset=>reset, --rst_lcd,
 		sclk=>lcd_sclk,
 		pclk=>lcd_pclk,
@@ -433,6 +436,7 @@ begin
 		lcd_a=>LVDS_A_OUTP,
 		Vcount=>lcd_Vcount,
 		Hcount=>lcd_Hcount,
+		no_signal=>no_signal_sync,
 		grafics_act=>grafics_act_pixel,
 		grafics_color=>grafics_color_pixel ); 
 	

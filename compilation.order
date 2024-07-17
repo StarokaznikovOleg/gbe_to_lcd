@@ -4,6 +4,7 @@
 .\src\bme280_lib.vhd
 .\src\i2c_lib.vhd
 .\src\eth_lib.vhd
+.\src\tmp100_lib.vhd
 .\src\voice_lib.vhd
 .\src\visca_lib.vhd
 .\src\mdio_lib.vhd

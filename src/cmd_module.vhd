@@ -18,7 +18,7 @@ entity cmd_module is
 	port(
 		reset,clock: in std_logic; 
 		key: in std_logic_vector(3 downto 0); 
-		LCD_backlight : out integer range 0 to 99;
+		LCD_backlight : out integer range 0 to 127;
 		--memory
 		mem_adr: out type_cmd_mem_adr;		
 		mem_data: out type_cmd_mem_data;
@@ -194,9 +194,6 @@ begin
 						state:=cmd_start; 
 					elsif key_state(2)=key_on then
 						key_done(2)<='1';
---						cmd:=zoom_check;
---						count:=conv_integer(cmd_zoom_check);
---						state:=cmd_start; 
 					elsif key_state(2)=key_off then
 						key_done(2)<='1';
 					elsif t100_ena then
@@ -304,11 +301,11 @@ begin
 	end process main_proc; 
 	
 	backlight_proc: process (reset,clock)   
-		variable count : integer range 0 to 99;
+		variable count : integer range 0 to 127;
 	begin
 		LCD_backlight<=count;	
 		if reset='1' then 	
-			count:=50;
+			count:=63;
 			key_done(5 downto 3)<=(others=>'0');
 		elsif rising_edge(clock) then 
 			if key_state(3)=key_on then
@@ -328,11 +325,11 @@ begin
 			end if;
 			if t10_ena  then
 				if key_state(3)=key_wait_off  then
-					if count/=99 then count:=count+1; end if;
+					if count/=127 then count:=count+1; end if;
 				elsif key_state(4)=key_wait_off then
 					if count/=6 then count:=count-1; end if;
 				elsif key_state(5)=key_wait_off then
-					count:=50; 
+					count:=63; 
 				end if;
 			end if;
 		end if;
@@ -341,7 +338,7 @@ begin
 	timer_proc: process (reset,clock)  
 		constant max_countA : integer :=ref_freq/100;
 		constant max_countB : integer :=5;
-		constant max_countR : integer :=50;
+		constant max_countR : integer :=20;
 		variable countA : integer range 0 to max_countA-1;
 		variable countB : integer range 0 to max_countB-1;
 		variable countR : integer range 0 to max_countR-1;

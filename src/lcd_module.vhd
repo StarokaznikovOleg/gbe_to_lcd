@@ -12,7 +12,7 @@ use work.lcd_lib.all;
 entity lcd_module is
 	generic( hsize:integer:=1280; hblank:integer:=160; vsize:integer:=800; vblank:integer:=23;
 		hpicture:integer:=960; vpicture:integer:=540; 
-		vfild:integer:=32);
+		vfild:integer:=32; rgb_ground:type_rgb_color:=rgb_sienna );
 	port(
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
@@ -22,6 +22,7 @@ entity lcd_module is
 		
 		
 		Vcount,Hcount: out integer; 
+		no_signal: in std_logic; 
 		grafics_act : in boolean; 
 		grafics_color :in type_rgb_color;
 		
@@ -58,6 +59,8 @@ architecture main of lcd_module is
 	signal state : state_type:=Vpause;
 	constant max_adrBuff: integer :=8192*2-1;
 	signal adrBuff,count_adrBuff : integer range 0 to 2**10-1 :=0;	
+	constant max_intDcount: integer :=hsize*2-1;
+	signal intDcount : integer range 0 to max_intDcount :=0;	
 	signal intHcount : integer range 0 to hblank+hsize-1 :=0;	
 	signal store0Request,store1Request,intVcount,intVAcount : integer range 0 to vblank+vsize-1 :=0;	
 	signal Frame,Vstart,Vstop,Hstart,Hstop,req_act,edgingv_act,edgingh_act,picturev_act,pictureh_act,status_buffer : boolean:=false;	
@@ -68,7 +71,7 @@ architecture main of lcd_module is
 	
 	signal YCC444stream : type_ycc_color:=ycc_black;
 	signal RGBstream : type_rgb_color:=rgb_black;
-	
+	signal genY :std_logic_vector(7 downto 0);
 begin 
 	err<=err_sequence;	
 	Vcount<=intVcount;
@@ -115,7 +118,7 @@ begin
 				LCD_PWM<='0';	
 			end if;
 			if Frame then
-					count_pwm:=0;
+				count_pwm:=0;
 			elsif count_pwm_inc then
 				if count_pwm=max_count_pwm then
 					count_pwm:=0;
@@ -126,7 +129,7 @@ begin
 			count_pwm_inc:=count=0;
 			if Frame then
 				count:=max_PWMcount-1;
---				count:=corr_PWMcount+max_PWMcount-1;
+				--				count:=corr_PWMcount+max_PWMcount-1;
 			elsif count=0 then
 				count:=max_PWMcount-1;
 			else
@@ -155,7 +158,12 @@ begin
 	mem_d(3)<='0';
 	main_proc: process (pclk)
 	begin
-		if rising_edge(pclk) then  
+		if rising_edge(pclk) then 
+			if conv_std_logic_vector(intHcount+intVcount+intDcount,16)(10)='0' then
+				genY<="00" & conv_std_logic_vector(intHcount+intVcount+intDcount,16)(9 downto 4); 
+			else
+				genY<="00" & not conv_std_logic_vector(intHcount+intVcount+intDcount,16)(9 downto 4); 
+			end if;
 			if intVAcount=vpicture then	 
 				mem_d(13 downto 4)<=conv_std_logic_vector(0,10);  
 				mem_d(2)<='0';
@@ -181,6 +189,13 @@ begin
 				status_buffer<=mem_q(31 downto 16)=conv_std_logic_vector(store1Request,16);	  
 			else
 				status_buffer<=mem_q(15 downto 0)=conv_std_logic_vector(store0Request,16);	  
+			end if;
+			if intVcount=0 and intHcount=0 then 
+				if  intDcount=max_intDcount then	
+					intDcount<=0;	
+				else
+					intDcount<=intDcount+16;	
+				end if;
 			end if;
 			if intHcount=0 then 
 				if  intVcount=vblank+vsize-1 then	
@@ -240,18 +255,21 @@ begin
 					if grafics_act then 
 						lcd.color<=grafics_color;
 					elsif edgingh_act or edgingv_act then 
-						lcd.color<=rgb_sienna;
+						lcd.color<=rgb_ground;
 					else
 						lcd.color<=RGBstream;
-					end if;
-					if picturev_act and pictureh_act and Hphase=1 then  
+					end if;	   
+					if no_signal='1' then
+						YCC420stream<= ycc_black.Cb & ycc_black.Cr & genY & genY & genY & genY; --[Cb/Cr] & [Y11/Y10] & [Y01/Y00]
+					elsif picturev_act and pictureh_act and Hphase=1 then  
 						adrBuff<=adrBuff+1;	
 						YCC420stream<= mem_q(95 downto 80) & mem_q(63 downto 48) & mem_q(31 downto 16); --[Cb/Cr] & [Y11/Y10] & [Y01/Y00]
 						Hphase<=0;
 					else
 						YCC420stream<= mem_q(79 downto 64) & mem_q(47 downto 32) & mem_q(15 downto 0);	--[Cb/Cr] & [Y11/Y10] & [Y01/Y00]
 						Hphase<=1;
-					end if;
+					end if;	
+					
 					if Vstop then	
 						state<=Vpause;
 					elsif Hstop then	

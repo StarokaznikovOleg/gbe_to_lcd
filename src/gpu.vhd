@@ -153,7 +153,8 @@ begin
 					O_sdrc_rd_n<='1';
 					tx_d<=(others=>'0');
 					tx_wr<='0';
-					O_sdrc_data<=x"5a5a5a5a";
+					O_sdrc_data<=x"80808080";
+--					O_sdrc_data<=x"5a5a5a5a";
 					count:=Smem_len-1; 
 					if I_sdrc_init_done='1' and I_sdrc_busy_n='1' then
 						O_sdrc_wr_n<='0';

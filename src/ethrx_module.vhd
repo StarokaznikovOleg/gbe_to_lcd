@@ -7,8 +7,9 @@ use IEEE.std_logic_unsigned.all;
 library work;
 use work.common_lib.all;
 use work.vimon10_lib.all;
-use work.voice_lib.all;
 use work.visca_lib.all;
+use work.voice_lib.all;
+use work.tmp100_lib.all;
 
 entity ethrx_module is
 	generic( hsize:integer:=1920; vsize:integer:=1080);
@@ -17,8 +18,7 @@ entity ethrx_module is
 		clock: in std_logic; 
 		err: out std_logic_vector(3 downto 0); 
 		vsync: out std_logic; 
-		voice: out type_voice_level; 
-		visca: out type_visca_param; 
+		mvk3: out type_mvk3; 
 		
 		ethrx_en: in std_logic;
 		ethrx_d : in std_logic_vector(7 downto 0);  
@@ -40,6 +40,7 @@ architecture main of ethrx_module is
 	constant ethMACS : std_logic_vector(47 downto 0):=x"001b638445e6";	
 	constant ethVType : std_logic_vector(31 downto 0):=x"00000000";	
 	constant ethSType : std_logic_vector(31 downto 0):=x"00000001";	
+	constant ethPType : std_logic_vector(31 downto 0):=x"00000002";	
 	constant ethCType : std_logic_vector(31 downto 0):=x"08004500";	 
 	
 	constant cmd_visca_zoom : std_logic_vector(15 downto 0):=x"9050";	
@@ -59,12 +60,12 @@ architecture main of ethrx_module is
 	constant count_SSeq : integer:=5;   
 	constant count_vline : integer:=1;   
 	
-	type state_type is (ethpause,idle,ethheader,ethVdata,ethSdata,ethCdata,ethexit);
+	type state_type is (ethpause,idle,ethheader,ethVdata,ethSdata,ethPdata,ethCdata,ethexit);
 	signal state : state_type:=ethpause;	
 	signal shift_txd : std_logic_vector(63 downto 0):=(others=>'0');
 	signal intcrc_clr,intcrc_en : std_logic:='0';
 	signal crc_check : std_logic_vector(31 downto 0):=(others=>'0');
-	signal ok_PREA,ok_MACD,ok_MACS,ok_VType,ok_SType,ok_CType,visca_zoom_cmd :boolean;
+	signal ok_PREA,ok_MACD,ok_MACS,ok_VType,ok_SType,ok_PType,ok_CType,visca_zoom_cmd :boolean;
 	signal adrBuffHi,numBuff : std_logic:='0';
 	signal adrBuff:integer range 0 to 2**11-1;
 	constant max_plen_count : integer :=hsize*3-1;
@@ -77,6 +78,7 @@ architecture main of ethrx_module is
 	--	signal voice_level : type_log_data;
 	constant store_size :integer := 32;
 	signal voice_level_acc: std_logic_vector(store_size-1 downto 0);
+	signal zoom_level: std_logic_vector(15 downto 0);
 	
 begin 
 	err(0)<=err_crc;
@@ -84,8 +86,7 @@ begin
 	err(2)<=err_len;
 	err(3)<=err_sequence; 
 	
-	voice.clock<=clock;
-	visca.clock<=clock;
+	mvk3.clock<=clock;	
 	
 	ethv_a(11)<=adrBuffHi;	
 	ethv_a(10 downto 0)<=conv_std_logic_vector(adrBuff,11);	
@@ -123,6 +124,7 @@ begin
 			ok_MACS<=false;
 			ok_VType<=false;
 			ok_SType<=false;
+			ok_PType<=false;
 			Vcount<=0;
 			plen_count<=0;
 			vsync_delay0<='0';
@@ -130,7 +132,7 @@ begin
 			vsync_int<='0';
 			voice_level_acc<=(others=>'0'); 
 			count:=0;
-			visca.ena<='0';
+			mvk3.ena<='0';
 			state<=ethpause;
 		elsif rising_edge(clock) then 	
 			ok_PREA<=shift_txd(31 downto 0) & ethrx_d=ethPREA;
@@ -143,7 +145,7 @@ begin
 			vsync_int<=boolean_to_data(vsync_delay0='1' and vsync_delay1='0');
 			case state is
 				when idle =>  
-					visca.ena<='0';
+					mvk3.ena<='0';
 					err_len<='0';
 					err_crc<='0';
 					err_sequence<='0';
@@ -177,6 +179,8 @@ begin
 							ethv_wr<='1';
 						elsif ok_SType then
 							state<=ethSdata;
+						elsif ok_PType then
+							state<=ethPdata;
 						elsif ok_CType then
 							state<=ethCdata;
 						else 
@@ -186,6 +190,7 @@ begin
 					if count=count_Etype then
 						ok_VType<=shift_txd(31 downto 0)=ethVType;
 						ok_SType<=shift_txd(31 downto 0)=ethSType;
+						ok_PType<=shift_txd(31 downto 0)=ethPType;
 						ok_CType<=shift_txd(31 downto 0)=ethCType;
 					end if;	 
 					--					if count=count_FSeq then	 
@@ -270,22 +275,22 @@ begin
 						state<=idle;
 					end if;	
 				
-				when ethCdata => 
-					ethv_wr<='0';  
-					if count=37 then  
-						visca_zoom_cmd<=cmd_visca_zoom=shift_txd(15 downto 0);  
-					end if;	
-					if visca_zoom_cmd then
-						if count=36 then  
-							visca.zoom(15 downto 12)<=shift_txd(3 downto 0);
-						elsif count=35 then  
-							visca.zoom(11 downto 8)<=shift_txd(3 downto 0);
-						elsif count=34 then  
-							visca.zoom(7 downto 4)<=shift_txd(3 downto 0);
-						elsif count=33 then  
-							visca.zoom(3 downto 0)<=shift_txd(3 downto 0);
-						end if;	
-					end if;	
+				when ethPdata => 
+				ethv_wr<='0';  
+					if count=47 then mvk3.data.hw_version<= conv_integer(shift_txd(39 downto 32)); end if;	 
+					if count=47 then mvk3.data.fw_version<= conv_integer(shift_txd(31 downto 24)); end if;	 
+					if count=47 then mvk3.data.fw_revision<= conv_integer(shift_txd(23 downto 16)); end if;	 
+					if count=47 then mvk3.data.fw_test<= conv_integer(shift_txd(15 downto 8)); end if;	 
+					if count=47 then mvk3.data.link<=shift_txd(5); end if; 
+					if count=47 then mvk3.data.DB<=shift_txd(4 downto 0); end if;	
+					if count=46 then mvk3.data.tmp100.act<=data_to_boolean(shift_txd(6)); end if;
+					if count=46 then mvk3.data.voice_act<=shift_txd(5); end if;
+					if count=46 then mvk3.data.CAM_PWR<=shift_txd(3); end if;
+					if count=46 then mvk3.data.FRONT_HEAD<=shift_txd(2); end if;
+					if count=46 then mvk3.data.HEAD<=shift_txd(1); end if;
+					if count=46 then mvk3.data.COLD<=shift_txd(0); end if;	
+					if count=45 then mvk3.data.voice_level<= conv_integer(shift_txd(7 downto 0)); end if;
+					if count=43 then mvk3.data.tmp100.val<= shift_txd(15 downto 0); end if;	
 					
 					if count=0 then
 						count:=count_max;  
@@ -293,7 +298,36 @@ begin
 						count:=count-1;
 					end if;	 
 					if ethrx_en='0' then 
-						visca.ena<='1';
+						mvk3.ena<='1';
+						state<=idle;
+					end if;	
+				
+				when ethCdata => 
+					ethv_wr<='0';  
+					if count=37 then  
+						visca_zoom_cmd<=cmd_visca_zoom=shift_txd(15 downto 0);  
+					end if;	
+					if visca_zoom_cmd then
+						if count=36 then  
+							zoom_level(15 downto 12)<=shift_txd(3 downto 0);
+						elsif count=35 then  
+							zoom_level(11 downto 8)<=shift_txd(3 downto 0);
+						elsif count=34 then  
+							zoom_level(7 downto 4)<=shift_txd(3 downto 0);
+						elsif count=33 then  
+							zoom_level(3 downto 0)<=shift_txd(3 downto 0);
+						end if;	
+					end if;	
+						if count=32 and zoom_level/=x"0000" then  zoom_level<=zoom_level-1; end if;
+						if count=31 then  mvk3.data.zoom_level<=conv_integer(zoom_level(13 downto 7)); end if;
+					
+					if count=0 then
+						count:=count_max;  
+					else
+						count:=count-1;
+					end if;	 
+					if ethrx_en='0' then 
+						mvk3.ena<='1';
 						state<=idle;
 					end if;	
 				
@@ -305,40 +339,7 @@ begin
 				
 			end case;		
 		end if;
-	end process main_proc; 
+	end process main_proc; 	
 	
-	---------------------------------------------------------	
-	act_level_proc: process (reset,clock)
-	begin
-		if reset='1' then 
-			int_voice<='0';
-			voice.ena<=clear_voice_level.ena;
-			voice.act<=clear_voice_level.act;
-			Ssync_int<=false; 
-		elsif rising_edge(clock) then 
-			voice.ena<=boolean_to_data(Ssync_int);
-			if Ssync_int then 	
-				voice.act<=int_voice;	 
-				voice.tmp<=voice_level_acc;	 
-				int_voice<='0';
-			elsif state=ethSdata then	 
-				int_voice<='1';
-			end if;
-			Ssync_int<=vsync_int='1'; 
-		end if;
-	end process act_level_proc; 
-	
-	i : for i in 0 to max_level-1 generate	
-		log_level_proc: process (reset,clock)
-		begin
-			if reset='1' then 
-				voice.level(i)<=clear_voice_level.level(i);
-			elsif rising_edge(clock) then  
-				if Ssync_int then
-					voice.level(i)<=boolean_to_data(conv_integer(voice_level_acc(31-7 downto 16-7))>log_level(i));
-				end if;
-			end if;
-		end process log_level_proc; 
-	end generate i;
 	
 end main;
