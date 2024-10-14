@@ -41,14 +41,15 @@ architecture main of cmd_module is
 	constant udp_checksum_start : std_logic_vector(15 downto 0):=x"f696"; 
 	constant udp_lenght_start : std_logic_vector(15 downto 0):=conv_std_logic_vector(8,16); 
 	
-	--	constant visca_zoom : integer:=6;
-	--	type type_visca_cmd_zoom is array (visca_zoom-1 downto 0) of std_logic_vector(7 downto 0);
-	--	constant visca_cmd_zoom_dec :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"03",x"ff"); 
-	--	constant visca_cmd_zoom_inc :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"02",x"ff"); 
-	--	constant visca_cmd_zoom_stop :type_visca_cmd_zoom := (x"81",x"01",x"04",x"07",x"00",x"ff"); 
+	constant visca_zoom : integer:=8;
+	type type_visca_cmd_zoom is array (visca_zoom-1 downto 0) of std_logic_vector(7 downto 0);
+	constant mem_visca_zoom_dec :type_visca_cmd_zoom := (x"00",x"81",x"01",x"04",x"07",x"03",x"ff",x"06"); 
+	constant mem_visca_zoom_inc :type_visca_cmd_zoom := (x"00",x"81",x"01",x"04",x"07",x"02",x"ff",x"06"); 
+	constant mem_visca_zoom_stop :type_visca_cmd_zoom := (x"00",x"81",x"01",x"04",x"07",x"00",x"ff",x"06"); 
+	constant mem_visca_zoom_check :type_visca_cmd_zoom := (x"00",x"00",x"81",x"09",x"04",x"47",x"ff",x"05"); 
 	signal t1_ena,t10_ena,t100_ena : boolean;
-	signal ad_cmd : std_logic_vector(2 downto 0);
-	signal cmd_zoom_inc,cmd_zoom_dec,cmd_zoom_stop,cmd_zoom_check : std_logic_vector(7 downto 0);
+	signal mem_count : integer range 0 to 7;
+	signal cmd_data : std_logic_vector(7 downto 0);
 	
 	signal buf_number : std_logic;
 	constant ADRcount_max :integer := eth_cmd_header_len+512; 
@@ -65,6 +66,8 @@ architecture main of cmd_module is
 	type type_array_key_state is array (key_variant-1 downto 0) of type_key_state;
 	signal key_state : type_array_key_state;
 	signal key_done : std_logic_vector(key_variant-1 downto 0);
+	type cmd_type is (zoom_check,zoom_dec,zoom_inc,zoom_stop);
+	signal cmd_select : cmd_type:=zoom_check;
 	
 begin
 	sync4_key: for i in 0 to 3 generate
@@ -107,23 +110,12 @@ begin
 		end process keydata_proc; 	  
 	end generate;	
 	
-	visca_zoom_inc1 : entity work.visca_zoom_inc 
-	port map(ad => ad_cmd, dout => cmd_zoom_inc);
-	visca_zoom_dec1 : entity work.visca_zoom_dec 
-	port map(ad => ad_cmd, dout => cmd_zoom_dec);
-	visca_zoom_stop1 : entity work.visca_zoom_stop 
-	port map(ad => ad_cmd, dout => cmd_zoom_stop);
-	visca_zoom_check1 : entity work.visca_zoom_check 
-	port map(ad => ad_cmd, dout => cmd_zoom_check);
-	
 	mem_status<=not buf_number;
 	mem_adr(CMD_mem_adr_len-1)<=buf_number;
 	mem_adr(CMD_mem_adr_len-2 downto 0)<=conv_std_logic_vector(ADRcount,CMD_mem_adr_len-1);
 	
 	--------------------------------------------	
 	main_proc: process (reset,clock)   
-		type cmd_type is (none,zoom_dec,zoom_inc,zoom_stop,zoom_check);
-		variable cmd : cmd_type:=none;
 		type state_type is (idle,cmd_start,cmd_send,
 		iplenghtH,iplenghtL,ipidH,ipidL,ipchecksumH,ipchecksumL,
 		udplenghtH,udplenghtL,udpchecksumH,udpchecksumL,
@@ -131,15 +123,14 @@ begin
 		variable state : state_type; 
 		constant pause_count_max: integer:=2048;
 		variable pause_count : integer range 0 to pause_count_max-1;
-		variable count : integer range 0 to 15;
 		variable ip_checksum,ip_lenght,ip_id,udp_checksum,udp_lenght: std_logic_vector(15 downto 0);
-		variable cmd_data : std_logic_vector(7 downto 0);
 		variable udp_csh : boolean;
 	begin
-		ad_cmd<=conv_std_logic_vector(count,3);
 		if reset='1' then 	
 			mem_data<=(others=>'0');
 			mem_wr<='0'; 
+			cmd_select<=zoom_check;
+			cmd_data<=(others=>'0');
 			buf_number<='0';
 			ADRcount<=0;
 			key_done(2 downto 0)<=(others=>'0');
@@ -150,17 +141,17 @@ begin
 			udp_lenght:=(others=>'0');
 			udp_csh:=false;
 			pause_count:=0;
-			count:=0;
+			mem_count<=0;
 			state:=pause;  
 		elsif rising_edge(clock) then 
-			if cmd=zoom_inc then
-				cmd_data:=cmd_zoom_inc;
-			elsif cmd=zoom_dec then
-				cmd_data:=cmd_zoom_dec; 
-			elsif cmd=zoom_stop then
-				cmd_data:=cmd_zoom_stop; 
-			elsif cmd=zoom_check then
-				cmd_data:=cmd_zoom_check; 
+			if cmd_select=zoom_inc then
+				cmd_data<=mem_visca_zoom_inc(mem_count);
+			elsif cmd_select=zoom_dec then
+				cmd_data<=mem_visca_zoom_dec(mem_count); 
+			elsif cmd_select=zoom_stop then
+				cmd_data<=mem_visca_zoom_stop(mem_count); 
+			else 
+				cmd_data<=mem_visca_zoom_check(mem_count); 
 			end if;	
 			case state is
 				when idle =>
@@ -173,61 +164,61 @@ begin
 					udp_lenght:=udp_lenght_start;
 					udp_csh:=false;
 					if key_state(0)=key_on then
-						cmd:=zoom_inc;
+						cmd_select<=zoom_inc;
 						key_done(0)<='1';
-						count:=conv_integer(cmd_zoom_inc);
+						mem_count<=conv_integer(mem_visca_zoom_inc(0));
 						state:=cmd_start;
 					elsif key_state(0)=key_off  then
 						key_done(0)<='1';
-						cmd:=zoom_stop;
-						count:=conv_integer(cmd_zoom_stop);
+						cmd_select<=zoom_stop;
+						mem_count<=conv_integer(mem_visca_zoom_stop(0));
 						state:=cmd_start; 
 					elsif key_state(1)=key_on then
 						key_done(1)<='1';
-						cmd:=zoom_dec;
-						count:=conv_integer(cmd_zoom_dec);
+						cmd_select<=zoom_dec;
+						mem_count<=conv_integer(mem_visca_zoom_dec(0));
 						state:=cmd_start; 
 					elsif key_state(1)=key_off then
 						key_done(1)<='1';
-						cmd:=zoom_stop;
-						count:=conv_integer(cmd_zoom_stop);
+						cmd_select<=zoom_stop;
+						mem_count<=conv_integer(mem_visca_zoom_stop(0));
 						state:=cmd_start; 
 					elsif key_state(2)=key_on then
 						key_done(2)<='1';
 					elsif key_state(2)=key_off then
 						key_done(2)<='1';
 					elsif t100_ena then
-						cmd:=zoom_check;
-						count:=conv_integer(cmd_zoom_check);
+						cmd_select<=zoom_check;
+						mem_count<=conv_integer(mem_visca_zoom_check(0));
 						state:=cmd_start; 
 					else
+						mem_count<=0;
 						key_done(2 downto 0)<=(others=>'0');
 					end if;
 				
 				when cmd_start =>  
 					key_done(2 downto 0)<=(others=>'0');
+					mem_count<=mem_count-1;
 					state:=cmd_send; 
 				
 				when cmd_send =>  
 					ADRcount<=ADRcount+1; 
 					mem_wr<='1'; 
-					if count=0 then 
-						mem_data<='0' & x"00";
-						state:=iplenghtH;
+					mem_data<='1' & cmd_data;
+					ip_lenght:=ip_lenght+1;
+					ip_checksum:=ip_checksum - 1;
+					udp_lenght:=udp_lenght+1; 
+					if udp_csh then
+						udp_checksum:=udp_checksum - 1 - (cmd_data & x"00");	
 					else
-						mem_data<='1' & cmd_data;
-						ip_lenght:=ip_lenght+1;
-						ip_checksum:=ip_checksum - 1;
-						udp_lenght:=udp_lenght+1; 
-						if udp_csh then
-							udp_checksum:=udp_checksum - 1 - (cmd_data & x"00");	
-						else
-							udp_checksum:=udp_checksum - 1 - (x"00" & cmd_data);	
-						end if;
-						udp_csh:=not udp_csh;
-						
-					end if;	 
-					if count/=0 then count:=count-1; end if;
+						udp_checksum:=udp_checksum - 1 - (x"00" & cmd_data);	
+					end if;
+					udp_csh:=not udp_csh;
+					if mem_count=0 then 
+						state:=iplenghtH;
+					end if;	
+					
+					mem_count<=mem_count-1;
 				
 				when iplenghtH => 
 					ADRcount<=eth_cmd_header_ADRiplenght; 
@@ -283,7 +274,7 @@ begin
 				when pause => 
 					mem_data<=(others=>'0');
 					mem_wr<='0'; 
-					count:=0; 
+					mem_count<=0; 
 					ADRcount<=eth_CMD_header_len-1; 
 					ip_checksum:=ip_checksum_start;
 					ip_lenght:=ip_lenght_start;
@@ -295,7 +286,6 @@ begin
 						pause_count:=pause_count-1;
 					end if;
 				
-				when others => null;
 			end case;
 		end if;
 	end process main_proc; 
@@ -338,7 +328,7 @@ begin
 	timer_proc: process (reset,clock)  
 		constant max_countA : integer :=ref_freq/100;
 		constant max_countB : integer :=5;
-		constant max_countR : integer :=20;
+		constant max_countR : integer :=50;
 		variable countA : integer range 0 to max_countA-1;
 		variable countB : integer range 0 to max_countB-1;
 		variable countR : integer range 0 to max_countR-1;
@@ -375,6 +365,4 @@ begin
 			end if;
 		end if;
 	end process timer_proc; 	  
-	
-	---------------------------------------------------------	
 end main; 

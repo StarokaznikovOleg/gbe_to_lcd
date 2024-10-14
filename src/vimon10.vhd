@@ -29,13 +29,11 @@ entity vimon10 is
 		
 		--LCD port
 		LCD_EN_VDD,LCD_PWM,LCD_EN_LED,LCD_RST : out STD_LOGIC; 
-		LCD_DIM : in STD_LOGIC; 
 		LVDS_A_OUT_CLK : out STD_LOGIC; 
 		LVDS_A_OUTP : out STD_LOGIC_VECTOR(3 downto 0); 
 		
 		--ETH0 port
 		ETH0_RSTN : out STD_LOGIC;
-		ETH0_CLKOUT : in STD_LOGIC;
 		ETH0_RXCLK,ETH0_RXCTL : in STD_LOGIC; 
 		ETH0_RXD : in STD_LOGIC_VECTOR(3 downto 0); 
 		ETH0_TXCLK,ETH0_TXCTL : out STD_LOGIC; 
@@ -429,7 +427,6 @@ begin
 		mem_q=>lcd_q,
 		LCD_EN_VDD=>LCD_EN_VDD,
 		LCD_RST=>LCD_RST,
-		LCD_READY=>LCD_DIM,
 		LCD_EN=>int_LCD_EN,
 		LCD_PWM=>int_LCD_PWM,
 		lcd_a_clk=>LVDS_A_OUT_CLK,

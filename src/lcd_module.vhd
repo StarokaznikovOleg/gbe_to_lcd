@@ -20,7 +20,6 @@ entity lcd_module is
 		backlight : in integer;  
 		err,vsync: out std_logic; 	
 		
-		
 		Vcount,Hcount: out integer; 
 		no_signal: in std_logic; 
 		grafics_act : in boolean; 
@@ -29,7 +28,6 @@ entity lcd_module is
 		lcd_a_clk: out std_logic;
 		lcd_a : out std_logic_vector(3 downto 0);  
 		
-		LCD_READY : in STD_LOGIC; 
 		LCD_EN_VDD,LCD_RST,LCD_EN,LCD_PWM : out STD_LOGIC; 
 		
 		mem_a : out std_logic_vector(9 downto 0);  

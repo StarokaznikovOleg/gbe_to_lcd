@@ -76,8 +76,9 @@ begin
 						code<=char_plus;
 					else
 						code<=char_minus;
+						int_hex_data<=not int_hex_data;
 					end if;	
-					int_hex_data(31)<='0'; 
+--					int_hex_data(31)<='0'; 
 					code_oe<=true;
 					inc_count<=0;	
 					state<=st_dig;

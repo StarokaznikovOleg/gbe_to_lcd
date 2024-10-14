@@ -13,4 +13,4 @@
 -file_type vlg
 -ssram_depth 8
 -ssram_width 8
--init_file D:\Projects\vimon\src\gowin_ip\visca_cmd\visca_zoom_stop.mi
+-init_file D:/Projects/vimon/src/gowin_ip/visca_cmd/visca_zoom_stop.mi

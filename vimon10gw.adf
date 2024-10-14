@@ -41,24 +41,24 @@ vimon10=.
 
 [Folders]
 Name3=Makefiles
-Directory3=d:\Projects\vimon\
+Directory3=D:\Projects\vimon\
 Extension3=mak
 Name4=Memory
-Directory4=d:\Projects\vimon\src
+Directory4=D:\Projects\vimon\src
 Extension4=mem;mif;hex
 Name5=Dll Libraries
-Directory5=d:\Projects\vimon\
+Directory5=D:\Projects\vimon\
 Extension5=dll
 Name6=PDF
-Directory6=d:\Projects\vimon\
+Directory6=D:\Projects\vimon\
 Extension6=pdf
 Name7=HTML
-Directory7=d:\Projects\vimon\
+Directory7=D:\Projects\vimon\
 Extension7=
 
 [HierarchyViewer]
 SortInfo=u
-HierarchyInformation=video_mem|Behavioral|0
+HierarchyInformation=main_osc|Behavioral|0 video_mem|Behavioral|0 
 ShowHide=ShowTopLevel
 Selected=
 
