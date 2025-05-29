@@ -63,7 +63,7 @@ architecture main of stat_module is
 	end record;
 	type type_array_HV is array (0 to max_st_count-1) of type_HV;
 	constant conf_TXT: type_array_HV:=(
-	(19,25),	--00 P(XXXX.XX)
+	(19,25),	--00 P(XXX.XXX)
 	(20,25),	--01 T(±XXX.XX)
 	(21,26),	--02 H(XXX.XXX)
 	(23,48), 	--03 hw_version(XXX)
@@ -152,7 +152,7 @@ begin
 								st_count<=7;
 							end if;
 							hex_data<=bme280.P;
-							dot_val<=2;
+							dot_val<=3;
 							sign<=false; 
 							numb_val<=6; 
 						
