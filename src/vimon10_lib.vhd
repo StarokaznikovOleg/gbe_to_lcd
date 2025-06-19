@@ -14,7 +14,7 @@ package vimon10_lib is
 	constant hw_version:	integer :=9;
 	constant fw_version:	integer :=3;
 	constant fw_revision:	integer :=1;
-	constant fw_test:		integer :=11;  
+	constant fw_test:		integer :=12;  
 	--------------------------------------------------	
 	
 	constant V_marker : integer :=01; 
@@ -71,7 +71,12 @@ package vimon10_lib is
 	subtype type_pulse_err is std_logic_vector(len_err-1 downto 0); 
 	type type_cnt_err_array is array (len_err-1 downto 0) of integer range 0 to max_cnt_err; 	
 	
-	
+	-- Example: Use these constants for backlight generic map
+	-- backlight_min => BACKLIGHT_MIN, backlight_default => BACKLIGHT_DEFAULT, backlight_max => BACKLIGHT_MAX
+	constant BACKLIGHT_MIN      : integer := 10;   -- Minimum backlight value
+	constant BACKLIGHT_DEFAULT  : integer := 63;  -- Default backlight value
+	constant BACKLIGHT_MAX      : integer := 100; -- Maximum backlight value
+	subtype type_backlight is integer range BACKLIGHT_MIN to BACKLIGHT_MAX; 
 	
 end vimon10_lib;	
 

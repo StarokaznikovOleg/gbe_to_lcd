@@ -1,6 +1,12 @@
 ------------------------------
 2024-10-14
 HW VIMON10a
+FW vimon10_009-003-001-012.fs
+исправление согласно 
+https://youtrack.protei.ru/issue/HWS-774/Vidoiskatel-8-VIMON1a-posle-dlitelnoi-raboty-pri-vystavlenii-minimalnogo-znacheniya-yarkosti-ekrana-gasnet-podsvetka-ekrana
+------------------------------
+2024-10-14
+HW VIMON10a
 FW vimon10_009-003-001-010.fs
 исправление согласно https://youtrack.protei.ru/issue/HWT-754/Ispytaniya-kamery-193-02-MVK4-Vimon#focus=Comments-85-1049899.0-0
 ------------------------------

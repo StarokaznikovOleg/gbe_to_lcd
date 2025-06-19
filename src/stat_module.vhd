@@ -23,7 +23,8 @@ entity stat_module is
 		bme280: in type_outBME280; 
 		eth_link: in std_logic_vector(1 downto 0); 
 		mvk3: in type_mvk3; 
-		LCD_backlight: in integer; 
+		-- LCD_backlight uses type_backlight for unified backlight range (see vimon10_lib)
+		LCD_backlight: in type_backlight; 	
 		
 		--STAT memory
 		MAPTXT_a: out STD_LOGIC_VECTOR(13 downto 0);		
@@ -36,7 +37,8 @@ architecture main of stat_module is
 	signal eth_link_sync: std_logic_vector(1 downto 0); 
 	signal detect_video_sync,voice_act: std_logic; 
 	signal LCD_backlight_level: type_level; 
-	signal LCD_backlight_sync: integer; 
+	-- Synchronized LCD_backlight signal, uses type_backlight for correct range
+	signal LCD_backlight_sync: type_backlight; 
 	signal level: integer range 0 to 128; 
 	signal mvk3_data : type_mvk3_data;
 	signal mvk3_ena: std_logic; 
@@ -64,19 +66,19 @@ architecture main of stat_module is
 	type type_array_HV is array (0 to max_st_count-1) of type_HV;
 	constant conf_TXT: type_array_HV:=(
 	(19,25),	--00 P(XXX.XXX)
-	(20,25),	--01 T(±XXX.XX)
+	(20,25),	--01 T(ï¿½XXX.XX)
 	(21,26),	--02 H(XXX.XXX)
 	(23,48), 	--03 hw_version(XXX)
 	(23,52),	--04 fw_version(XXX)
 	(23,56),	--05 fw_revision(XXX)
 	(23,60), 	--06 fw_test(XXX)
-	(19,18), 	--07 mvk3.HEAD (ÕXXX)åñòü\íåò
-	(20,18), 	--08 mvk3.FRONT_HEAD (ÕXXX)åñòü\íåò
-	(19,59), 	--09 mvk3.link (ÕXXX)åñòü\íåò
-	(20,55), 	--10 mvk3.voice.level(XXXXÕXXX)
-	(21,55), 	--11 mvk3.tmp100.val(±XXX)
-	(22,13), 	--12 LCD_backlight(XXXXÕXXX)
-	(22,01), 	--13 mvk3.visca.zoom(XXXXÕXXX)
+	(19,18), 	--07 mvk3.HEAD (ï¿½XXX)ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½
+	(20,18), 	--08 mvk3.FRONT_HEAD (ï¿½XXX)ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½
+	(19,59), 	--09 mvk3.link (ï¿½XXX)ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½
+	(20,55), 	--10 mvk3.voice.level(XXXXï¿½XXX)
+	(21,55), 	--11 mvk3.tmp100.val(ï¿½XXX)
+	(22,13), 	--12 LCD_backlight(XXXXï¿½XXX)
+	(22,01), 	--13 mvk3.visca.zoom(XXXXï¿½XXX)
 	(21,15), 	--14 LCD_backlight(XXX)
 	(21,03),	--15 mvk3.visca.zoom(XXX)
 	(20,37),	--16 mvk3.voice.level(XXX)
@@ -94,7 +96,8 @@ begin
 	eth_link_sync<=eth_link;  
 	
 	sync_LCD_backlight_process: process (clock)
-		variable LCD_backlight_false_path_sync: integer; 
+		-- Variable for synchronizing LCD_backlight, uses type_backlight for correct range
+		variable LCD_backlight_false_path_sync: type_backlight; 
 	begin
 		if rising_edge(clock) then
 			LCD_backlight_sync<=LCD_backlight_false_path_sync;

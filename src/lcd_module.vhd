@@ -17,7 +17,7 @@ entity lcd_module is
 		reset : in STD_LOGIC;
 		sclk,pclk: in std_logic; 
 		EN : in std_logic;  
-		backlight : in integer;  
+		backlight : in type_backlight;  
 		err,vsync: out std_logic; 	
 		
 		Vcount,Hcount: out integer; 
@@ -104,7 +104,7 @@ begin
 	end process EN_proc; 
 	
 	PWM_proc: process (pclk)
-		constant max_count_pwm : integer:=98;
+		constant max_count_pwm : integer:=BACKLIGHT_MAX-2;
 		variable count_pwm : integer range 0 to max_count_pwm;
 		variable count : integer range 0 to corr_PWMcount+max_PWMcount-1;
 		variable count_pwm_inc : boolean:= false;
@@ -127,7 +127,6 @@ begin
 			count_pwm_inc:=count=0;
 			if Frame then
 				count:=max_PWMcount-1;
-				--				count:=corr_PWMcount+max_PWMcount-1;
 			elsif count=0 then
 				count:=max_PWMcount-1;
 			else

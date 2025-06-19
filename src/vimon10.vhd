@@ -122,7 +122,8 @@ architecture main of vimon10 is
 	
 	signal bme280: type_outBME280; 
 	signal tmp100: type_tmp100; 
-	signal LCD_backlight : integer range 0 to 100; 
+	-- LCD_backlight range is set according to backlight constants from vimon10_lib
+	signal LCD_backlight : type_backlight; 
 	
 	signal CMDTX_status: std_logic :='0';
 	signal CMDTX_wr: std_logic :='0';
@@ -155,21 +156,21 @@ begin
 	port map( clkin=>CLK25M,	--reference 25MHz
 		lock=>ethtx_lock,
 		clkout=>ethtx_clock,		--clock 125MHz
-		clkoutp=>ext_ethtx_clock );	  	--clock 125MHz shift 112°
+		clkoutp=>ext_ethtx_clock );	  	--clock 125MHz shift 112ï¿½
 	--------------------------------------------------------	
 	--  sdram pll	
 	sdram_rpll1 : entity work.sdram_rpll 
 	port map( clkin=>CLK25M,	--reference 25MHz
 		lock=>sdrampll_lock,
 		clkout=>sdram_clk,		--clock 125MHz
-		clkoutp=>gpu_clk );	  	--clock 125MHz shift 45°
+		clkoutp=>gpu_clk );	  	--clock 125MHz shift 45ï¿½
 	--------------------------------------------------------	
 	--  lcd pll	
 	lcd_sclk_pll : entity work.lcd_rpll 
 	port map ( clkin=>CLK25M,	--reference 25MHz
 		lock=>lcd_lock,
 		clkout=>lcd_sclk,		--clock 225MHz
-		clkoutp=>ref_sclk );	--clock 225MHz shift 45°
+		clkoutp=>ref_sclk );	--clock 225MHz shift 45ï¿½
 	--------------------------------------------------------	
 	
 	lcd_pclk_pll : entity work.lcd_clkdiv 
@@ -206,7 +207,13 @@ begin
 	
 	--------------------------------------------------------	
 	cmd_module1 : entity work.cmd_module
-	generic map( ref_freq => int_clk_freq, hfilter => 4 )
+	generic map(
+		ref_freq => int_clk_freq,
+		hfilter => 4,
+		backlight_min => BACKLIGHT_MIN,         -- Minimum backlight value from vimon10_lib
+		backlight_default => BACKLIGHT_DEFAULT, -- Default backlight value from vimon10_lib
+		backlight_max => BACKLIGHT_MAX          -- Maximum backlight value from vimon10_lib
+	)
 	port map( reset => rst_eth, clock => int_clk,
 		mem_status => CMDtx_status, mem_wr => CMDtx_wr, mem_adr => CMDtx_ad, mem_data => CMDtx_d,
 		key => KEY(3 downto 0),LCD_backlight=>LCD_backlight );	

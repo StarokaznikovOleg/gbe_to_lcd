@@ -10,15 +10,20 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 library work;
+use work.vimon10_lib.all;								    
 use work.common_lib.all;
 use work.ETH_lib.all;
 
 entity cmd_module is
-	generic( ref_freq:integer:=125000000; hfilter:integer:=4 );	 
+	generic( ref_freq:integer:=125000000; hfilter:integer:=4;
+        backlight_min : integer := 6; -- Minimum backlight value
+        backlight_default : integer := 63; -- Default backlight value
+        backlight_max : integer := 127 -- Maximum backlight value
+    );	 
 	port(
 		reset,clock: in std_logic; 
 		key: in std_logic_vector(3 downto 0); 
-		LCD_backlight : out integer range 0 to 127;
+		LCD_backlight : out type_backlight;
 		--memory
 		mem_adr: out type_cmd_mem_adr;		
 		mem_data: out type_cmd_mem_data;
@@ -291,11 +296,12 @@ begin
 	end process main_proc; 
 	
 	backlight_proc: process (reset,clock)   
-		variable count : integer range 0 to 127;
+		-- Parameters for backlight count from generic
+		variable count : type_backlight;
 	begin
-		LCD_backlight<=count;	
-		if reset='1' then 	
-			count:=63;
+		LCD_backlight<=count;    
+		if reset='1' then     
+			count:=backlight_default;
 			key_done(5 downto 3)<=(others=>'0');
 		elsif rising_edge(clock) then 
 			if key_state(3)=key_on then
@@ -315,11 +321,11 @@ begin
 			end if;
 			if t10_ena  then
 				if key_state(3)=key_wait_off  then
-					if count/=127 then count:=count+1; end if;
+					if count<backlight_max then count:=count+1; end if;
 				elsif key_state(4)=key_wait_off then
-					if count/=6 then count:=count-1; end if;
+					if count>backlight_min then count:=count-1; end if;
 				elsif key_state(5)=key_wait_off then
-					count:=63; 
+					count:=backlight_default; 
 				end if;
 			end if;
 		end if;
