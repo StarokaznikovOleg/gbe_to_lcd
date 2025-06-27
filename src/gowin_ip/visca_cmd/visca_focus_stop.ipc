@@ -1,0 +1,13 @@
+[General]
+ipc_version=4
+file=visca_focus_stop
+module=visca_focus_stop
+target_device=gw2ar18c-004
+type=ssram_rom16
+version=1.0
+
+[Config]
+DEPTH=8
+LANG=0
+MEM_FILE=visca_focus_stop.mi
+WIDTH=8
