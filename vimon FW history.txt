@@ -1,3 +1,17 @@
+2025-10-28
+HW VIMON10a
+FW vimon10_009-003-002-002.fs
+исправление свиста на частоте 12,938МГц согласно 
+https://youtrack.protei.ru/issue/HWS-970
+------------------------------
+2025-10-14
+HW VIMON10a
+FW vimon10_009-003-002-001.fs
+исправление согласно 
+https://youtrack.protei.ru/issue/HWS-970
+dynamic screen brightness scale =10..100% (128 levels)
+minimum screen brightness value =10%
+default brightness level =63
 ------------------------------
 2024-10-14
 HW VIMON10a

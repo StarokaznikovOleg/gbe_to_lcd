@@ -13,8 +13,8 @@ package vimon10_lib is
 	----------        Versions data         ----------	
 	constant hw_version:	integer :=9;
 	constant fw_version:	integer :=3;
-	constant fw_revision:	integer :=1;
-	constant fw_test:		integer :=12;  
+	constant fw_revision:	integer :=2;
+	constant fw_test:		integer :=2;  
 	--------------------------------------------------	
 	
 	constant V_marker : integer :=01; 
@@ -73,9 +73,10 @@ package vimon10_lib is
 	
 	-- Example: Use these constants for backlight generic map
 	-- backlight_min => BACKLIGHT_MIN, backlight_default => BACKLIGHT_DEFAULT, backlight_max => BACKLIGHT_MAX
-	constant BACKLIGHT_MIN      : integer := 10;   -- Minimum backlight value
+	constant BACKLIGHT_MARGIN_MIN      : integer := 15;   -- Minimum backlight value
+	constant BACKLIGHT_MIN      : integer := 0;   -- Minimum backlight value
 	constant BACKLIGHT_DEFAULT  : integer := 63;  -- Default backlight value
-	constant BACKLIGHT_MAX      : integer := 100; -- Maximum backlight value
+	constant BACKLIGHT_MAX      : integer := 128; -- Maximum backlight value
 	subtype type_backlight is integer range BACKLIGHT_MIN to BACKLIGHT_MAX; 
 	
 end vimon10_lib;	
