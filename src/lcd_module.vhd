@@ -63,7 +63,13 @@ architecture main of lcd_module is
 	-- PWM Backlight Control Parameters
 	-------------------------------------------------------------------------------
 	constant fps          : integer := 60;                        -- Frame rate (60 FPS)
-	constant PWMfreq      : integer := 33695;                     -- Target PWM frequency (33.695 kHz, raised to avoid audible noise)
+--	constant PWMfreq      : integer := 18517;                     -- 12987KHz -71db
+--	constant PWMfreq      : integer := 26000;                     -- 18094KHz -48db
+	constant PWMfreq      : integer := 27000;                     -- 18844KHz -53db
+--	constant PWMfreq      : integer := 28000;                     -- 19688KHz -47db
+--	constant PWMfreq      : integer := 29000;                     -- 20625KHz -51db
+--	constant PWMfreq      : integer := 30000;                     -- 21562KHz -48db
+--	constant PWMfreq      : integer := 32000;                     -- 22594KHz -49db
 	constant PWMsize      : integer := 99;                        -- PWM resolution steps (0-99, giving 100 levels)
 	-- Calculate how many pixel clocks per PWM period
 	-- max_PWMcount = total_pixels_per_frame / (PWMfreq/fps * PWMsize)
